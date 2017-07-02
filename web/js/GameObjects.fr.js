@@ -21,10 +21,11 @@ Home.addItem(new Item("LettreDeBienvenue", "Bienvenue à toi apprenti sorcier ! 
 		"Tu peux revenir sur tes pas avec la commande \"cd ..\". \n" +
 		"Tu peux utilisé des objets avec la commande \"less OBJET\" \n\n" +
         "Si tu es perdu, écris \"pwd\" \n\n" +
+  "Bonus : si tu commence à écrire un mot, il sera deviné lorsque tu appuis sur la touche TAB\n" +
 		"Explore et va de l'avant.\n"));
 
 //WESTERN FOREST
-var WesternForest = new Room("ForêtDesLutins",
+var WesternForest = new Room("BoisDesLutins",
     "Tu es entré dans la foret des Lutins . \
 Le chemin semble mener à une école. Un panneau indique \
 \"Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur.\"",
@@ -44,7 +45,7 @@ var SpellCastingAcademy = new Room("AcadémieDesBots",
 sont bondées. Les Bots s'agitent de droite à gauche et de gauche à droite \
 et même vers le centre. \
 L'académie a un plafond très haut ce que rend l'entrée très impressionante.\
-Ouuuuaahhh ! tu faites semblant d'être émerveillé-e\
+Ouuuuaahhh ! tu faites semblant d'être émerveillé-e \
 pour ne pas jeter de soupsons sur vous.", 
     "loc_academy.gif");
 var HurryingStudent = new Item("BotPressé-e", 
@@ -87,14 +88,13 @@ Box.removeCommand("cd");
 Box.addCmdText("cd", "You are too small to fit into the box.");
 
 //NORTHERN MEADOW
-var NorthernMeadow = new Room("NorthernMeadow", 
-    "This is a beautiful green meadow. A plump but majestic pony prances happily about.",
+var NorthernMeadow = new Room("Prairie", 
+    "C'est une grande et belle prairie verte. Un majesteux poney s'y trouve. Il a l'air triste et solitaire.",
     "loc_meadow.gif");
-NorthernMeadow.addItem(new Item("Pony", 
-    "You go up to the pony and attempt to ride it. \
-It compiles and you ride the pony around in circles for a bit. It then grows tired \
-of having you as a burden and knocks you off. He then looks towards the east as if \
-suggesting that you head in that direction.", 
+NorthernMeadow.addItem(new Item("Poney", 
+    "Sans t'approcher.\
+Toi et le poney avez appris à communiquer en vous regardant dans les yeux et avec quelques hochements de tête.\
+Finalement, le poney regardait vers l'est comme s'il te suggérait d'aller dans cette direction.", 
     "item_fatpony.gif"));
 
 //EASTERN MOUNTAINS
@@ -1908,3 +1908,4 @@ link_rooms(KernelFiles, MoreKernelFiles);
 link_rooms(Home, MIT);
 link_rooms(MIT, StataCenter);
 link_rooms(MIT, AthenaCluster);
+console.log("Game objects : init");

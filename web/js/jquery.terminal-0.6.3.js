@@ -1340,7 +1340,7 @@
     // :: TOOLS
     // -------------------------------------------------------------------------
     function skipFormattingCount(string) {
-        return $('<div>' + $.terminal.strip(string) + '</div>').text().length;
+        return $('<p>' + $.terminal.strip(string) + '</p>').text().length;
     }
     // -------------------------------------------------------------------------
     function formattingCount(string) {

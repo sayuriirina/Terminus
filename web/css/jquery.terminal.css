@@ -27,7 +27,7 @@
 }
 .terminal .terminal-output div div, .terminal .prompt {
     display: block;
-    line-height: 14px;
+/*    line-height: 14px;*/
     height: auto;
 }
 .terminal .prompt {
@@ -35,11 +35,14 @@
 }
 
 .terminal {
-    font-family: FreeMono, monospace;
-    color: #cccccc;
+/*    font-family: FreeMono, monospace;*/
+    color: #efefef;
+/*    font-weight: 600;*/
     background-color: #000;
-    font-size: 16px;
-    line-height: 14px;
+    font-family:sans-serif;
+    font-size: 1.4rem;
+    font-stretch:condensed;
+/*    line-height: 14px;*/
 }
 .terminal-output > div {
     padding-top: 3px;
