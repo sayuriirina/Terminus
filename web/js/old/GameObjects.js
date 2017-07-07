@@ -10,67 +10,61 @@
 */
 
 //HOME
-var Home = new Room("Dossier personnel",
-    "Tu es confortablement installé dans ton dossier personnel; c'est là où tu ranges toutes tes affaires. Disons que c'est ici ta maison.",
+var Home = new Room("Home",
+    "You are in the comfort of your own home.",
     "loc_farm.gif");
-Home.addItem(new Item("LettreDeBienvenue", "Bienvenue à toi apprenti sorcier ! \n" +
-		"Pour réussir ta quête, tu devra écrire des sorts magiques appelées commandes. \n" +
-		"Ces commandes te permettront de te déplacer et de comprendre le monde plus rapidement que le commun des mortels. \n\n" +
-		"Observe ton l'endroit où tu te trouve avec la commande \"ls\". \n" +
-		"Déplace toi avec la commande \"cd \" \n" +
-		"Tu peux revenir sur tes pas avec la commande \"cd ..\". \n" +
-		"Tu peux utilisé des objets avec la commande \"less OBJET\" \n\n" +
-        "Si tu es perdu, écris \"pwd\" \n\n" +
-  "Bonus : si tu commence à écrire un mot, il sera deviné lorsque tu appuis sur la touche TAB\n" +
-		"Explore et va de l'avant.\n"));
+Home.addItem(new Item("WelcomeLetter", "Welcome! If you are new to the game, here are some tips: \n\n" +
+		"Look at your surroundings with the command \"ls\". \n" +
+		"Move to a new location with the command \"cd LOCATION\" \n" +
+		"You can backtrack with the command \"cd ..\". \n" +
+		"Interact with things in the world with the command \"less ITEM\" \n\n" +
+        "If you forget where you are, type \"pwd\" \n\n" + 
+		"Go ahead, explore. We hope you enjoy what you find. Do ls as your first command.\n"));
 
 //WESTERN FOREST
-var WesternForest = new Room("BoisDesLutins",
-    "Tu es entré dans la foret des Lutins . \
-Le chemin semble mener à une école. Un panneau indique \
-\"Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur.\"",
+var WesternForest = new Room("WesternForest",
+    "You enter and travel deep into the forest. \
+Eventually, the path leads to a clearing with a large impressive building. A sign \
+on it reads: Spell Casting Academy: The Elite School of Magic.",
     "loc_forest.gif");
-WesternForest.addItem(new Item("Panneau",
-    "Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur.\
-À ne pas manquez aujourd'hui : Leçon d'initiation aux sortilèges !",
+WesternForest.addItem(new Item("Sign",
+    "Spell Casting Academy: The Elite School of Magic \
+Today Only: Free Introductory Lessons! Novices welcome!",
     "loc_forest.gif"));
-WesternForest.addItem(new Item("RentreALaMaison",
-    "À tous moment, si tu veux revenir dans le dossier personnel, écris la commande 'cd ~' ou 'cd' \
-   et tu seras de retour chez toi. C'est plus simple que demander son chemin.",
+WesternForest.addItem(new Item("BackSign",
+    "If you ever want to go directly Home, just type 'cd ~' or just plain old `cd' \
+and you'll come back Home. Getting back might be more difficult though.",
     "loc_forest.gif"));
 
 //SPELL CASTING ACADEMY
-var SpellCastingAcademy = new Room("AcadémieDesBots", 
-    "L'entrée, les salles, même les toilettes sont \
-sont bondées. Les Bots s'agitent de droite à gauche et de gauche à droite \
-et même vers le centre. \
-L'académie a un plafond très haut ce que rend l'entrée très impressionante.\
-Ouuuuaahhh ! tu faites semblant d'être émerveillé-e \
-pour ne pas jeter de soupsons sur vous.", 
+var SpellCastingAcademy = new Room("SpellCastingAcademy", 
+    "The halls are filled the hustle \
+and bustle of academy students scurrying to and from classes. The inside of the \
+academy is as impressive as it is on the outside with a high ceiling and gothic \
+arches, it seems even larger on the inside.", 
     "loc_academy.gif");
-var HurryingStudent = new Item("BotPressé-e", 
-    "Tu tente de parler à un-e des élèves de l'académie. \
-L'étudiant-e ne te vois pas et te rentre dedans. \
-L'élève  se relève vite et te demande pardon et si tout va bien.\
-« Pardon, Pardn, j'été pressé-e et je ne t'ai pas vu. \
-Dis moi. Je ne t'ai jamais vu ? C'est ton premier jour ici ? » \
-(Sourire) « Ne t'inquietes pas, il y a beaucoups de Noobs aujourd'hui. \
-Pourquoi to n'essairai pas de commencer par le cours d'introduction ? \
-Je pourrai t'accompagner mais je suis un peu pressé-e.\
-Traverse le couloirs des cours et trouvera bien quelqu'un pour te guider.» \
-L'élève disparait en courant aussi vite qu'elle ou il s'était relevé.  \
-Vous avez remarqué que sa voix rendrait super bien dans votre groupe de Raggae.\
-Malheureusement, tu n'as pas eu le temps de lui demandé son nom, ni même son \
-adresse mail.", 
-"item_student.gif")
+var HurryingStudent = new Item("HurryingStudent", 
+    "You speak to a hurrying student. \
+The student runs into you and falls to the ground. \
+The student quickly gets up \
+and apologizes to you, asking if you are okay. You are sturdier than you look and \
+you're undamaged. I'm so sorry, I was in such a hurry that I didn't see you \
+there... Say, I haven't seen you here before. You're new here aren't-cha?\" the \
+student winks at you, \"Don't worry, there's tons of newbies around today, \
+why don't you try checking out one of the free intro lessons? I'd show you where \
+to go, but I gotta run to class. Just head into the Lessons hall and someone \
+should help you out. See you around.\" The student runs past you. You notice that \
+the student is pretty cute, and probably around your age. Unfortunately, the \
+student disappears around a corner before you can ask for a name.", 
+    "item_student.gif")
 SpellCastingAcademy.addItem(HurryingStudent);
 
 //PRACTICE ROOM
-var PracticeRoom = new Room("SalleDEntrainement", 
-    "La pièce est remplie de noobs comme vous et \
-d'élèves pratiquant leur nouveaux sortilèges. ",
+var PracticeRoom = new Room("PracticeRoom", 
+    "The room is filled with practice dummies \
+for students to practice their new spells on.",
     "loc_practiceroom.gif");
-PracticeRoom.addItem(new Item("LeçonDInitiation", 
+PracticeRoom.addItem(new Item("Instructions", 
     "Welcome to the Practice Room. Here \
 you will find practice dummies try your new spells on. Go ahead, give it a go! \
 If you don't know any spells yet, go back and check out some Lessons.", 
@@ -88,13 +82,14 @@ Box.removeCommand("cd");
 Box.addCmdText("cd", "You are too small to fit into the box.");
 
 //NORTHERN MEADOW
-var NorthernMeadow = new Room("Prairie", 
-    "C'est une grande et belle prairie verte. Un majesteux poney s'y trouve. Il a l'air triste et solitaire.",
+var NorthernMeadow = new Room("NorthernMeadow", 
+    "This is a beautiful green meadow. A plump but majestic pony prances happily about.",
     "loc_meadow.gif");
-NorthernMeadow.addItem(new Item("Poney", 
-    "Sans t'approcher.\
-Toi et le poney avez appris à communiquer en vous regardant dans les yeux et avec quelques hochements de tête.\
-Finalement, le poney regardait vers l'est comme s'il te suggérait d'aller dans cette direction.", 
+NorthernMeadow.addItem(new Item("Pony", 
+    "You go up to the pony and attempt to ride it. \
+It compiles and you ride the pony around in circles for a bit. It then grows tired \
+of having you as a burden and knocks you off. He then looks towards the east as if \
+suggesting that you head in that direction.", 
     "item_fatpony.gif"));
 
 //EASTERN MOUNTAINS
@@ -1908,4 +1903,3 @@ link_rooms(KernelFiles, MoreKernelFiles);
 link_rooms(Home, MIT);
 link_rooms(MIT, StataCenter);
 link_rooms(MIT, AthenaCluster);
-console.log("Game objects : init");

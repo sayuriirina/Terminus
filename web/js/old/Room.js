@@ -1,46 +1,3 @@
-dialog['fr']={
-  'room_pwd':"Tu te trouve dans %s.",
-  'room_intro_none':"C'est une pièce très banale.",
-  'room_name_none':"Pièce banale",
-  'room_items': "Objets:\n%s",
-  'room_directions': "Lieux:\n%s ",
-  'room_empty': "Il n'y a nul objet visible à regarder.",
-  'room_combination':"The combination is 'terminus' (without the quotes).",
-  'room_new_created':"New room %s created",
-  'room_incorrect_syntax':"Incorrect syntax. Ask the OldMan for help.",
-  'room_spell_unknown':"You have not learned this spell yet",
-  'room_wrong_syntax': "Wrong syntax. Read the instructions again.",
-  'room_cannot_cast':"You cannot cast this spell here.",
-  'room_wrong_password':"Wrong password.",
-  'room_lock_added':"You just added the %s locker",
-  'room_invalid_locker': "Je ne connais pas ce nom de verrou.",
-  'room_invalid_spell': "Ce sort n'existe pas",
-};
-dialog['en']={
-  'room_pwd':"You are in %s.",
-  'room_intro_none':"This is a generic room.",
-  'room_name_none':"Generic room",
-  'room_items': "Objects:\n%s",
-  'room_directions': "Locations:\n%s ",
-  'room_empty': "The room is empty.",
-  'room_combination':"The combination is 'terminus' (without the quotes).",
-  'room_new_created':"New room %s created",
-  'room_incorrect_syntax':"Incorrect syntax. Ask the OldMan for help.",
-  'room_spell_unknown':"You have not learned this spell yet",
-  'room_wrong_syntax': "Wrong syntax. Read the instructions again.",
-  'room_cannot_cast':"You cannot cast this spell here.",
-  'room_wrong_password':"Wrong password.",
-  'room_lock_added':"You just added the %s locker",
-  'room_invalid_locker': "No valid locker of that name.",
-  'room_invalid_spell': "This is not a valid spell."
-};
-img={
-'room_none':"none.gif",
-};
-function i(fname){
-  return './img/' + fname;
-}
-
 String.prototype.replaceAll = function(replaceThis, withThis){
 	toreturn = this.toString();
 	while (toreturn.indexOf(replaceThis) > 0){
@@ -51,13 +8,14 @@ String.prototype.replaceAll = function(replaceThis, withThis){
 
 function Room(roomname, introtext, roompic){
 	this.parents = [];
+  this.previous = null;
 	this.children = new Array();
 	this.items = new Array();
 	this.commands = ["cd", "ls", "less", "man", "help", "exit", "pwd"];
-	this.room_name = (typeof roomname === 'undefined') ? _('room_name_none') : roomname;
-	this.room_pic = i((typeof roompic === 'undefined') ? img['room_none']: roompic);
-	this.intro_text = (typeof introtext === 'undefined') ? _('room_intro_text'): introtext;
-	this.cmd_text = {"pwd": _('room_pwd',this.room_name)};
+	this.room_name = (typeof roomname === 'undefined') ? "Generic Room": roomname;
+	this.room_pic = (typeof roompic === 'undefined') ? "./static/img/none.gif": "./static/img/" + roompic;
+	this.intro_text = (typeof introtext === 'undefined') ? "This is a simple room": introtext;
+	this.cmd_text = {"pwd": "You are in " + this.room_name + "."};
 	//for event handling
 	this.ev = new EventTarget();
 	EventTarget.call(this);
@@ -153,10 +111,12 @@ Room.prototype.removeCommand = function(cmd){
 
 Room.prototype.addCmdText = function(cmd, text) {
 	this.cmd_text[cmd] = text;
+  return this;
 };
 
 Room.prototype.removeCmdText = function(cmd){
 	delete this.cmd_text[cmd];
+  return this;
 };
 
 Room.prototype.ls = function(args){
@@ -164,48 +124,58 @@ Room.prototype.ls = function(args){
 		if (this.childrenStringArray().indexOf(args[0]) > -1){
 			return this.children[this.childrenStringArray().indexOf(args[0])].printLS();
 		} else {
-			return _("room_empty");
+			return "That is not a valid object to look at.";
 		}
 	} else {
+		other_rooms = (this.children.toString()).replaceAll(",", "\n");
 		$("#scene").attr("src",this.room_pic); // Display image of room
-    return this.printLS();
+		if (this.items.length > 0){
+			return " Locations: \n" + other_rooms + "\n Items: \n" + (this.items.toString()).replaceAll(",", "\n");
+		}
+		return " Locations: \n" + other_rooms;
 	}
 };
 
 Room.prototype.printLS = function(){
-  return _('room_directions', " " + (this.children.toString()).replaceAll(",", "\n "))
-    + "\n" + ( (this.items.length > 0) ? _('room_items', " " + (this.items.toString()).replaceAll(",", "\n ")) : '');
+	other_rooms = (this.children.toString()).replaceAll(",", "\n");
+		if (this.items.length > 0){
+			return " Locations: \n" + other_rooms + "\n Items: \n" + (this.items.toString()).replaceAll(",", "\n");
+		}
+		return " Locations: \n" + other_rooms;
 }
 
 var enterRoom = function(new_room){
-  $("#scene").attr("src", i(img['room_none'])); //Always show blank image when moving into a room
+  $("#scene").attr("src", "./static/img/none.gif"); //Always show blank image when moving into a room
   current_room = new_room;
   state.setCurrentRoom(current_room);
 }
 
 Room.prototype.cd = function(args){
 	if (args.length > 1){
-		return "Nope nope nope. Tu ne peux pas te dédoubler et accéder à plusieurs salles en même temps. Seul le grand Tmux peut faire cette prouesse.";
+		return "You can't move to multiple locations.";
 	} else if (args.length == 0){
-		enterRoom(Home);
-		return "Tu es de retour à la maison!";
+		Home.previous=this;
+    enterRoom(Home);
+		return "You have come Home!";
 	}else if (args[0] === "..") {
 		if (this.parents.length >= 1){
 			if (this.room_name === "AthenaCluster"){
 				this.ev.fire("AthenaClusterExited");
 			}
-            enterRoom(this.parents[0]);
-			return "Tu est entré-e dans " + current_room.toString() + ". " + current_room.intro_text;
+		  this.parents[0].previous=this;
+      enterRoom(this.parents[0]);
+			return "You have moved to " + current_room.toString() + ". " + current_room.intro_text;
 		} else {
-			return "Tu est dans la première salle.";
+			return "You are at the first room.";
 		}
 	} else if (args[0] === "~"){
+		Home.previous=this;
 		enterRoom(Home);
-		return "Tu es de retour à la maison!";
+		return "You have come Home!";
 	} else if (args[0] === ".") {
         enterRoom(current_room);
-        $("#scene").attr("src", i(img['room_none'])); //Always show blank image when moving into a room
-		return "Tu es entré-e dans " + current_room.toString() + ". " + current_room.intro_text;
+        $("#scene").attr("src", "./static/img/none.gif"); //Always show blank image when moving into a room
+		return "You have moved to " + current_room.toString() + ". " + current_room.intro_text;
 	// } else if (args[0].indexOf("/") > 0){
 	// 	var rooms_in_order = args[0].split("/");
 	// 	var cur_room_to_test = this;
@@ -217,12 +187,16 @@ Room.prototype.cd = function(args){
 	// 	}
 	// 	enterRoom(cur_room_to_test);
 	// 	return "You  have moved to " + cur_room_to_test.toString() + ". " + current_room.intro_text;
+	} else if (args[0] === "-") {
+		this.previous.previous=this;
+		enterRoom(this.previous);
 	} else {
 		roomname = args[0];
 		for (var i = 0; i < this.children.length; i++){
 			if (roomname === this.children[i].toString()){
 				if (this.children[i].commands.indexOf("cd") > -1){
-	                enterRoom(this.children[i]);
+          this.children.previous=this;
+          enterRoom(this.children[i]);
 					return "You have moved to " + current_room.toString() + ". " + current_room.intro_text;
 				} else {
 					if (roomname === "AthenaCluster"){
@@ -232,7 +206,7 @@ Room.prototype.cd = function(args){
 				}
 			}
 		}
-		return "Il n'existe aucun lieu appelé " + args[0] + ". Retourne te coucher.";
+		return "There is no room called " + args[0] + ".";
 	}
 };
 
@@ -284,17 +258,17 @@ Room.prototype.less = function(args){
 //only valid for command names
 Room.prototype.man = function(args){
 	if (args.length < 1){
-		return "Il faut se poser une question pour être prêt à connaître sa réponse. C'est ce que dit le grand manuscrit.";
+		return "Must ask the man about something to receive a response.";
 	} else {
 		if (args[0] in man_pages){
 			return man_pages[args[0]];
 		}
-		return "Il n'y a rien d'écrit dans le grand manuscrit.";
+		return "there is no man page for that command";
 	}
 };
 
 Room.prototype.help = function(args){
-	return "Écris 'man' pour avoir accès aux informations contenues dans la manuscrit";
+	return "Type 'man' to ask the man for help";
 };
 
 //TODO: for some reason this doesn't close the window
@@ -442,9 +416,9 @@ Room.prototype.terminus = function(args){
 
 Room.prototype.tellme = function(args){
 	if (args[0] === "combo"){
-		return _("room_combination");
+		return "The combination is 'terminus' (without the quotes).";
 	}
-	return _('room_incorrect_syntax');
+	return "Incorrect syntax. Ask the OldMan for help.";
 };
 
 Room.prototype.mkdir = function(args){
@@ -456,11 +430,11 @@ Room.prototype.mkdir = function(args){
 			if (this.room_name === "Clearing" && room_name_to_make === "House"){
 				this.ev.fire("HouseMade");
 			}
-			return _("room_new_created", args[0]);
+			return "New room " + args[0] + " created";
 		}
-		return _("room_incorrect_syntax");
+		return "Incorrect syntax. Ask the OldMan for help.";
 	}
-	return _("room_spell_unknown");
+	return "You have not learned this spell yet";
 };
 
 Room.prototype.sudo = function(args){
@@ -469,10 +443,10 @@ Room.prototype.sudo = function(args){
 			this.ev.fire("tryEnterSudo");
 			return;
 		} else {
-			return _("room_wrong_syntax");
+			return "Wrong syntax. Read the instructions again.";
 		}
 	} 
-	return _("room_cannot_cast");
+	return "You cannot cast this spell here.";
 }
 
 Room.prototype.IHTFP = function(args){
@@ -482,9 +456,9 @@ Room.prototype.IHTFP = function(args){
 			this.ev.fire("sudoComplete");
 			return text_to_return;
 		}
-		return _('room_wrong_password');
+		return "Wrong password.";
 	}
-	return _('room_invalid_spell');
+	return "This is not a valid spell.";
 }
 
 Room.prototype.add = function(args){
@@ -492,13 +466,13 @@ Room.prototype.add = function(args){
 		if (args[0] === "MagicLocker"){
 			this.ev.fire("addMagicLocker");
 			if (typeof this.cmd_text["add"] === 'undefined'){
-				return _("room_lock_added",[args[0]]);
+				return "You just added the " + args[0] + " locker";
 			}
 			return this.cmd_text["add"];
 		}
 		else {
-			return _("room_invalid_locker");
+			return "No valid locker of that name.";
 		}
 	}
-	return _('room_invalid_spell');
+	return "This is not a valid spell.";
 }
