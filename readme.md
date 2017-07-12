@@ -6,15 +6,23 @@ Use the game (testing)
 ======================
 Open '''index.html''' in '''src'''.
 If you need to change lang,
-modify the line containing 'terminus.dialog.<lang>.html'.
+modify the line containing 'terminus.dialog.lang.js'.
+
+Generate missing files
+======================
+You need to install NodeJs before.
+Do '''make''' in the directory containing Makefile.
+This will install dependencies and assemble files.
 
 Update translations
 ===================
-Edit '''.po''' file in '''src''' and do '''make'''.
+Edit '''.po''' file in '''src/js''' and generate missing files.
+The translation "terminal.dialog.lang.js" in "src/js" will be updated.
 
-Get final/minified versions
-===========================
-Edit '''.po''' file in '''src''' and do '''make'''.
+Get minified versions
+=====================
+Edit '''.po''' file in '''src''' and generate missing files.
+The minified will appear in '''webroot'''.
 
 Educational targets
 ===================
