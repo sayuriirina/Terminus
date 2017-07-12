@@ -21,7 +21,7 @@ The translation "terminal.dialog.lang.js" in "src/js" will be updated.
 
 Get minified versions
 =====================
-Edit '''.po''' file in '''src''' and generate missing files.
+Generate missing files.
 The minified will appear in '''webroot'''.
 
 Educational targets
