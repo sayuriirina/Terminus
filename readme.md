@@ -28,7 +28,7 @@ Educational targets
 ===================
 The game aims to
 - encourage curiosity
-- initate to terminal / command line
+- initiate to terminal / command line
 + be usable for game hacking / creation (aim of the fork)
 
 History
