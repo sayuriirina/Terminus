@@ -14,30 +14,30 @@ String.prototype.replaceAll = function(from, to){
 	return ret;
 };
 var global_spec={};
-function Room(roomname, introtext, roompic, inside_evts={},outside_evts={}){
+function Room(roomname, introtext, roompic, inside_evts,outside_evts){
 	this.parents = [];
   this.previous = this;
 	this.children = [];
 	this.items = [];
 	this.commands = ["cd", "ls", "less", "man", "help", "exit", "pwd"];
   this.fire = null;
-	this.room_name = roomname ? roomname : _('room_none');
-	this.intro_text = introtext ? introtext: _('room_none_text');
-	this.room_pic = i( roompic ? roompic : img.room_none);
-  this.cmd_text = {"pwd": _('cmd_pwd',this.room_name)};
+	this.room_name = d(roomname, _('room_none'));
+	this.intro_text = d(introtext, _('room_none_text'));
+	this.room_pic = i(d(roompic, img.room_none));
+  this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name])};
 	//for event handling
 	this.ev = new EventTarget();
-	this.cmd_inside_spec=inside_evts;
-	global_spec[this.room_name]=outside_evts;
+  this.cmd_inside_spec=d(inside_evts, {});
+  global_spec[this.room_name]=d(outside_evts, {});
   EventTarget.call(this);
 }
-function newRoom(id, roompic, inside_evts={},outside_evts={}){
+function newRoom(id, roompic, inside_evts,outside_evts){
   return new Room(
     _('room_'+id,or='room_none'),
-    _('room_'+id,or='room_none_text'),
+    _('room_'+id+'_text',or='room_none_text'),
     roompic,
-    inside_evts=inside_evts,
-    outside_evts=outside_evts);
+    inside_evts,
+    outside_evts);
 }
 var enterRoom = function(new_room){
   show_blank_img();
@@ -50,10 +50,10 @@ Room.prototype = {
     return this.room_name;
   },
 
-  fire_event:function(cmd,args,idx=0,otherroomname=null){
+  fire_event:function(cmd,args,idx,otherroomname){
     var ck=null;
     var context={room:this, arg:args[idx], args:args, i:idx};
-    if (otherroomname) {
+    if (typeof otherroomname === 'string' ) {
       if ((otherroomname in global_spec) && (cmd in global_spec[otherroomname])) {
         ck = global_spec[otherroomname][cmd](context);
       }
@@ -76,12 +76,9 @@ Room.prototype = {
     return this;
   },
 
-  newItem : function(id,picname,text_from='') {
-    var name = _('item_'+id,or='item_none');
-    if (text_from) {
-      id=text_from;
-    }
-    var intro = _('item_'+id+'_text',or='item_none_text');
+  newItem : function(id,picname) {
+    var name = _('item_'+id,[],'item_none');
+    var intro = _('item_'+id+'_text',[],'item_none_text');
     var ret=new Item(name, intro, picname);
     this.addItem(ret);
     return ret;
@@ -98,14 +95,8 @@ Room.prototype = {
   newItemBatch: function(id, names, picname) {
     var ret=[], name, intro;
     for (var i = 0; i < names.length; i++){
-      name = _('item_'+id+names[i],
-          [names[i]],
-          or='item_'+id,
-          _or='item_none');
-      intro = _('item_'+id+name[i]+'_text',
-          [names[i]],
-          or='item_'+id+'_text',
-          _or='item_none_text');
+      name = _('item_'+id+names[i], [names[i]], 'item_'+id, 'item_none');
+      intro = _('item_'+id+name[i]+'_text', [names[i]], 'item_'+id+'_text', 'item_none_text');
       ret[i]=new Item(name,intro,picname);
       this.addItem(ret[i]);
     }
@@ -217,8 +208,8 @@ Room.prototype = {
   },
 
   printLS : function(){
-    return _('directions', " " + (this.children.toString()).replaceAll(",", "\n ")) +
-      "\n" + ( (this.items.length > 0) ? _('items', " " + (this.items.toString()).replaceAll(",", "\n ")) : '');
+    return _('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")]) +
+      "\n" + ( (this.items.length > 0) ? _('items', [" " + (this.items.toString()).replaceAll(",", "\n ")]) : '');
   },
 
   cd : function(args){
@@ -237,7 +228,7 @@ Room.prototype = {
         this.parents[0].previous=this;
         enterRoom(this.parents[0]);
         return _('cmd_cd_parent',
-            current_room.toString(), current_room.intro_text);
+            [current_room.toString(), current_room.intro_text]);
       } else {
         return _('cmd_cd_no_parent');
       }
@@ -249,7 +240,7 @@ Room.prototype = {
       enterRoom(current_room);
       show_blank_img();
       return _('cmd_cd',
-          current_room.toString(), current_room.intro_text);
+          [current_room.toString(), current_room.intro_text]);
       // } else if (args[0].indexOf("/") > 0){
       // 	var rooms_in_order = args[0].split("/");
       // 	var cur_room_to_test = this;
@@ -264,7 +255,7 @@ Room.prototype = {
       //  } else if (args[0][0] === "/") {
       // /* testing ... */
       //    roomname = args[0].substr(1);
-      //    this.fire_event('cd',args,otherroomname=roomname);
+      //    this.fire_event('cd',args,O,roomname);
   } else {
     roomname = args[0];
     for (var i = 0; i < this.children.length; i++){
@@ -272,15 +263,16 @@ Room.prototype = {
         if (this.children[i].commands.indexOf("cd") > -1){
           this.children[i].previous=this;
           enterRoom(this.children[i]);
+          console.log(current_room);
           return _('cmd_cd',
-              current_room.toString(), current_room.intro_text);
+              [current_room.toString(), current_room.intro_text]);
         } else {
-          this.fire_event('cd',args,otherroomname=roomname);
+          this.fire_event('cd',args,0,roomname);
           return this.children[i].cmd_text.cd;
         }
       }
     }
-    return _('cmd_cd_failed', args[0]);
+    return _('cmd_cd_failed', args);
   }
   },
 
@@ -315,7 +307,6 @@ Room.prototype = {
     if (args.length < 1){
       return _('cmd_less_invalid');
     } else {
-      //		item = args[0];
       for (var i = 0; i < this.items.length; i++){
         if (args[0] === this.items[i].toString()){
           $("#scene").attr("src",this.items[i].picturename); // Display image of item
@@ -324,7 +315,7 @@ Room.prototype = {
           return ret;
         }
       }
-      return _('cmd_less_invalid',args[0]);
+      return _('cmd_less_invalid',args);
     }
   },
 
@@ -367,7 +358,7 @@ Room.prototype = {
         this.children[this.childrenStringArray().indexOf(args[1])].addItem(itemtoadd);
         this.fire_event('mv',args,0);
         this.removeItem(args[0]);
-        return _('cmd_mv_done', [args[0], args[1]]);
+        return _('cmd_mv_done', args);
       } else {
         return _("cmd_mv_invalid");
       }
@@ -388,7 +379,7 @@ Room.prototype = {
               if ("rm" in removedItem.cmd_text){
                 stringtoreturn += removedItem.cmd_text.rm + "\n";
               } else {
-                stringtoreturn += _('cmd_rm_done', args[i]);
+                stringtoreturn += _('cmd_rm_done', [args[i]]);
               }
             } else {
               stringtoreturn += _('cmd_rm_failed');
@@ -424,7 +415,7 @@ Room.prototype = {
       var createdItemsString = "";
       for (var i = args.length - 1; i >= 0; i--) {
         if (args[i].length > 0){
-          this.addItem(new Item(args[i], _('item_intro', args[i])));
+          this.addItem(new Item(args[i], _('item_intro', [args[i]])));
           createdItemsString += args[i];
           this.fire_event('touch',args,i);
         }
@@ -432,7 +423,7 @@ Room.prototype = {
       if (createdItemsString === ""){
         return _('cmd_touch_none');
       }
-      return _('cmd_touch_created', createdItemsString);
+      return _('cmd_touch_created', [createdItemsString]);
     }
     return _('cmd_unknown');
   },
@@ -451,7 +442,7 @@ Room.prototype = {
         newItem.valid_cmds = item_to_copy.valid_cmds;
         this.addItem(newItem);
         this.fire_event('cp',args,0);
-        return _('cmd_cp_copied', item_to_copy_name ,new_item_name);
+        return _('cmd_cp_copied', [item_to_copy_name ,new_item_name]);
       }
       return _('cmd_cp_unknown');
     }
@@ -476,7 +467,7 @@ Room.prototype = {
       if (args.length === 1){
         link_rooms(this, new Room(args[0]));
         this.fire_event('mkdir',args,0);
-        return _("room_new_created", args[0]);
+        return _("room_new_created", args);
       }
       return _("incorrect_syntax");
     }
@@ -512,7 +503,7 @@ Room.prototype = {
       if (args[0] === "MagicLocker"){
         this.ev.fire("addMagicLocker");
         if (typeof this.cmd_text.add === 'undefined'){
-          return _("lock_added",[args[0]]);
+          return _("lock_added",args);
         }
         return this.cmd_text.add;
       }

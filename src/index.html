@@ -1,16 +1,24 @@
-??? d'ici jusqu'à ???FIN des lignes ont pu être insérées/effacées
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <title>Terminus</title>
     <meta name="description"
-    content="The last and the first destination">
+          content="The last and the first destination">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=edge" />
     <meta name="author" content="luffah"/>
     <meta name="author" content="Shawn Conrad, Michele Pratusevich, michele.pratusevich@gmail.com"/>
-    <!-- Scripts -->
+    <!-- inject:css -->
+    <link href="./css/jquery.terminal.css" rel="stylesheet"/>
+    <link href="./css/terminus.css" rel="stylesheet"/>
+    <!-- endinject -->
+  </head>
+  <body>
+    <div id="term"></div>
+    <div id="pics"><img id="scene"></img></div>
+    <!-- inject:js -->
+    <script type="text/javascript" src="./js/terminus.dialog.fr.js"></script>
     <script type="text/javascript" src="./js/engine/jquery-1.9.1.min.js" ></script>
     <script type="text/javascript" src="./js/engine/jquery.terminal-0.6.3.js"></script>
     <script type="text/javascript" src="./js/engine/Gettext.js"></script>
@@ -18,15 +26,7 @@
     <script type="text/javascript" src="./js/engine/EventTarget.js"></script>
     <script type="text/javascript" src="./js/engine/Room.js"></script>
     <script type="text/javascript" src="./js/engine/Item.js"></script>
-    <script type="text/javascript" src="./js/GameDialogs.js"></script>
-    <script type="text/javascript" src="./js/GameScript.js"></script>
-    <script type="text/javascript" src="./js/engine/GameStart.js"></script> <!-- Execute last -->
-    <!-- CSS -->
-    <link href="./css/jquery.terminal.css" rel="stylesheet"/>
-    <link href="./css/terminus.css" rel="stylesheet"/>
-  </head>
-<body>
-<div id="term"></div>
-<div id="pics"><img id="scene"></img></div>
-</body>
+    <script type="text/javascript" src="./js/terminus.js"></script>
+    <!-- endinject -->
+  </body>
 </html>
