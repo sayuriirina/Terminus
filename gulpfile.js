@@ -56,8 +56,8 @@ function _js(){
    * JS (without dialogs)
    */
   return gulp.src([
-    'src/js/engine/jquery-1.9.1.min.js',
-    'src/js/engine/jquery.terminal*.js',
+//    'src/js/engine/jquery-1.9.1.min.js',
+//    'src/js/engine/jquery.terminal*.js',
     'src/js/engine/Gettext.js',
     'src/js/engine/GameState.js',
     'src/js/engine/EventTarget.js',
@@ -74,7 +74,7 @@ function _css(){
   /*
    * CSS
    */
-  return gulp.src("src/css/*.css")
+  return gulp.src("src/css/terminus.css")
     .pipe(concat('min.css'))
     .pipe(postcss(postcss_plugins));
 }

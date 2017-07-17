@@ -74,7 +74,8 @@ GameState.prototype = {
   }
 };
 var current_room;
-function start_game(){
+/*
+function start_game_bak(){
   current_room = state.getCurrentRoom();
   $(document).ready(function() {
     $('#term').terminal(function(input, term) {
@@ -117,7 +118,8 @@ function start_game(){
       else{
         term.echo("Command '"+command+"' not found in room '"+current_room.room_name+"'");
       }
-    }, { history: true,                     // Keep user's history of commands
+    }, {
+//      history: true,                     // Keep user's history of commands
       prompt: '>',                        // Text that prefixes terminal entries
       name: 'terminus_terminal',          // Name of terminal
       // Signiture to include at top of terminal
@@ -127,7 +129,7 @@ function start_game(){
     });
 
     // Clear history on page reload
-    $("#term").terminal().history().clear();
+//    $("#term").terminal().history().clear();
     //Give term focus (Fixes weird initial draw issue)
     $("#term").click();
     //Tab Completion FOR LAST ARGUMENT
@@ -255,5 +257,90 @@ function start_game(){
       }
     });
   });
+  console.log("Game loaded");
+}
+*/
+/*
+function VTerm(name, room){
+  this.title=name;
+  this.current_room=room;
+
+}
+VTerm.prototype = {
+}
+*/
+var term, pr, args, cmd, history;
+function start_game(){
+  current_room = state.getCurrentRoom();
+  term=document.getElementById('term');
+  prcontainer = document.createElement('p');
+  prcontainer.className = "input";
+  pr = document.createElement('input');
+//  history = document.createElement('datalist');
+  pr.autofocus="autofocus";
+  pr.autocomplete="on";
+  pr.value='ls';
+  pr.size=80;
+//  var hist=['ls','cd','less'];
+//  history.state=hist;
+//  pr.name='terminus';
+  pr.list='commands';
+  prcontainer.appendChild(pr);
+  term.appendChild(prcontainer);
+
+  var welcome=document.createElement('p');
+  welcome.innerText=_('item_welcome_letter_text');
+  term.insertBefore(welcome,prcontainer);
+
+  //  term.appendChild(history);
+  term.onclick = function (e) {
+    pr.focus();
+  }
+	pr.onkeydown = function (e) {
+    var k=e.which;
+    if ( k === 9 || k == 13 ) {
+      e.preventDefault();
+    }
+  }
+  pr.onkeyup = function (e) {
+    var k=e.which;
+    var echo="";
+//    console.log(e);
+    if (k === 13) {
+      // Enter -> exec command
+      args=pr.value.replace(/\s+/," ").replace(/\s+$/,"").replace(/\/$/,"").split(" ");
+
+      echo=current_room.exec(args);
+      var prevcmd=document.createElement('p');
+      var msg=document.createElement('pre');
+      prevcmd.className = "input";
+      prevcmd.innerText = pr.value;
+      msg.innerText= echo;
+      msg.className = "msg";
+      term.insertBefore(prevcmd, prcontainer);
+      term.insertBefore(msg, prcontainer);
+      e.preventDefault();
+      pr.value='';
+      window.scrollTo(0,prcontainer.offsetTop);
+    } else if ( k === 9) {
+      // Tab -> complete command
+      e.preventDefault();
+      args=pr.value.replace(/\s+/," ").replace(/\s+$/,"").replace(/\/$/,"").split(" ");
+      if (args.length > 1) {
+        var tocomplete=args.pop();
+        var match=current_room._completeRoomName(args[0],tocomplete);
+        if (match.length == 0){
+        } else if (match.length == 1){
+          args.push(match[0]);
+          pr.value=args.join(" ");
+        } else {
+//          console.log(match);
+        }
+      }
+    } else if (k === 37 || k === 39 || k === 38 || k  === 40) {
+//				e.preventDefault()
+      //arows
+    }
+  }
   console.log("Game loaded");
 }

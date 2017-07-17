@@ -691,7 +691,16 @@ msgstr ""
 "Where ITEM is the name of the thing you want to create. Now make me a Gear! Then come back.\""
 
 msgid "item_gear"
-msgstr "Gear"
+msgstr "gear"
+
+msgid "item_gear_artisans_ok"
+msgstr "Ah, Déjà fini ? J'ai l'impression que tu apprends vite. \nMerci pour ton aide."
+
+msgid "item_gear_text"
+msgstr "This is a Gear"
+
+msgid "item_gear_touch"
+msgstr "Well that’s lovely, thank you, but you can’t expect me to make\nanything with just one gear! Can’t you copy it?\n...\n*sigh* I can see you are going to need a lot of training. Just say “cp [ITEM] [NEWITEM]”.\n[ITEM]’s the name of the item that you want copy, and [NEWITEM]’s the new name of the\ncopy, got it? Then poof! You’ll have shiny new item. I need five more gears so you’d better\nget started! Just call them gear1, gear2, gear3, gear4, and gear5, please."
 
 msgid "room_farm"
 msgstr "Farm"
@@ -709,6 +718,15 @@ msgstr "The corn is sad and withered-looking."
 
 msgid "item_earofcorn_rm"
 msgstr "Why would you destroy a starving man's only food?"
+
+msgid "item_another_earofcorn"
+msgstr "AnotherEarOfCorn"
+
+msgid "item_another_earofcorn_text"
+msgstr "This is AnotherEarOfCorn"
+
+msgid "corn_farmer_ok"
+msgstr "It’s a miracle! Thank you, friend. May the Admin bless you."
 
 msgid "people_farmer"
 msgstr "Farmer"
@@ -751,6 +769,25 @@ msgstr ""
 "If you really are who you say you are, then prove your good intentions \n"
 "by making me a new House!\""
 
+msgid "room_house"
+msgstr "Maison"
+
+msgid "room_house_text"
+msgstr "This is a House"
+
+msgid "room_house_cd"
+msgstr "You are entering the House that you made."
+
+msgid "room_house_ls"
+msgstr "You made this house for the man. How thoughtful of you!"
+
+msgid "room_clearing_less2"
+msgstr "Thank you for making me the House!  Why am I still crying?  These are tears of joy.  Can't a man openly express his emotions?"
+
+msgid "room_clearing_text2"
+msgstr "There's a small grassy clearing here, with a man sitting on a \n stone, weeping. Behind him is a pile of rubble and a small white house."
+    
+
 msgid "room_brokenbridge"
 msgstr "BrokenBridge"
 
@@ -759,8 +796,14 @@ msgstr ""
 "A creaky wooden bridges stretches across a chasm.\n"
 "But it's missing a Plank, and the gap is too far to jump."
 
+msgid "room_brokenbridge_text2"
+msgstr "A creaky rope bridges stretches across a chasm."
+
 msgid "item_plank"
 msgstr "Plank"
+
+msgid "item_plank_text"
+msgstr "This is a Plank."
 
 msgid "room_ominouspath"
 msgstr "OminousLookingPath"
@@ -792,6 +835,10 @@ msgstr "The slides is long. At the end, you see the KernelFiles."
 
 msgid "room_slide_cd"
 msgstr "You have to get past the UglyTroll first."
+
+msgid "room_slide_cd2"
+msgstr "It's just a Slide. Keep going. You're almost at the KernelFiles."
+
 
 msgid "room_kernel"
 msgstr "KernelFiles"

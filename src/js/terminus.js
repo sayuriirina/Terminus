@@ -1,22 +1,22 @@
 /**
-* Objects used to build levels
-*/
+ * Objects used to build levels
+ */
 
 /**
-* ROOMS
-* Players can cd between rooms
-*
-* API: new Room(roomid, img)
-*     roomid : non 'room_' part of a key 'room_<roomid>' in GameDialogs file
-*              GameDialogs file shall contain :
-*               - room_<roomid> :      the name of the room
-*               - room_<roomid>_text : the description of what happening in
-*                                      the room
-*     img : img file in image directory
-*
-* API: new Iterm(itemid, img)
-*      The logic is identical to new Room API
-*/
+ * ROOMS
+ * Players can cd between rooms
+ *
+ * API: new Room(roomid, img)
+ *     roomid : non 'room_' part of a key 'room_<roomid>' in GameDialogs file
+ *              GameDialogs file shall contain :
+ *               - room_<roomid> :      the name of the room
+ *               - room_<roomid>_text : the description of what happening in
+ *                                      the room
+ *     img : img file in image directory
+ *
+ * API: new Iterm(itemid, img)
+ *      The logic is identical to new Room API
+ */
 
 //HOME
 var Home = newRoom('home', "loc_farm.gif");
@@ -35,14 +35,14 @@ SpellCastingAcademy.newPeople('academy_student', "item_student.gif");
 
 //PRACTICE ROOM
 var PracticeRoom = newRoom('academy_practice', "loc_practiceroom.gif")
-    .addCommand("mv");
+	.addCommand("mv");
 PracticeRoom.newItem('academy_practice', "item_manuscript.gif");
 PracticeRoom.newItemBatch('practice_dummy',[1,2,3,4,5], "item_dummy.gif");
 
 //BOX
 var Box = newRoom('box', "item_box.gif")
-    .removeCommand("cd")
-    .addCmdText("cd",_('room_box_cd'));
+	.removeCommand("cd")
+	.addCmdText("cd",_('room_box_cd'));
 
 //NORTHERN MEADOW
 var NorthernMeadow = newRoom('meadow', "loc_meadow.gif");
@@ -69,11 +69,11 @@ Staircase.newItem('dead_end', "item_sign.gif");
 
 //DANK ROOM
 var DankRoom = newRoom('dank',"loc_darkroom.gif", {
-  'mv':function(ct){return (ct.arg == 'Boulder' ? 'mvBoulder' : '');}
+    'mv':function(ct){return (ct.arg == 'Boulder' ? 'mvBoulder' : '');}
 }).addCommand("mv")
-  .addListener("mvBoulder", function(){
-    state.apply("mvBoulder");
-  });
+	.addListener("mvBoulder", function(){
+	    state.apply("mvBoulder");
+	});
 var Boulder=DankRoom.newItem('boulder','item_boulder.gif');
 state.add("mvBoulder",function(re){ 
     link_rooms(DankRoom, Tunnel);
@@ -84,7 +84,7 @@ state.add("mvBoulder",function(re){
 });
 //SMALL HOLE
 var SmallHole = newRoom('small_hole', "none.gif")
-    .addCmdText("cd", _('room_small_hole_cd'));
+	.addCmdText("cd", _('room_small_hole_cd'));
 
 //TUNNEL
 var Tunnel = newRoom('tunnel',"loc_tunnel.gif");
@@ -107,13 +107,13 @@ TownSquare.newPeople('citizen3',"item_lady.gif");
 
 //MARKETPLACE
 var Marketplace = newRoom('market',"loc_market.gif")
-.addCommand('rm')
-.addCommand('mv')
+	.addCommand('rm')
+	.addCommand('mv')
 ;
 Marketplace.newPeople("vendor", "item_merchant.gif")
-   .addCmdText("rm", _('people_vendor_rm'));
+    .addCmdText("rm", _('people_vendor_rm'));
 Marketplace.newItem("backpack","item_backpack.gif")
-   .addCmdText("mv", _('item_backpack_stolen'));
+    .addCmdText("mv", _('item_backpack_stolen'));
 Marketplace.newItem("rm_spell","item_manuscript.gif");
 Marketplace.newItem("mkdir_spell","item_manuscript.gif");
 
@@ -125,13 +125,13 @@ var Library = newRoom("library", "loc_library.gif", {
 	       );
     }
 })
-    .addCommand("grep")
-    .addListener("pullLever", function(){
-	state.apply("pullLever");
-    })
-    .addListener("openVim", function(){
-	Library.removeItem(_('item_vimbook'));
-    });
+	.addCommand("grep")
+	.addListener("pullLever", function(){
+	    state.apply("pullLever");
+	})
+	.addListener("openVim", function(){
+	    Library.removeItem(_('item_vimbook'));
+	});
 Library.newItem('radspellbook',"item_radspellbook.gif");
 Library.newItem('romancebook',"item_romancenovel.gif");
 Library.newItem('historybook',"item_historybook.gif");
@@ -144,7 +144,7 @@ state.add("pullLever", function(re){
 
 //BACK ROOM
 var BackRoom = newRoom('backroom',"loc_backroom.gif")
-    .addCommand("grep");
+	.addCommand("grep");
 BackRoom.newItem("grep", "grep.gif");
 BackRoom.newItem("practicebook");
 BackRoom.newPeople("librarian", "item_librarian.gif");
@@ -156,18 +156,18 @@ var RockyPath = newRoom("rockypath", "loc_rockypath.gif",
 				return (ct.arg == _('item_largeboulder') ? 'rmLargeBoulder': '');
 			    }
 			})
-    .addListener("rmLargeBoulder", function(){
-	state.apply("rmLargeBoulder");
-    })
-    .addCommand("rm");
+	.addListener("rmLargeBoulder", function(){
+	    state.apply("rmLargeBoulder");
+	})
+	.addCommand("rm");
 state.add("rmLargeBoulder",function(re){
     link_rooms(RockyPath, Farm);
     if (re) RockyPath.removeItem(_("item_largeboulder"));
 });
 
 var LargeBoulder = RockyPath.newItem("largeboulder", "item_boulder.gif")
-    .addCmdText("rm", _('item_largeboulder_rm'))
-    .addValidCmd("rm");
+	.addCmdText("rm", _('item_largeboulder_rm'))
+	.addValidCmd("rm");
 
 //ARTISAN'S SHOP
 var ArtisanShop = newRoom("artisanshop", "loc_artisanshop.gif",{
@@ -188,41 +188,33 @@ var ArtisanShop = newRoom("artisanshop", "loc_artisanshop.gif",{
 	}
     },
 }).addCommand("touch")
-    .addListener("touchGear", function(){
-	state.apply("touchGear");
-    })
-    .addListener("FiveGearsCopied", function(){
-	state.apply("FiveGearsCopied");
-    });
+	.addListener("touchGear", function(){ state.apply("touchGear"); })
+	.addListener("FiveGearsCopied", function(){ state.apply("FiveGearsCopied"); })
+;
 
 state.add("touchGear", function (re){
-    Artisan.addCmdText("less", "Euh... à quoi tu t'attends avec seulement un rouage ?\
-Tu devrait être capable de la copier pourtant...\n\
-*pfffff* I can see you are going to need a lot of training. Écris seulement “cp [ITEM] [CLONE_DE_ITEM]”.\
-[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvell copie.\
-Compris ? Alors prouve le moi ! Voici un rouage. Il m'en faut 5 autres.\
-Appeles les  rouage1, rouage2, rouage3, rouage4, et rouage5, stp.");
+    Artisan.addCmdText("less", _('item_gear_touch'));
     ArtisanShop.addCommand("cp");
-    if (re) ArtisanShop.addItem(new Item("Gear", "Ceci est un rouage","item_gear.gif"));
+    if (re) ArtisanShop.addItem(new Item("Gear", _('item_gear_text'),"item_gear.gif"));
     else ArtisanShop.getItemFromName("Gear").changePicName("item_gear.gif");
 });
 state.add("FiveGearsCopied",function(re){
-    Artisan.addCmdText("less", "Ah, Déjà fini ? J'ai l'impression que tu apprends vite. \
-Merci pour ton aide.");
+    Artisan.addCmdText("less", _('item_gear_artisans_ok'));
     if (re){
-	ArtisanShop.addItem(new Item("rouage1", "Ceci est un rouage","item_gear.gif"));
-	ArtisanShop.addItem(new Item("rouage2", "Ceci est un rouage","item_gear.gif"));
-	ArtisanShop.addItem(new Item("rouage3", "Ceci est un rouage","item_gear.gif"));
-	ArtisanShop.addItem(new Item("rouage4", "Ceci est un rouage","item_gear.gif"));
-	ArtisanShop.addItem(new Item("rouage5", "Ceci est un rouage","item_gear.gif"));
+	ArtisanShop.newItemBatch("gear",['1','2','3','4','5']);
+	//	ArtisanShop.addItem(new Item("rouage1", _('item_gear_text'),"item_gear.gif"));
+	//	ArtisanShop.addItem(new Item("rouage2", "Ceci est un rouage","item_gear.gif"));
+	//	ArtisanShop.addItem(new Item("rouage3", "Ceci est un rouage","item_gear.gif"));
+	//	ArtisanShop.addItem(new Item("rouage4", "Ceci est un rouage","item_gear.gif"));
+	//	ArtisanShop.addItem(new Item("rouage5", "Ceci est un rouage","item_gear.gif"));
     }
 });
 var StrangeTrinket = ArtisanShop.newItem("strangetrinket", "item_trinket.gif")
-    .addCmdText("rm", _('item_strangetrinket_rm'))
-    .addCmdText("mv", _('item_strangetrinket_mv'));
+	.addCmdText("rm", _('item_strangetrinket_rm'))
+	.addCmdText("mv", _('item_strangetrinket_mv'));
 var ClockworkDragon = ArtisanShop.newItem("dragon", "item_clockdragon.gif")
-    .addCmdText("rm", _('item_dragon_rm'))  
-    .addCmdText("mv", _('item_dragon_mv')); 
+	.addCmdText("rm", _('item_dragon_rm'))  
+	.addCmdText("mv", _('item_dragon_mv')); 
 var Artisan=ArtisanShop.newPeople("artisan", "item_artisan.gif");
 
 //FARM
@@ -233,12 +225,13 @@ var Farm = newRoom("farm", "loc_farm.gif",{
 	}
     }
 }).addCommand("cp")
-    .addListener("CornCopied", function(){
-	state.apply("CornCopied");
-    });
+	.addListener("CornCopied", function(){
+	    state.apply("CornCopied");
+	});
+
 state.add("CornCopied",function(re){
-    Farmer.addCmdText("less", "Ceci est une révolution ! Merci mon pote. Que l'Admin te benisse.");
-    if (re) Farm.addItem(new Item("EpisDeMaïs", "Ceci est une épis de maïs."));
+    Farmer.addCmdText("less", _('corn_farmer_ok'));
+    if (re) Farm.addNewItem('another_earofcorn');
 });
 Farm.newItem("earofcorn", "item_corn.gif")
     .addCmdText("rm",_('item_earofcorn_rm'));
@@ -250,21 +243,21 @@ var Clearing = newRoom("clearing", "loc_clearing.gif", {
 	return (ct.arg == "House" ? 'HouseMade':'');
     }
 })
-    .removeCommand("cd")
-    .addCmdText("cd", _('room_clearing_cd'))
-    .addCommand("mkdir")
-    .addListener("HouseMade", function(){
-	state.apply("HouseMade");    
-    })
+	.removeCommand("cd")
+	.addCmdText("cd", _('room_clearing_cd'))
+	.addCommand("mkdir")
+	.addListener("HouseMade", function(){
+	    state.apply("HouseMade");    
+	})
 ;
 state.add("HouseMade",function(re){
-    if (re) Clearing.addChild(new Room("Maison", "Ça ! c'est une maison."));
-    Clearing.getChildFromName("Maison").addCmdText("cd", "Tu entre dans la maison construite de tes mains.");
-    Clearing.getChildFromName("Maison").addCmdText("ls", "C'est toi qui l'a faite cette maison. Prends quelques minutes pour apprécier ta fierté !");
+    if (re) Clearing.addChild(newRoom('house'));
+    Clearing.getChildFromName(_('room_house'))
+	.addCmdText("cd", _('room_house_cd') )
+	.addCmdText("ls", _('room_house_ls') );
     Clearing.removeCmdText("cd");
-    Clearing.changeIntroText("There's a small grassy clearing here, with a man sitting on a \
-stone, weeping. Behind him is a pile of rubble and a small white house.");
-    CryingMan.addCmdText("less", "Merci du fond du coeur pour m'avoir construit cette maison !J'en pleure de joie.");
+    Clearing.changeIntroText(_('room_clearing_text2'));
+    CryingMan.addCmdText("less", _('room_clearing_less2'));
 });
 var CryingMan=Clearing.newPeople('cryingman',"item_man.gif");
 
@@ -276,17 +269,18 @@ var BrokenBridge = newRoom("brokenbridge", "loc_bridge.gif",{
 	}
     }
 })
-    .addCommand("touch")
-    .addListener("touchPlank", function(){
-	state.apply("touchPlank");
-    });
+	.addCommand("touch")
+	.addListener("touchPlank", function(){
+	    state.apply("touchPlank");
+	});
+
 state.add("touchPlank",function(){
     Clearing.addCommand("cd");
     Clearing.removeCmdText("cd");
     BrokenBridge.removeCmdText("cd");
-    BrokenBridge.changeIntroText("Devant vous, un pont tenu par des cordes s'étend vers l'abîme.");
-    if (re) BrokenBridge.addItem(new Item("Planche","Ceci est une planche.","item_plank.gif"));
-    else BrokenBridge.getItemFromName("Plandche").changePicName("item_plank.gif");
+    BrokenBridge.changeIntroText(_('room_brokenbridge_text2'));
+    if (re) BrokenBridge.addNewItem('plank',"item_plank.gif");
+    else BrokenBridge.getItemFromName(_('item_plank')).changePicName("item_plank.gif");
 });
 
 //OMINOUS-LOOKING PATH
@@ -295,10 +289,10 @@ var OminousLookingPath = newRoom("ominouspath", "loc_path.gif", {
 	return (ct.arg == 'ThornyBrambles' ? 'rmBrambles' : '');
     }
 })
-    .addCommand("rm")
-    .addListener("rmBrambles", function(){
-	state.apply("rmBrambles");
-    });
+	.addCommand("rm")
+	.addListener("rmBrambles", function(){
+	    state.apply("rmBrambles");
+	});
 OminousLookingPath.newItem("brambles", "item_brambles.gif")
     .addCmdText("mv", _('item_brambles_mv'))
     .addCmdText("rm", _('item_brambles_rm'))
@@ -309,21 +303,21 @@ state.add("rmBrambles",function(){
 });
 //SLIDE
 var Slide = newRoom("slide")
-    .removeCommand("cd")
-    .addCmdText("cd", _('room_slide_cd'));
+	.removeCommand("cd")
+	.addCmdText("cd", _('room_slide_cd'));
 
 //KERNEL FILES
 var KernelFiles = newRoom("kernel")
-    .addCommand("sudo")
-    .addCommand("grep")
-    .addCmdText("sudo", _('room_kernel_sudo'))
-    .addListener("sudoComplete", function(){
-	state.apply("sudoComplete");
-    })
-    .addListener("tryEnterSudo", function(){
-	KernelFiles.addCommand("IHTFP");
-	KernelFiles.addCmdText("IHTFP", _('room_kernel_IHTFP'));
-    });
+	.addCommand("sudo")
+	.addCommand("grep")
+	.addCmdText("sudo", _('room_kernel_sudo'))
+	.addListener("sudoComplete", function(){
+	    state.apply("sudoComplete");
+	})
+	.addListener("tryEnterSudo", function(){
+	    KernelFiles.addCommand("IHTFP");
+	    KernelFiles.addCmdText("IHTFP", _('room_kernel_IHTFP'));
+	});
 KernelFiles.newItem('certificate');
 KernelFiles.newItem("instructions");
 state.add("sudoComplete",function(re){
@@ -337,7 +331,7 @@ MoreKernelFiles.newItemBatch("bigfile",['L','M','Q','R','S','T','U','V','W']);
 
 //PARADISE (end game screen)
 var Paradise = newRoom("paradise", "loc_theend.gif")
-    .addCmdText("ls", _('room_paradise_ls'));
+	.addCmdText("ls", _('room_paradise_ls'));
 
 //CAVE
 //Room beforeCave = new Room("CaveOfDisgruntledTrolls", "A patch of thorny brambles is growing at the mouth of the cave, blocking your way.", "loc_cave");
@@ -346,15 +340,16 @@ var troll_evt=function(ct){
 };
 var CaveOfDisgruntledTrolls = newRoom("troolcave", "loc_cave.gif",
 				      {'mv':troll_evt,'rm':troll_evt})
-    .addCommand("rm")
-    .addCommand("mv")
-    .addCommand("cp")
-    .addListener("openSlide", function(){
-	state.apply("openSlide");
-    });
+	.addCommand("rm")
+	.addCommand("mv")
+	.addCommand("cp")
+	.addListener("openSlide", function(){
+	    state.apply("openSlide");
+	});
+
 state.add("openSlide",function(re){
     Slide.addCommand("cd");
-    Slide.addCmdText("cd", "It's just a Slide. Keep going. You're almost at the KernelFiles.");
+    Slide.addCmdText("cd", _('room_slide_cd2'));
     if (re) CaveOfDisgruntledTrolls.removeItem("UglyTroll");
 });
 CaveOfDisgruntledTrolls.newPeople('troll1', "item_troll1.gif")
@@ -374,8 +369,8 @@ CaveOfDisgruntledTrolls.newPeople('supertroll', "item_supertroll.gif")
 
 //CAGE
 var Cage = newRoom('cage', "item_cage.gif")
-    .removeCommand("cd")
-    .addCmdText("cd", _('room_cage_cd'));
+	.removeCommand("cd")
+	.addCmdText("cd", _('room_cage_cd'));
 Cage.newItem('kidnapped', "item_cagedboy.gif")
     .addCmdText("mv", _('people_kidnapped_mv'));
 
@@ -397,30 +392,30 @@ var AthenaCluster = newRoom('cluster',  "loc_cluster.gif",
 				    return "tryEnterAthenaCluster";
 				}
 			    })
-    .removeCommand("ls")
-    .addCmdText("ls",_('room_cluster_ls'))
-    .removeCommand("cd")
-    .addCmdText("cd",_('room_cluster_cd'))
-    .addListener("addMagicLocker", add_locker_func)
-    .addListener("AthenaClusterExited", function(){
-	AthenaCluster.removeCommand("cd");
-    })
-    .addCommand("tellme")
-    .addCommand("add");
+	.removeCommand("ls")
+	.addCmdText("ls",_('room_cluster_ls'))
+	.removeCommand("cd")
+	.addCmdText("cd",_('room_cluster_cd'))
+	.addListener("addMagicLocker", add_locker_func)
+	.addListener("AthenaClusterExited", function(){
+	    AthenaCluster.removeCommand("cd");
+	})
+	.addCommand("tellme")
+	.addCommand("add");
 
 AthenaCluster.newItem('workstation', "item_workstation.gif");
 //MIT
 var MIT = newRoom("mit" , "loc_MIT.gif")
-    .addListener("AthenaComboEntered", function(){
-	state.apply("AthenaComboEntered");
-    })
-    .addCommand("tellme")
-    .addCommand("add")
-    .addListener("addMagicLocker", add_locker_func)
-    .addListener("tryEnterAthenaCluster", function(){
-	MIT.addCommand("terminus") .addCmdText("terminus", _('room_mit_terminus'));
-	AthenaCluster.removeCommand("ls").addCmdText("ls", _('room_cluster_ls'));
-    });
+	.addListener("AthenaComboEntered", function(){
+	    state.apply("AthenaComboEntered");
+	})
+	.addCommand("tellme")
+	.addCommand("add")
+	.addListener("addMagicLocker", add_locker_func)
+	.addListener("tryEnterAthenaCluster", function(){
+	    MIT.addCommand("terminus") .addCmdText("terminus", _('room_mit_terminus'));
+	    AthenaCluster.removeCommand("ls").addCmdText("ls", _('room_cluster_ls'));
+	});
 MIT.newItem("mitletter", "item_manuscript.gif");
 
 state.add("AthenaComboEntered",function(re){
@@ -434,9 +429,9 @@ state.add("AthenaComboEntered",function(re){
 });
 //StataCenter
 var StataCenter = newRoom('stata', "loc_stata.gif")
-    .addCommand("tellme")
-    .addCommand("add")
-    .addListener("addMagicLocker", add_locker_func); 
+	.addCommand("tellme")
+	.addCommand("add")
+	.addListener("addMagicLocker", add_locker_func); 
 StataCenter.newPeople('gradstudent', "item_grad.gif");
 StataCenter.newPeople('assistant', "item_TA.gif");
 

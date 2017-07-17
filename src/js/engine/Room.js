@@ -2,8 +2,13 @@ img={ room_none:"none.gif", people_none:'none.gif', item_none:'none.gif' };
 function i(fname){
   return './img/' + fname;
 }
+var scene=document.getElementById("scene");
+function set_img(img){
+  scene.setAttribute("src", img); //Always show blank image when moving into a room
+}
+
 function show_blank_img(){
-  $("#scene").attr("src", i(img.room_none)); //Always show blank image when moving into a room
+  scene.setAttribute("src", i(img.room_none)); //Always show blank image when moving into a room
 }
 
 String.prototype.replaceAll = function(from, to){
@@ -202,7 +207,7 @@ Room.prototype = {
         return _("room_empty");
       }
     } else {
-      $("#scene").attr("src",this.room_pic); // Display image of room
+      set_img(this.room_pic); // Display image of room
       return this.printLS();
     }
   },
@@ -309,7 +314,7 @@ Room.prototype = {
     } else {
       for (var i = 0; i < this.items.length; i++){
         if (args[0] === this.items[i].toString()){
-          $("#scene").attr("src",this.items[i].picturename); // Display image of item
+          set_img(this.items[i].picturename); // Display image of item
           var ret=this.items[i].cmd_text.less
             this.fire_event('less',args,0);
           return ret;
@@ -344,7 +349,7 @@ Room.prototype = {
   },
 
   pwd : function(args){
-    $("#scene").attr("src", this.room_pic);
+    set_img(this.room_pic);
     return "";
   },
 
@@ -513,4 +518,130 @@ Room.prototype = {
     }
     return _('invalid_spell');
   },
+  exec : function (args){
+    if( this.commands.indexOf(args[0]) > -1 ){ 
+      var prev = this;
+      if (args.length > 1 && args[1].indexOf("/") > 0){
+        var rooms_in_order = args[1].split("/");
+        var curr = this;
+        for (var i = 0; i < rooms_in_order.length; i++){
+          prev = curr;
+          var room_to_cd = rooms_in_order[i];
+          if (i > 0 && rooms_in_order[i-1] === "~"){
+            curr = Home.can_cd(room_to_cd)
+          } else if (room_to_cd === "~"){
+            curr = Home;
+          } else {
+            curr = curr.can_cd(room_to_cd);
+          }
+          if ((args[0] === "cd" || args[0] === "ls") && curr === false){
+            return "That is not reachable from here.";
+          }
+        }
+        args[1] = curr.room_name;
+      }
+      var text_to_display = prev[args[0]](args.slice(1));
+      if (text_to_display){
+        return text_to_display;
+      }
+      if (args in this.cmd_text){
+        return this.cmd_text[command];
+      }
+    } else{
+      return "Command '"+command+"' not found in room '"+this.room_name+"'";
+    }
+  },
+
+  _completeRoomName : function(cmd,prefix){
+    var search_room = prefix.substring(0,1) == "~" ? Home : this;
+    //Iterate through each room
+    var path_rooms = prefix.split("/");
+    var new_room;
+    var incomplete_room;
+    var ret = [];
+    var substring_matches = [];
+    for (room_num=0;room_num<path_rooms.length;room_num++)
+    {
+      new_room = search_room.can_cd(path_rooms[room_num]);
+      if(new_room){
+        search_room = new_room;
+      }
+      else{
+        //We've made it to the final room,
+        // so we should look for things to complete our journey
+        if(room_num == path_rooms.length-1){
+          //IF cd, ls, cp, mv, less
+          //Compare to this room's children
+          if(cmd == "cd" ||
+            cmd == "ls" ||
+            cmd == "mv")
+          {
+            for(child_num = 0; child_num<search_room.children.length; child_num++){
+              if(search_room.children[child_num].room_name.match("^"+path_rooms[room_num])){
+                substring_matches.push(search_room.children[child_num].room_name);
+              }
+            }
+          }
+          //IF cp, mv, less, grep, touch
+          //Compare to this room's items
+          if(cmd == "cp" ||
+            cmd == "mv" ||
+            cmd == "less" ||
+            cmd == "grep" ||
+            cmd == "touch" ||
+            cmd == "rm" ||
+            cmd == "sudo")
+          {
+            for(item_num = 0; item_num<search_room.items.length; item_num++){
+              if(search_room.items[item_num].itemname.match("^"+path_rooms[room_num])){
+                substring_matches.push(search_room.items[item_num].itemname);
+              }
+            }
+          }
+
+          //If one match exists
+          if(substring_matches.length == 1){
+            path_rooms.pop();
+            path_rooms.push(substring_matches[0]);
+            ret = [path_rooms.join("/")];
+          }
+          //If multiple matches exist
+          else if(substring_matches.length > 1){
+            //Search for longest common substring (taken from: http://stackoverflow.com/questions/1837555/ajax-autocomplete-or-autosuggest-with-tab-completion-autofill-similar-to-shell/1897480#1897480)
+            var lCSindex = 0
+            var i, ch, memo
+            do {
+              memo = null
+              for (i=0; i < substring_matches.length; i++) {
+                ch = substring_matches[i].charAt(lCSindex)
+                if (!ch) break
+                if (!memo) memo = ch
+                else if (ch != memo) break
+              }
+            } while (i == substring_matches.length && ++lCSindex)
+
+              var longestCommonSubstring = substring_matches[0].slice(0, lCSindex)
+            //If there is a common substring...
+            if(longestCommonSubstring != ""){
+              //If it already matches the last snippit, then show the options
+              if(path_rooms[room_num] == longestCommonSubstring){
+                ret = substring_matches;
+              }
+              //Otherwise, fill in the longest common substring
+              else{
+                ret = [path_rooms.join("/")];
+              }
+            }
+            //Otherwise, there is no common substring.  Show all of the options.
+            else{
+              ret =  substring_matches;
+            }
+          }
+        }
+      }
+    }
+    return ret;
+  }
+
+
 };
