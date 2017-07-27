@@ -23,9 +23,9 @@ var Home = newRoom('home', "loc_farm.gif");
 Home.newItem('welcome_letter');
 // Initiate Game state 
 var state = new GameState(Home); // GameState to initialize in game script
-
+var vt;
 function start_game(){
-  var vt=new VTerm(state.getCurrentRoom(),'term',null,'follow','./img/');
+  vt=new VTerm(state.getCurrentRoom(),'term',null,'follow','./img/');
   vt.show_msg(_('item_welcome_letter_text'));
   console.log("Game loaded");
 }
@@ -329,7 +329,7 @@ state.add("sudoComplete",function(re){
     KernelFiles.removeCommand("IHTFP");
     KernelFiles.removeCmdText("IHTFP");
     link_rooms(KernelFiles, Paradise);
-    enterRoom(Paradise);
+    enterRoom(Paradise,vt);
 });
 var MoreKernelFiles = newRoom("morekernel");
 MoreKernelFiles.newItemBatch("bigfile",['L','M','Q','R','S','T','U','V','W']);
@@ -428,7 +428,7 @@ state.add("AthenaComboEntered",function(re){
     AthenaCluster.removeCmdText("ls");
     AthenaCluster.addCommand("cd");
     // AthenaCluster.addCmdText("cd", "You have correctly entered the cluster combo. You may enter.");
-    enterRoom(AthenaCluster);
+    enterRoom(AthenaCluster,vt);
     MIT.removeCommand("terminus");
     MIT.removeCmdText("terminus");
 });
