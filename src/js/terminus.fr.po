@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 
 msgid "cannot_cast"
-msgstr "You cannot cast this spell here."
+msgstr "Ce sort ne peut pas être utilisé ici."
 
 msgid "cmd_exit"
 msgstr "Au revoir !"
@@ -40,64 +40,64 @@ msgid "cmd_cd_parent"
 msgstr "Tu es entrée dans %s. %s"
 
 msgid "cmd_cp_copied"
-msgstr "Just copied %s into %s."
+msgstr "%s vient d'être copier dans %s."
 
 msgid "cmd_cp_unknown"
-msgstr "No item of that name to copy."
+msgstr "Je ne vois aucun objet qui pourrait porter ce nom."
 
 msgid "cmd_help_suggestion"
 msgstr "Écris 'man' pour avoir accès aux informations contenues dans la manuscrit"
 
 msgid "cmd_less_invalid"
-msgstr "Pick a different item to less."
+msgstr "Choisissez un autre objet à décrire..."
 
 msgid "cmd_less_missing"
-msgstr "There is no %s here."
+msgstr "%s n'a pas été trouvé."
 
 msgid "cmd_man_no_query"
-msgstr "Il faut se poser une question pour être prêt à connaître sa réponse. C'est ce que dit le grand manuscrit."
+msgstr "Il faut poser une question pour obtenir une réponse. C'est ce que dit le grand manuscrit."
 
 msgid "cmd_man_not_found"
 msgstr "Il n'y a rien d'écrit dans le grand manuscrit."
 
 msgid "cmd_mv_done"
-msgstr "Moved %s to %s."
+msgstr "%s a été déplacé vers %s."
 
 msgid "cmd_mv_flood"
-msgstr "You need to move thing A to place B. Use mov [thingA] [placeB]."
+msgstr "Il est possible de déplacer un objet A dans un emplacement (ou lieu)  B.   Pour cela, utilisez mv [objetA] [emplacementB]."
 
 msgid "cmd_mv_invalid"
-msgstr "Must be a valid item and location to move it."
+msgstr "Il faut un objet déplaçable et un emplacement de destination pour réaliser un déplacement."
 
 msgid "cmd_pwd"
 msgstr "Tu te trouve dans %s."
 
 msgid "cmd_rm_done"
-msgstr "You just removed %s \n"
+msgstr "Tu viens de supprimer %s. Ses données disparaissent devant tes yeux."
 
 msgid "cmd_rm_failed"
-msgstr "That item cannot be removed"
+msgstr "Voilà quelque chose que tu ne peux pas détruire."
 
 msgid "cmd_rm_invalid"
-msgstr "That's not a valid object to remove."
+msgstr "Tu ne peux supprimer qu'un objet existant sans grande importance pour autrui."
 
 msgid "cmd_rm_miss"
-msgstr "You must remove a particular item."
+msgstr "Si il s'agit d'une chose particulière que tu cherches à supprimer. Cela ne suffira pas."
 
 msgid "cmd_touch_created"
-msgstr "You have just created %s"
+msgstr "Tu viens de créer : %s !"
 
 msgid "cmd_touch_none"
-msgstr "You haven't touched anything. Check your syntax."
+msgstr "Tu viens de créer ... rien du tout... vérifie ta syntaxe."
 
 msgid "cmd_touch_nothing"
-msgstr "You must touch something in particular."
+msgstr "Tu dois indiquer ce que tu cherche à créer pour que cela marche."
 
 msgid "cmd_unknown"
-msgstr "You have not learned this spell yet"
+msgstr "Tu n'as pas encore appris ce sort."
 
 msgid "combo"
-msgstr "The combination is 'terminus' (without the quotes)."
+msgstr "La combinaison est  'terminus' (sans les guillemets)."
 
 msgid "directions"
 msgstr ""
@@ -105,7 +105,7 @@ msgstr ""
 "%s "
 
 msgid "incorrect_syntax"
-msgstr "Incorrect syntax. Ask the OldMan for help."
+msgstr "Cela ne marche pas. Tu devrais voir dans Manuscript si tu as bien utiliser ce sortilège."
 
 msgid "invalid_locker"
 msgstr "Je ne connais pas ce nom de verrou."
@@ -119,19 +119,19 @@ msgstr ""
 "%s"
 
 msgid "lock_added"
-msgstr "You just added the %s locker"
+msgstr "Tu viens d'ajouter le vérrou %s"
 
 msgid "room_empty"
-msgstr "Il n'y a nul objet visible à regarder."
+msgstr "Cette pièce est vide. Il n'y a rien."
 
 msgid "room_new_created"
-msgstr "New room %s created"
+msgstr "Tu viens de créer un nouveau lieu : %s"
 
 msgid "room_wrong_password"
-msgstr "Wrong password."
+msgstr "Le mot de passe est erroné. Avez vous oublié votre mot de passe ? Non, je blague. Déguerpissez !"
 
 msgid "room_wrong_syntax"
-msgstr "Wrong syntax. Read the instructions again."
+msgstr "La syntaxe n'est pas valide. Relisez les instructions."
 
 msgid "room_none"
 msgstr "Pièce banale"
@@ -1220,8 +1220,8 @@ msgstr ""
 
 msgid "man_man"
 msgstr ""
-"Je suis le manuscrit ancien, et je possède le savoir indispensable aux sorciers.\n"
-"Voici les sorts que je pourais t'enseigner : cd, ls, rm, mv, exit, help, man, touch, grep, pwd."
+"Le Grand Manuscrit possède le savoir indispensable aux sorciers.\n"
+"Voici les sorts que je pourrais t'enseigner : cd, ls, rm, mv, exit, help, man, touch, grep, pwd."
 
 msgid "man_help"
 msgstr "Écris \"man COMMANDE\" si tu as oublié comment utiliser une commande."
@@ -1260,6 +1260,6 @@ msgstr ""
 
 msgid "man_tellme"
 msgstr ""
-"(tellme combo)tells you the combination for the AthenaCluster rooms at MIT.\n"
+"(tellme combo) vous donne la combinaison pour entrer dans le AthenaCluster du  MIT.\n"
 "Il faut écrire :\n"
 "  tellme combo"

@@ -61,8 +61,10 @@ function _js(){
     'src/js/engine/Gettext.js',
     'src/js/engine/GameState.js',
     'src/js/engine/EventTarget.js',
-    'src/js/engine/Room.js',
+    'src/js/engine/VTerm.js',
+    'src/js/engine/Pic.js',
     'src/js/engine/Item.js',
+    'src/js/engine/Room.js',
     'src/js/terminus.js'
   ])
     .pipe(concat('min.js'))

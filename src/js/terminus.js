@@ -22,8 +22,13 @@
 var Home = newRoom('home', "loc_farm.gif");
 Home.newItem('welcome_letter');
 // Initiate Game state 
-var state = new GameState(Home);
+var state = new GameState(Home); // GameState to initialize in game script
 
+function start_game(){
+  var vt=new VTerm(state.getCurrentRoom(),'term',null,'follow','./img/');
+  vt.show_msg(_('item_welcome_letter_text'));
+  console.log("Game loaded");
+}
 //WESTERN FOREST
 var WesternForest = newRoom('western_forest', "loc_forest.gif");
 WesternForest.newItem('western_forest_academy_direction',"loc_forest.gif");
@@ -196,7 +201,7 @@ state.add("touchGear", function (re){
     Artisan.addCmdText("less", _('item_gear_touch'));
     ArtisanShop.addCommand("cp");
     if (re) ArtisanShop.addItem(new Item("Gear", _('item_gear_text'),"item_gear.gif"));
-    else ArtisanShop.getItemFromName("Gear").changePicName("item_gear.gif");
+    else ArtisanShop.getItemFromName("Gear").changePic("item_gear.gif");
 });
 state.add("FiveGearsCopied",function(re){
     Artisan.addCmdText("less", _('item_gear_artisans_ok'));
@@ -280,7 +285,7 @@ state.add("touchPlank",function(){
     BrokenBridge.removeCmdText("cd");
     BrokenBridge.changeIntroText(_('room_brokenbridge_text2'));
     if (re) BrokenBridge.addNewItem('plank',"item_plank.gif");
-    else BrokenBridge.getItemFromName(_('item_plank')).changePicName("item_plank.gif");
+    else BrokenBridge.getItemFromName(_('item_plank')).changePic("item_plank.gif");
 });
 
 //OMINOUS-LOOKING PATH
@@ -488,4 +493,4 @@ link_rooms(Home, MIT);
 link_rooms(MIT, StataCenter);
 link_rooms(MIT, AthenaCluster);
 console.log("Game objects : init");
-start_game();
+start_game();// make views and interact

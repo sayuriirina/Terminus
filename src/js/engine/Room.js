@@ -1,16 +1,3 @@
-img={ room_none:"none.gif", people_none:'none.gif', item_none:'none.gif' };
-function i(fname){
-  return './img/' + fname;
-}
-var scene=document.getElementById("scene");
-function set_img(img){
-  scene.setAttribute("src", img); //Always show blank image when moving into a room
-}
-
-function show_blank_img(){
-  scene.setAttribute("src", i(img.room_none)); //Always show blank image when moving into a room
-}
-
 String.prototype.replaceAll = function(from, to){
 	ret = this.toString();
 	while (ret.indexOf(from) > 0){
@@ -28,7 +15,7 @@ function Room(roomname, introtext, roompic, inside_evts,outside_evts){
   this.fire = null;
 	this.room_name = d(roomname, _('room_none'));
 	this.intro_text = d(introtext, _('room_none_text'));
-	this.room_pic = i(d(roompic, img.room_none));
+	this.room_pic = d(new Pic(roompic), img.room_none);
   this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name])};
 	//for event handling
 	this.ev = new EventTarget();
@@ -44,11 +31,13 @@ function newRoom(id, roompic, inside_evts,outside_evts){
     inside_evts,
     outside_evts);
 }
-var enterRoom = function(new_room){
-  show_blank_img();
-  current_room = new_room;
-  state.setCurrentRoom(current_room);
-};
+function enterRoom(new_room,vt){
+  vt.push_img(null);
+  vt.setContext(new_room);
+  state.setCurrentRoom(new_room);
+  return [new_room.toString(), new_room.intro_text];
+}
+
 
 Room.prototype = {
   toString : function(){
@@ -199,53 +188,75 @@ Room.prototype = {
     return this;
   },
 
-  ls : function(args){
+  traversee: function(path){
+      var pat=path.split('/');
+      var room=this;
+      var item=null;
+      var i;
+      for (i = 0; i < pat.length-1; i++){
+        if (room){
+          room=room.can_cd(pat[i]);
+        } else {
+          return _("room_unreachable");
+        }
+      }
+      for (i = 0; i < room.items.length; i++){
+        if (pat[pat.length-1] === room.items[i].toString()){
+          item=pat[pat.length-1]
+          break;
+        }
+      }
+      if (!item){
+         room=room.can_cd(pat[pat.length-1])
+      }
+      return [room,item];
+  },
+
+  ls : function(args,vt){
     if (args.length > 0){
-      if (this.childrenStringArray().indexOf(args[0]) > -1){
-        return this.children[this.childrenStringArray().indexOf(args[0])].printLS();
-      } else {
-        return _("room_empty");
+      var room=this.traversee(args[0])[0];
+      if (room) {
+        if (room.children.length == 0 && room.items.length == 0 ){
+          return _("room_empty");
+        }
+        return room.printLS();
       }
     } else {
-      set_img(this.room_pic); // Display image of room
+      vt.push_img(this.room_pic); // Display image of room
       return this.printLS();
     }
   },
 
   printLS : function(){
-    return _('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")]) +
-      "\n" + ( (this.items.length > 0) ? _('items', [" " + (this.items.toString()).replaceAll(",", "\n ")]) : '');
+    return _('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")]) +
+      "\n" + ( (this.items.length > 0) ? _('items', [" " + (this.items.toString()).replaceAll(",", "\n ")]) : '');
   },
 
-  cd : function(args){
+  cd : function(args,vt){
     if (args.length > 1){
       return _('cmd_cd_flood');
     } else if (args[0] === "-") {
       this.previous.previous=this;
-      enterRoom(this.previous);
+      enterRoom(this.previous, vt);
     } else if (args.length === 0){
       Home.previous=this;
-      enterRoom(Home);
+      enterRoom(Home, vt);
       return _('cmd_cd_home');
     }else if (args[0] === "..") {
       this.fire_event('cd',args,0);
       if (this.parents.length >= 1){
         this.parents[0].previous=this;
-        enterRoom(this.parents[0]);
-        return _('cmd_cd_parent',
-            [current_room.toString(), current_room.intro_text]);
+        return _('cmd_cd_parent', enterRoom(this.parents[0], vt));
       } else {
         return _('cmd_cd_no_parent');
       }
     } else if (args[0] === "~"){
       Home.previous=this;
-      enterRoom(Home);
+      enterRoom(Home, vt);
       return _('cmd_cd_home');
     } else if (args[0] === ".") {
-      enterRoom(current_room);
-      show_blank_img();
-      return _('cmd_cd',
-          [current_room.toString(), current_room.intro_text]);
+      vt.push_img(null);
+      return _('cmd_cd',enterRoom(this, vt));
       // } else if (args[0].indexOf("/") > 0){
       // 	var rooms_in_order = args[0].split("/");
       // 	var cur_room_to_test = this;
@@ -261,24 +272,31 @@ Room.prototype = {
       // /* testing ... */
       //    roomname = args[0].substr(1);
       //    this.fire_event('cd',args,O,roomname);
-  } else {
-    roomname = args[0];
-    for (var i = 0; i < this.children.length; i++){
-      if (roomname === this.children[i].toString()){
-        if (this.children[i].commands.indexOf("cd") > -1){
-          this.children[i].previous=this;
-          enterRoom(this.children[i]);
-          console.log(current_room);
-          return _('cmd_cd',
-              [current_room.toString(), current_room.intro_text]);
+    } else {
+      var room=this.traversee(args[0])[0];
+      if (room) {
+        if (room.commands.indexOf("cd") > -1){
+          room.previous=this;
+          return _('cmd_cd',enterRoom(room,vt));
         } else {
-          this.fire_event('cd',args,0,roomname);
-          return this.children[i].cmd_text.cd;
+          this.fire_event('cd',args,0,room.room_name);
+          return room.cmd_text.cd;
         }
       }
+      //      roomname = args[0];
+      //      for (var i = 0; i < this.children.length; i++){
+      //        if (roomname === this.children[i].toString()){
+      //          if (this.children[i].commands.indexOf("cd") > -1){
+      //            this.children[i].previous=this;
+      //            return _('cmd_cd',enterRoom(this.children[i],vt));
+      //          } else {
+      //            this.fire_event('cd',args,0,roomname);
+      //            return this.children[i].cmd_text.cd;
+      //          }
+      //        }
+      //    }
+      return _('cmd_cd_failed', args);
     }
-    return _('cmd_cd_failed', args);
-  }
   },
 
   /*Checks if arg can be reached from this room
@@ -308,15 +326,18 @@ Room.prototype = {
     }
   },
 
-  less : function(args){
+  less : function(args,vt){
     if (args.length < 1){
       return _('cmd_less_invalid');
     } else {
-      for (var i = 0; i < this.items.length; i++){
-        if (args[0] === this.items[i].toString()){
-          set_img(this.items[i].picturename); // Display image of item
-          var ret=this.items[i].cmd_text.less
-            this.fire_event('less',args,0);
+      var traversee=this.traversee(args[0]);
+      var room=traversee[0];
+      var item=traversee[1];
+      for (i = 0; i < room.items.length; i++){
+        if (item === room.items[i].toString()){
+          vt.push_img(room.items[i].picture); // Display image of item
+          var ret=room.items[i].cmd_text.less;
+          room.fire_event('less',args,0);
           return ret;
         }
       }
@@ -348,8 +369,8 @@ Room.prototype = {
     return _('cmd_exit');
   },
 
-  pwd : function(args){
-    set_img(this.room_pic);
+  pwd : function(args,vt){
+    vt.push_img(this.room_pic);
     return "";
   },
 
@@ -442,7 +463,7 @@ Room.prototype = {
       var item_to_copy = this.getItemFromName(item_to_copy_name);
       if (item_to_copy != -1){
         var newItem = new Item(new_item_name);
-        newItem.picturename = item_to_copy.picturename;
+        newItem.picture = item_to_copy.picture;
         newItem.cmd_text = item_to_copy.cmd_text;
         newItem.valid_cmds = item_to_copy.valid_cmds;
         this.addItem(newItem);
@@ -518,43 +539,47 @@ Room.prototype = {
     }
     return _('invalid_spell');
   },
-  exec : function (args){
-    if( this.commands.indexOf(args[0]) > -1 ){ 
+  exec : function (vt, args){
+    var cmd = args[0];
+    args.push(args.pop().replace(/\/$/,""));
+    if( this.commands.indexOf(cmd) > -1 ){ 
       var prev = this;
-      if (args.length > 1 && args[1].indexOf("/") > 0){
-        var rooms_in_order = args[1].split("/");
-        var curr = this;
-        for (var i = 0; i < rooms_in_order.length; i++){
-          prev = curr;
-          var room_to_cd = rooms_in_order[i];
-          if (i > 0 && rooms_in_order[i-1] === "~"){
-            curr = Home.can_cd(room_to_cd)
-          } else if (room_to_cd === "~"){
-            curr = Home;
-          } else {
-            curr = curr.can_cd(room_to_cd);
-          }
-          if ((args[0] === "cd" || args[0] === "ls") && curr === false){
-            return "That is not reachable from here.";
-          }
-        }
-        args[1] = curr.room_name;
-      }
-      var text_to_display = prev[args[0]](args.slice(1));
+      //      if (args.length > 1 && args[1].indexOf("/") > 0){
+      //        var rooms_in_order = args[1].split("/");
+      //        var curr = this;
+      //        for (var i = 0; i < rooms_in_order.length; i++){
+      //          prev = curr;
+      //          var room_to_cd = rooms_in_order[i];
+      //          if (i > 0 && rooms_in_order[i-1] === "~"){
+      //            curr = Home.can_cd(room_to_cd);
+      //          } else if (room_to_cd === "~"){
+      //            curr = Home;
+      //          } else {
+      //            curr = curr.can_cd(room_to_cd);
+      //          }
+      //          if ((cmd === "cd" || cmd === "ls") && curr === false){
+      //            return "That is not reachable from here.";
+      //          }
+      //        }
+      //        args[1] = curr.room_name;
+      //      }
+      console.log(args);
+      var text_to_display = prev[cmd](args.slice(1),vt);
       if (text_to_display){
         return text_to_display;
       }
-      if (args in this.cmd_text){
-        return this.cmd_text[command];
+      if (cmd in this.cmd_text){
+        return this.cmd_text[cmd];
       }
     } else{
-      return "Command '"+command+"' not found in room '"+this.room_name+"'";
+      return "Command '"+cmd+"' not found in room '"+this.room_name+"'";
     }
   },
 
   _completeRoomName : function(cmd,prefix){
     var search_room = prefix.substring(0,1) == "~" ? Home : this;
     //Iterate through each room
+    var lastchar=prefix.charAt(prefix.length-1);
     var path_rooms = prefix.split("/");
     var new_room;
     var incomplete_room;
@@ -565,33 +590,25 @@ Room.prototype = {
       new_room = search_room.can_cd(path_rooms[room_num]);
       if(new_room){
         search_room = new_room;
-      }
-      else{
+        if (room_num === path_rooms.length -1){
+          ret = [new_room.room_name + '/' ];
+        }
+      } else {
         //We've made it to the final room,
         // so we should look for things to complete our journey
         if(room_num == path_rooms.length-1){
           //IF cd, ls, cp, mv, less
           //Compare to this room's children
-          if(cmd == "cd" ||
-            cmd == "ls" ||
-            cmd == "mv")
-          {
+          if(cmd == "cd" || cmd == "ls" || cmd == 'less' || cmd == "mv") {
             for(child_num = 0; child_num<search_room.children.length; child_num++){
               if(search_room.children[child_num].room_name.match("^"+path_rooms[room_num])){
-                substring_matches.push(search_room.children[child_num].room_name);
+                substring_matches.push(search_room.children[child_num].room_name + '/');
               }
             }
           }
           //IF cp, mv, less, grep, touch
           //Compare to this room's items
-          if(cmd == "cp" ||
-            cmd == "mv" ||
-            cmd == "less" ||
-            cmd == "grep" ||
-            cmd == "touch" ||
-            cmd == "rm" ||
-            cmd == "sudo")
-          {
+          if(cmd == "cp" || cmd == "mv" || cmd == "less" || cmd == "grep" || cmd == "touch" || cmd == "rm" || cmd == "sudo") {
             for(item_num = 0; item_num<search_room.items.length; item_num++){
               if(search_room.items[item_num].itemname.match("^"+path_rooms[room_num])){
                 substring_matches.push(search_room.items[item_num].itemname);
@@ -604,38 +621,9 @@ Room.prototype = {
             path_rooms.pop();
             path_rooms.push(substring_matches[0]);
             ret = [path_rooms.join("/")];
-          }
-          //If multiple matches exist
-          else if(substring_matches.length > 1){
-            //Search for longest common substring (taken from: http://stackoverflow.com/questions/1837555/ajax-autocomplete-or-autosuggest-with-tab-completion-autofill-similar-to-shell/1897480#1897480)
-            var lCSindex = 0
-            var i, ch, memo
-            do {
-              memo = null
-              for (i=0; i < substring_matches.length; i++) {
-                ch = substring_matches[i].charAt(lCSindex)
-                if (!ch) break
-                if (!memo) memo = ch
-                else if (ch != memo) break
-              }
-            } while (i == substring_matches.length && ++lCSindex)
-
-              var longestCommonSubstring = substring_matches[0].slice(0, lCSindex)
-            //If there is a common substring...
-            if(longestCommonSubstring != ""){
-              //If it already matches the last snippit, then show the options
-              if(path_rooms[room_num] == longestCommonSubstring){
-                ret = substring_matches;
-              }
-              //Otherwise, fill in the longest common substring
-              else{
-                ret = [path_rooms.join("/")];
-              }
-            }
-            //Otherwise, there is no common substring.  Show all of the options.
-            else{
-              ret =  substring_matches;
-            }
+          } else if(substring_matches.length > 1){
+            //If multiple matches exist
+            ret =  substring_matches;
           }
         }
       }
