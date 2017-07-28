@@ -25,8 +25,8 @@ function Room(roomname, introtext, roompic, inside_evts,outside_evts){
 }
 function newRoom(id, roompic, inside_evts,outside_evts){
   return new Room(
-    _('room_'+id,or='room_none'),
-    _('room_'+id+'_text',or='room_none_text'),
+    _('room_'+id,[],or='room_none'),
+    _('room_'+id+'_text',[],or='room_none_text'),
     roompic,
     inside_evts,
     outside_evts);
@@ -64,9 +64,7 @@ Room.prototype = {
   },
 
   addItem : function(newitem) {
-    if (typeof newitem != 'undefined'){
-      this.items[this.items.length] = newitem;
-    }
+    pushDef(newitem,this.items);
     return this;
   },
 
@@ -89,56 +87,60 @@ Room.prototype = {
   newItemBatch: function(id, names, picname) {
     var ret=[], name, intro;
     for (var i = 0; i < names.length; i++){
-      name = _('item_'+id+names[i], [names[i]], 'item_'+id, 'item_none');
-      intro = _('item_'+id+name[i]+'_text', [names[i]], 'item_'+id+'_text', 'item_none_text');
+      name = _('item_'+id, [names[i]], or='item_none');
+      intro = _('item_'+id+'_text', [names[i]], or='item_none_text');
       ret[i]=new Item(name,intro,picname);
       this.addItem(ret[i]);
     }
     return ret;
   },
 
-  removeItem : function(itemnametoremove){
-    index = this.itemStringArray().indexOf(itemnametoremove);
-    if (index != -1){
-      return this.items.splice(index, 1)[0];
-    }
-    return null;
+  removeItemByIdx : function(idx){
+    return ((idx == -1) ? null : this.items.splice(idx, 1)[0]);
   },
 
-  itemStringArray : function(item){
-    itemstrarray = [];
-    for (var i = 0; i < this.items.length; i++){
-      itemstrarray[itemstrarray.length] = this.items[i].toString();
-    }
-    return itemstrarray;
+//  removeItem : function(name){
+//    idx = this.idxItemFromName(name);
+//    return removeItemByIdx(idx);
+//  },
+
+//  itemStringArray : function(){
+//    itemstrarray = [];
+//    for (var i = 0; i < this.items.length; i++){
+//      itemstrarray[itemstrarray.length] = this.items[i].toString();
+//    }
+//    return itemstrarray.map(objToStr);
+//  },
+
+  idxItemFromName : function(name){
+    return this.items.map(objToStr).indexOf(name);
+  },
+  idxChildFromName : function(name){
+    return this.children.map(objToStr).indexOf(name);
+  },
+//  childStringArray : function(){
+//    childstrarray = [];
+//    for (var i = 0; i < this.children.length; i++){
+//      childstrarray[childstrarray.length] = this.children[i].toString();
+//    }
+//    return childstrarray.map(objToStr);
+//  },
+
+  getItemFromName : function(name){
+    idx = this.idxItemFromName(name);
+    return ((idx == -1) ? null : this.items[idx]);
   },
 
-  childStringArray : function(child){
-    childstrarray = [];
-    for (var i = 0; i < this.children.length; i++){
-      childstrarray[childstrarray.length] = this.children[i].toString();
-    }
-    return childstrarray;
-  },
-
-  getItemFromName : function(itemname){
-    itemindex = this.itemStringArray().indexOf(itemname);
-    if (itemindex > -1)
-      return this.items[itemindex];
-    return -1;
-  },
-
-  getChildFromName : function(childname){
-    childindex = this.childStringArray().indexOf(childname);
-    if (childindex > -1)
-      return this.children[childindex];
-    return -1;
+  getChildFromName : function(name){
+    idx = this.children.map(objToStr).indexOf(name);
+    return ((idx == -1) ? null : this.children[idx]);
+//    if (childindex > -1)
+//      return this.children[childindex];
+//    return -1;
   },
 
   addChild : function(newchild){
-    if (typeof newchild != 'undefined'){
-      this.children[this.children.length] = newchild;
-    }
+    pushDef(newchild,this.children);
   },
 
   removeChild : function(child){
@@ -149,11 +151,12 @@ Room.prototype = {
   },
 
   childrenStringArray : function(child){
-    childrenstrarray = [];
-    for (var i = 0; i < this.children.length; i++){
-      childrenstrarray[childrenstrarray.length] = this.children[i].toString();
-    }
-    return childrenstrarray;
+    return this.children.map(objToStr);
+    //    childrenstrarray = [];
+//    for (var i = 0; i < this.children.length; i++){
+//      childrenstrarray[childrenstrarray.length] = this.children[i].toString();
+//    }
+//    return childrenstrarray;
   },
 
   addParent : function(parent){
@@ -166,6 +169,7 @@ Room.prototype = {
   },
 
   addCommand : function(cmd){
+//    console.log(this,cmd);
     this.commands[this.commands.length] = cmd;
     return this;
   },
@@ -364,7 +368,7 @@ Room.prototype = {
   exit : function(args){
     this.commands=[];
     setTimeout(function(){
-      document.body.innerHTML=_('cmd_exit_html');
+      dom.body.innerHTML=_('cmd_exit_html');
     },2000);
     return _('cmd_exit');
   },
@@ -378,12 +382,13 @@ Room.prototype = {
     if (args.length != 2){
       return _('cmd_mv_flood');
     } else {
-      var item_name_to_move = this.itemStringArray().indexOf(args[0]);
-      if ((item_name_to_move >= 0) && (this.childrenStringArray().indexOf(args[1]) >= 0)){
-        itemtoadd = this.items[this.itemStringArray().indexOf(args[0])];
-        this.children[this.childrenStringArray().indexOf(args[1])].addItem(itemtoadd);
+      var item_idx = this.idxItemFromName(args[0]);
+      var child_idx = this.idxChildFromName(args[1]);
+      if ((item_idx >= 0) && ( child_idx >= 0)){
+        itemtoadd = this.items[item_idx];
+        this.children[child_idx].addItem(itemtoadd);
         this.fire_event('mv',args,0);
-        this.removeItem(args[0]);
+        this.removeItemByIdx(item_idx);
         return _('cmd_mv_done', args);
       } else {
         return _("cmd_mv_invalid");
@@ -395,11 +400,14 @@ Room.prototype = {
     if (args.length < 1){
       return _("cmd_rm_miss");
     } else {
-      stringtoreturn = "";
+      var stringtoreturn = "";
+      var item;
       for (var i = 0; i < args.length; i++){
-        if (this.getItemFromName(args[i]) != -1){
-          if (this.getItemFromName(args[i]).valid_cmds.indexOf("rm") > 0){
-            var removedItem = this.removeItem(args[i]);
+        idx = this.idxItemFromName(args[i]);
+        if (idx != -1){
+          item=this.items[idx];
+          if (item.valid_cmds.indexOf("rm") > 0){
+            var removedItem = this.removeItemByIdx(idx);
             if (removedItem) {
               this.fire_event('rm',args,i);
               if ("rm" in removedItem.cmd_text){
@@ -422,8 +430,9 @@ Room.prototype = {
   grep : function(args){
     if (this.commands.indexOf("grep") > 0){
       var word_to_find = args[0];
-      if (this.getItemFromName(args[1]) != -1){
-        var item_to_find_in_text = this.getItemFromName(args[1]).cmd_text.less;
+      var item=this.getItemFromName(args[1]);
+      if (item){
+        var item_to_find_in_text = item.cmd_text.less;
         var line_array = item_to_find_in_text.split("\n");
         var return_arr = jQuery.grep(line_array, function(line){ return (line.indexOf(word_to_find) > 0);});
         return return_arr.join("\n");
@@ -460,12 +469,12 @@ Room.prototype = {
     } else {
       var item_to_copy_name = args[0];
       var new_item_name = args[1];
-      var item_to_copy = this.getItemFromName(item_to_copy_name);
-      if (item_to_copy != -1){
+      var item = this.getItemFromName(item_to_copy_name);
+      if (item){
         var newItem = new Item(new_item_name);
-        newItem.picture = item_to_copy.picture;
-        newItem.cmd_text = item_to_copy.cmd_text;
-        newItem.valid_cmds = item_to_copy.valid_cmds;
+        newItem.picture = item.picture;
+        newItem.cmd_text = item.cmd_text;
+        newItem.valid_cmds = item.valid_cmds;
         this.addItem(newItem);
         this.fire_event('cp',args,0);
         return _('cmd_cp_copied', [item_to_copy_name ,new_item_name]);
@@ -476,6 +485,7 @@ Room.prototype = {
   },
 
   terminus : function(args){
+//    console.log(this,args);
     var ret = this.cmd_text.terminus;
     this.ev.fire("AthenaComboEntered");
     return ret;
@@ -563,7 +573,7 @@ Room.prototype = {
       //        }
       //        args[1] = curr.room_name;
       //      }
-      console.log(args);
+//      console.log(args);
       var text_to_display = prev[cmd](args.slice(1),vt);
       if (text_to_display){
         return text_to_display;

@@ -7,19 +7,21 @@ String.prototype.printf=function (vars){
       return vars[i];
     });
 };
-function d(v,w){
-	return typeof v === 'undefined' ? w : v ;
-}
-function _(str,vars,or,_or) {
+function _(str,vars,or) {
   vars = d(vars, []);
   or = d(or, '');
-  _or = d(_or, '');
   if (str in dialog) {
     return dialog[str].printf(vars);
-  } else if (or && or in dialog) {
-    return dialog[or].printf(vars);
-  } else if (_or && _or in dialog) {
-    return dialog[_or].printf(vars);
+  } else {
+    if (typeof pogen == 'function' ){
+      pogen(str);
+    }
+    if (or && or in dialog) {
+      return dialog[or].printf(vars);
+    }
+    return str + vars.join(' ');
   }
-  return str+' '+vars;
+};
+function gettext_check(){
+  if (typeof pogen_deliver == 'function' ){pogen_deliver();}
 }

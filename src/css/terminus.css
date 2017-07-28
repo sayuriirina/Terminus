@@ -62,10 +62,22 @@ body {
 }
 .suggest p {
   padding:0 1ch;
-  color:#939393;
+  color:gray;
   margin:0;
 }
 
+a {
+  color: gray;
+  text-align: center;
+  display: block;
+  position:relative;
+  bottom:-1rem;
+  padding:1rem;
+  transition:all .6s;
+}
+a:hover {
+  bottom:1rem;
+}
 
 /* Alternative  setting for having a custom command line */
 /*#term .input span:after {*/
@@ -97,11 +109,11 @@ body {
 /*  top:0;*/
 /*  left:0;*/
 /*  position:relative;*/
-/*  background: #939393;*/
+/*  background: gray;*/
 /*  color:black;*/
 /*}*/
 /*#termwin {*/
-/*  border:3px solid #939393;*/
+/*  border:3px solid gray;*/
 /*  height:100vh;*/
 /*  left:50%;*/
 /*-moz-transform:     translateX(-50%);*/

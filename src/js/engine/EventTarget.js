@@ -11,11 +11,7 @@ EventTarget.prototype = {
     constructor: EventTarget,
 
     addListener: function(type, listener){
-        if (typeof this._listeners[type] == "undefined"){
-            this._listeners[type] = [];
-        }
-
-        this._listeners[type].push(listener);
+        hdef(this._listeners,type,listener);
     },
 
     fire: function(event){

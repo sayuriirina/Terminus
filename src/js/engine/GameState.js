@@ -37,7 +37,7 @@ GameState.prototype = {
     var date = new Date();
     //by default, cookies active for a week
     date.setTime(date.getTime()+(7*24*60*60*1000));
-    document.cookie = "terminuscookie="+this.get()+"; expires="+date.toGMTString()+"; path=/";
+    dom.cookie = "terminuscookie="+this.get()+"; expires="+date.toGMTString()+"; path=/";
   },
 
   get : function(){
@@ -53,7 +53,7 @@ GameState.prototype = {
 
   readCookie : function(){
     var nameCookie = "terminuscookie";
-    var ca = document.cookie.split(';');
+    var ca = dom.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
       var c = ca[i];
       while (c.charAt(0)==' ') c = c.substring(1,c.length);

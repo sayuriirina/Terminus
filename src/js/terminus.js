@@ -25,6 +25,7 @@ Home.newItem('welcome_letter');
 var state = new GameState(Home); // GameState to initialize in game script
 var vt;
 function start_game(){
+  gettext_check();
   vt=new VTerm(state.getCurrentRoom(),'term',null,'follow','./img/');
   vt.show_msg(_('item_welcome_letter_text'));
   console.log("Game loaded");
@@ -343,7 +344,7 @@ var Paradise = newRoom("paradise", "loc_theend.gif")
 var troll_evt=function(ct){
     return (ct.arg == 'UglyTroll' ? 'openSlide' : '' );
 };
-var CaveOfDisgruntledTrolls = newRoom("troolcave", "loc_cave.gif",
+var CaveOfDisgruntledTrolls = newRoom("trollcave", "loc_cave.gif",
 				      {'mv':troll_evt,'rm':troll_evt})
 	.addCommand("rm")
 	.addCommand("mv")
