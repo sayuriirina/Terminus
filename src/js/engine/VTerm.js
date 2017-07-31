@@ -28,9 +28,12 @@ function VTerm(context, container_id, img_id,img_mode,img_dir){
   this.history=[];
   this.histchecking=false;
   this.histindex=0;
-  this.behave();
 }
 VTerm.prototype={
+  start: function(ctx){
+    this.context=ctx;
+    this.behave();
+  },
   setContext: function(ctx){
     this.context=ctx;
   },
@@ -106,6 +109,13 @@ VTerm.prototype={
     var pr=t.input;
     //    var cmd=this.cmdspan;
     var term=this.container;
+    
+    var echo=t.context.getStarterMsg(t);
+    if (echo) {
+      t.show_img();
+      t.show_msg(echo);
+    }
+    
     dom.body.onkeydown = function (e) {
       e = e || window.event;//Get event
       var k=e.which;

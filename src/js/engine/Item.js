@@ -4,22 +4,21 @@ function Item(name, intro, picname){
   this.cmd_text = {less: intro ? intro : _('item_none_text')};
   this.valid_cmds = ["less"];
 }
-Item.prototype.addCmdText = function(cmd, text) {
+Item.prototype = {
+  addCmdText : function(cmd, text) {
 	this.cmd_text[cmd] = text;
   return this;
-};
-
-Item.prototype.addValidCmd = function(cmd){
-	this.valid_cmds[this.valid_cmds.length] = cmd;
+},
+  addValidCmd : function(cmd){
+	this.valid_cmds.push(cmd);
   return this;
-}
-
-Item.prototype.toString = function(){
+ },
+ toString : function(){
 	return this.itemname;
-}
-
-Item.prototype.changePic = function(newpicname){
+ },
+ changePic : function(newpicname){
 	this.picture = new Pic(newpicname);
+ }
 };
 
 // Useless : just used for making distinction between living being and non-living things

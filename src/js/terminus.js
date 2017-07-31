@@ -6,125 +6,176 @@
  * ROOMS
  * Players can cd between rooms
  *
- * API: new Room(roomid, img)
- *     roomid : non 'room_' part of a key 'room_<roomid>' in GameDialogs file
+ * API:
+ *
+ * ROOM   e.g. $home
+ *    newRoom(id, img, evts, outer_evts) set a new room variable named $id
+ *     id : non 'room_' part of a key 'room_<id>' in GameDialogs file
  *              GameDialogs file shall contain :
  *               - room_<roomid> :      the name of the room
  *               - room_<roomid>_text : the description of what happening in
  *                                      the room
  *     img : img file in image directory
  *
- * API: new Iterm(itemid, img)
- *      The logic is identical to new Room API
+ *     cmds : hash { <cmd_name>: function(ct) return event name }
+ *         ct  is an event context defined as  
+ *         {room:<current_room>, args:<arguments_of_the_command>, arg:<current_argument>,  i:<idx_argument>};
+ *
+ *     outer_cmds : idem but event is fired when refering to (entering in) directory
+ *
+ *    Return the <Room> object
+ *
+ *    Note : $home is required , in order to define path '~/', and command 'cd'.
+ *
+ * ITEM (or PEOPLE) 
+ *
+ *     <Room>.newItem(id, img)  or <Room>.newPeople(id, img)
+ *     id : non 'item_' (or 'people_') part of a key 'item_<id>' in GameDialogs file
+ *              GameDialogs file shall contain :
+ *               - item_<id>   :      the name of the item
+ *              ( - people_<id> :      the name of the person )
+ *               - item_<id>_text   : a description
+ *              ( - people_<id>_text : a description )
+ *     img : img file in image directory
+ 
+ *    Return the <Item> object
+ *
+ * FIRST PROMPT
+ *
+ *    If the player start a game or load it from saved state,
+ *    you can display a message for the room she/he starts.
+ *    Default is the result of 'pwd'.
+ *    <Room>.setStarterMsg(<welcome_message>);
+ *
+ * COMMANDS
+ *
+ *    Commands are defined in Room class, (and in Item class for item description).
+ *    However the access and the results are limited
+ *    and controllable given the Room or the Item :
+ *
+ *    // disallow or allow usage of command
+ *    <Room>.removeCommand(<cmd_name>)
+ *    <Room>.addCommand(<cmd_name>)
+ *    <Item>.addValidCmd(<cmd_name>)
+ *
+ *    // alter result of the command
+ *    <Room>.addCmdText(<cmd_name>,<cmd_result>)
+ *    <Item>.addCmdText(<cmd_name>,<cmd_result>)
+ *
  */
 
-//HOME
-var Home = newRoom('home', "loc_farm.gif");
-Home.newItem('welcome_letter');
+//HOME - required
+newRoom('home', "loc_farm.gif")
+  .setStarterMsg(_('item_welcome_letter_text'));
+$home.newItem('welcome_letter');
 // Initiate Game state 
-var state = new GameState(Home); // GameState to initialize in game script
+var state = new GameState($home); // GameState to initialize in game script
 var vt;
 function start_game(){
+  vt=new VTerm(null,'term',null,'follow','./img/');
+  var loaded=state.loadCookie('terminuscookie',7*24*60);// delay in minutes;the cookie expire in a week
+  if (loaded){
+    vt.show_msg(_("game_loaded"));
+  }
   gettext_check();
-  vt=new VTerm(state.getCurrentRoom(),'term',null,'follow','./img/');
-  vt.show_msg(_('item_welcome_letter_text'));
+  vt.start(state.getCurrentRoom());
   console.log("Game loaded");
 }
 //WESTERN FOREST
-var WesternForest = newRoom('western_forest', "loc_forest.gif");
-WesternForest.newItem('western_forest_academy_direction',"loc_forest.gif");
-WesternForest.newItem('western_forest_back_direction',"loc_forest.gif");
+newRoom('western_forest', "loc_forest.gif");
+$western_forest.newItem('western_forest_academy_direction',"loc_forest.gif");
+$western_forest.newItem('western_forest_back_direction',"loc_forest.gif");
 
 //SPELL CASTING ACADEMY
-var SpellCastingAcademy = newRoom('spell_casting_academy', "loc_academy.gif");
-SpellCastingAcademy.newPeople('academy_student', "item_student.gif");
+newRoom('spell_casting_academy', "loc_academy.gif")
+  .newPeople('academy_student', "item_student.gif");
 
 //PRACTICE ROOM
-var PracticeRoom = newRoom('academy_practice', "loc_practiceroom.gif")
-	.addCommand("mv");
-PracticeRoom.newItem('academy_practice', "item_manuscript.gif");
-PracticeRoom.newItemBatch('practice_dummy',[1,2,3,4,5], "item_dummy.gif");
+newRoom('academy_practice', "loc_practiceroom.gif")
+	.addCommand("mv")
+  .newItem('academy_practice', "item_manuscript.gif");
+$academy_practice.newItemBatch('practice_dummy',[1,2,3,4,5], "item_dummy.gif");
 
 //BOX
-var Box = newRoom('box', "item_box.gif")
+newRoom('box', "item_box.gif")
 	.removeCommand("cd")
 	.addCmdText("cd",_('room_box_cd'));
 
 //NORTHERN MEADOW
-var NorthernMeadow = newRoom('meadow', "loc_meadow.gif");
-NorthernMeadow.newPeople("poney", "item_fatpony.gif");
+newRoom('meadow', "loc_meadow.gif")
+  .newPeople("poney", "item_fatpony.gif");
 
 //EASTERN MOUNTAINS
-var EasternMountains = newRoom('mountain', "loc_mountains.gif");
-EasternMountains.newPeople('man_sage', "item_mysteryman.gif");
-EasternMountains.newItem('man', "item_manuscript.gif");
+newRoom('mountain', "loc_mountains.gif")
+  .newPeople('man_sage', "item_mysteryman.gif");
+$mountain.newItem('man', "item_manuscript.gif");
 
 //LESSONS
-var Lessons = newRoom('lessons',"loc_classroom.gif");
-Lessons.newPeople('professor', "item_professor.gif");
+newRoom('lessons',"loc_classroom.gif")
+  .newPeople('professor', "item_professor.gif");
 
 //CAVE
-var Cave = newRoom('cave', "loc_cave.gif");
+newRoom('cave', "loc_cave.gif");
 
 //DARK CORRIDOR
-var DarkCorridor = newRoom('dark_corridor', "loc_corridor.gif");
+newRoom('dark_corridor', "loc_corridor.gif");
 
 //STAIRCASE
-var Staircase = newRoom('staircase', "loc_stair.gif");
-Staircase.newItem('dead_end', "item_sign.gif");
+newRoom('staircase', "loc_stair.gif")
+  .newItem('dead_end', "item_sign.gif");
 
 //DANK ROOM
-var DankRoom = newRoom('dank',"loc_darkroom.gif", {
+newRoom('dank',"loc_darkroom.gif", {
     'mv':function(ct){return (ct.arg == 'Boulder' ? 'mvBoulder' : '');}
 }).addCommand("mv")
 	.addListener("mvBoulder", function(){
 	    state.apply("mvBoulder");
-	});
-var Boulder=DankRoom.newItem('boulder','item_boulder.gif');
+	})
+  .newItem('boulder','item_boulder.gif');
 state.add("mvBoulder",function(re){ 
-    link_rooms(DankRoom, Tunnel);
+    link_rooms($dank, $tunnel);
     if (re) {
-        SmallHole.addItem(Boulder);
-        DankRoom.removeItem(_("item_boulder"));
+        $small_hole.addItem(Boulder);
+        $dank.removeItem(_("item_boulder"));
     }
 });
 //SMALL HOLE
-var SmallHole = newRoom('small_hole', "none.gif")
+newRoom('small_hole', "none.gif")
 	.addCmdText("cd", _('room_small_hole_cd'));
 
 //TUNNEL
-var Tunnel = newRoom('tunnel',"loc_tunnel.gif");
-Tunnel.newPeople('rat',"item_rat.gif");
+newRoom('tunnel',"loc_tunnel.gif")
+  .newPeople('rat',"item_rat.gif");
 
 //STONE CHAMBER
-var StoneChamber = newRoom('stone_chamber',"loc_portalroom.gif");
+newRoom('stone_chamber',"loc_portalroom.gif");
 
 //PORTAL (to bring you to the next level
-var Portal = newRoom('portal',"item_portal.gif");
+newRoom('portal',"item_portal.gif");
 //---------------END LEVEL 1-----------------
 
 
 //---------------LEVEL 2---------------------
 //TOWN SQUARE
-var TownSquare = newRoom("townsquare", "loc_square.gif");
-TownSquare.newPeople('citizen1',"item_citizen1.gif");
-TownSquare.newPeople('citizen2',"item_citizen2.gif");
-TownSquare.newPeople('citizen3',"item_lady.gif");
+newRoom("townsquare", "loc_square.gif");
+$townsquare.newPeople('citizen1',"item_citizen1.gif");
+$townsquare.newPeople('citizen2',"item_citizen2.gif");
+$townsquare.newPeople('citizen3',"item_lady.gif");
 
 //MARKETPLACE
-var Marketplace = newRoom('market',"loc_market.gif")
+newRoom('market',"loc_market.gif")
 	.addCommand('rm')
 	.addCommand('mv')
 ;
-Marketplace.newPeople("vendor", "item_merchant.gif")
+$market.newPeople("vendor", "item_merchant.gif")
     .addCmdText("rm", _('people_vendor_rm'));
-Marketplace.newItem("backpack","item_backpack.gif")
+$market.newItem("backpack","item_backpack.gif")
     .addCmdText("mv", _('item_backpack_stolen'));
-Marketplace.newItem("rm_spell","item_manuscript.gif");
-Marketplace.newItem("mkdir_spell","item_manuscript.gif");
+$market.newItem("rm_spell","item_manuscript.gif");
+$market.newItem("mkdir_spell","item_manuscript.gif");
 
 //LIBRARY
-var Library = newRoom("library", "loc_library.gif", {
+newRoom("library", "loc_library.gif", {
     'less':function(ct){
 	return (ct.arg == _('item_lever') ? 'pullLever':
 		( ct.arg == _('item_vimbook') ? 'openVim': '')
@@ -136,27 +187,27 @@ var Library = newRoom("library", "loc_library.gif", {
 	    state.apply("pullLever");
 	})
 	.addListener("openVim", function(){
-	    Library.removeItem(_('item_vimbook'));
+	    $library.removeItem(_('item_vimbook'));
 	});
-Library.newItem('radspellbook',"item_radspellbook.gif");
-Library.newItem('romancebook',"item_romancenovel.gif");
-Library.newItem('historybook',"item_historybook.gif");
-Library.newItem('nostalgicbook',"item_historybook.gif");
-Library.newItem('vimbook',"item_historybook.gif");
-Library.newItem("lever", "item_lever.gif");
+$library.newItem('radspellbook',"item_radspellbook.gif");
+$library.newItem('romancebook',"item_romancenovel.gif");
+$library.newItem('historybook',"item_historybook.gif");
+$library.newItem('nostalgicbook',"item_historybook.gif");
+$library.newItem('vimbook',"item_historybook.gif");
+$library.newItem("lever", "item_lever.gif");
 state.add("pullLever", function(re){
-    link_rooms(Library, BackRoom);
+    link_rooms($library, $backroom);
 });
 
 //BACK ROOM
-var BackRoom = newRoom('backroom',"loc_backroom.gif")
+newRoom('backroom',"loc_backroom.gif")
 	.addCommand("grep");
-BackRoom.newItem("grep", "grep.gif");
-BackRoom.newItem("practicebook");
-BackRoom.newPeople("librarian", "item_librarian.gif");
+$backroom.newItem("grep", "grep.gif");
+$backroom.newItem("practicebook");
+$backroom.newPeople("librarian", "item_librarian.gif");
 
 //ROCKY PATH
-var RockyPath = newRoom("rockypath", "loc_rockypath.gif",
+newRoom("rockypath", "loc_rockypath.gif",
 			{
 			    'rm': function(ct){
 				return (ct.arg == _('item_largeboulder') ? 'rmLargeBoulder': '');
@@ -167,16 +218,16 @@ var RockyPath = newRoom("rockypath", "loc_rockypath.gif",
 	})
 	.addCommand("rm");
 state.add("rmLargeBoulder",function(re){
-    link_rooms(RockyPath, Farm);
-    if (re) RockyPath.removeItem(_("item_largeboulder"));
+    link_rooms($rockypath, Farm);
+    if (re) $rockypath.removeItem(_("item_largeboulder"));
 });
 
-var LargeBoulder = RockyPath.newItem("largeboulder", "item_boulder.gif")
+$rockypath.newItem("largeboulder", "item_boulder.gif")
 	.addCmdText("rm", _('item_largeboulder_rm'))
 	.addValidCmd("rm");
 
 //ARTISAN'S SHOP
-var ArtisanShop = newRoom("artisanshop", "loc_artisanshop.gif",{
+newRoom("artisanshop", "loc_artisanshop.gif",{
     'touch': function(ct){
 	if (ct.arg === _("item_gear")){
 	    return "touchGear";
@@ -200,51 +251,46 @@ var ArtisanShop = newRoom("artisanshop", "loc_artisanshop.gif",{
 
 state.add("touchGear", function (re){
     Artisan.addCmdText("less", _('item_gear_touch'));
-    ArtisanShop.addCommand("cp");
-    if (re) ArtisanShop.addItem(new Item("Gear", _('item_gear_text'),"item_gear.gif"));
-    else ArtisanShop.getItemFromName("Gear").changePic("item_gear.gif");
+    $artisanshop.addCommand("cp");
+    if (re) $artisanshop.addItem(new Item("Gear", _('item_gear_text'),"item_gear.gif"));
+    else $artisanshop.getItemFromName("Gear").changePic("item_gear.gif");
 });
 state.add("FiveGearsCopied",function(re){
     Artisan.addCmdText("less", _('item_gear_artisans_ok'));
     if (re){
-	ArtisanShop.newItemBatch("gear",['1','2','3','4','5']);
-	//	ArtisanShop.addItem(new Item("rouage1", _('item_gear_text'),"item_gear.gif"));
-	//	ArtisanShop.addItem(new Item("rouage2", "Ceci est un rouage","item_gear.gif"));
-	//	ArtisanShop.addItem(new Item("rouage3", "Ceci est un rouage","item_gear.gif"));
-	//	ArtisanShop.addItem(new Item("rouage4", "Ceci est un rouage","item_gear.gif"));
-	//	ArtisanShop.addItem(new Item("rouage5", "Ceci est un rouage","item_gear.gif"));
+	$artisanshop.newItemBatch("gear",['1','2','3','4','5']);
     }
 });
-var StrangeTrinket = ArtisanShop.newItem("strangetrinket", "item_trinket.gif")
+$artisanshop.newItem("strangetrinket", "item_trinket.gif")
 	.addCmdText("rm", _('item_strangetrinket_rm'))
 	.addCmdText("mv", _('item_strangetrinket_mv'));
-var ClockworkDragon = ArtisanShop.newItem("dragon", "item_clockdragon.gif")
+$artisanshop.newItem("dragon", "item_clockdragon.gif")
 	.addCmdText("rm", _('item_dragon_rm'))  
 	.addCmdText("mv", _('item_dragon_mv')); 
-var Artisan=ArtisanShop.newPeople("artisan", "item_artisan.gif");
+var Artisan=$artisanshop.newPeople("artisan", "item_artisan.gif");
 
 //FARM
-var Farm = newRoom("farm", "loc_farm.gif",{
-    cp:function(ct){
-	if (ct.args[0] === "EarOfCorn" && ct.args[1] === "AnotherEarOfCorn"){
-	    return "CornCopied";
-	}
+newRoom("farm", "loc_farm.gif",{
+  cp:function(ct){
+    if (ct.args[0] === "EarOfCorn" && ct.args[1] === "AnotherEarOfCorn"){
+      return "CornCopied";
     }
+  }
 }).addCommand("cp")
-	.addListener("CornCopied", function(){
-	    state.apply("CornCopied");
-	});
+  .addListener("CornCopied", function(){
+    state.apply("CornCopied");
+  })
+  .newItem("earofcorn", "item_corn.gif")
+  .addCmdText("rm",_('item_earofcorn_rm'));
 
 state.add("CornCopied",function(re){
     Farmer.addCmdText("less", _('corn_farmer_ok'));
-    if (re) Farm.addNewItem('another_earofcorn');
+    if (re) $farm.addNewItem('another_earofcorn');
 });
-Farm.newItem("earofcorn", "item_corn.gif")
-    .addCmdText("rm",_('item_earofcorn_rm'));
-var Farmer=Farm.newPeople('farmer',"item_farmer.gif");
+var Farmer=$farm.newPeople('farmer',"item_farmer.gif");
 
 //CLEARING
-var Clearing = newRoom("clearing", "loc_clearing.gif", {
+newRoom("clearing", "loc_clearing.gif", {
     'mkdir':function(ct){
 	return (ct.arg == "House" ? 'HouseMade':'');
     }
@@ -257,18 +303,18 @@ var Clearing = newRoom("clearing", "loc_clearing.gif", {
 	})
 ;
 state.add("HouseMade",function(re){
-    if (re) Clearing.addChild(newRoom('house'));
-    Clearing.getChildFromName(_('room_house'))
+    if (re) $clearing.addChild(newRoom('house'));
+    $clearing.getChildFromName(_('room_house'))
 	.addCmdText("cd", _('room_house_cd') )
 	.addCmdText("ls", _('room_house_ls') );
-    Clearing.removeCmdText("cd");
-    Clearing.changeIntroText(_('room_clearing_text2'));
+    $clearing.removeCmdText("cd");
+    $clearing.changeIntroText(_('room_clearing_text2'));
     CryingMan.addCmdText("less", _('room_clearing_less2'));
 });
-var CryingMan=Clearing.newPeople('cryingman',"item_man.gif");
+var CryingMan=$clearing.newPeople('cryingman',"item_man.gif");
 
 //BROKEN BRIDGE
-var BrokenBridge = newRoom("brokenbridge", "loc_bridge.gif",{
+newRoom("brokenbridge", "loc_bridge.gif",{
     'touch':function(ct){
 	if (ct.arg === "Plank"){
 	    this.ev.fire("touchPlank");
@@ -281,16 +327,16 @@ var BrokenBridge = newRoom("brokenbridge", "loc_bridge.gif",{
 	});
 
 state.add("touchPlank",function(){
-    Clearing.addCommand("cd");
-    Clearing.removeCmdText("cd");
-    BrokenBridge.removeCmdText("cd");
-    BrokenBridge.changeIntroText(_('room_brokenbridge_text2'));
-    if (re) BrokenBridge.addNewItem('plank',"item_plank.gif");
-    else BrokenBridge.getItemFromName(_('item_plank')).changePic("item_plank.gif");
+    $clearing.addCommand("cd");
+    $clearing.removeCmdText("cd");
+    $brokenbridge.removeCmdText("cd");
+    $brokenbridge.changeIntroText(_('room_brokenbridge_text2'));
+    if (re) $brokenbridge.addNewItem('plank',"item_plank.gif");
+    else $brokenbridge.getItemFromName(_('item_plank')).changePic("item_plank.gif");
 });
 
 //OMINOUS-LOOKING PATH
-var OminousLookingPath = newRoom("ominouspath", "loc_path.gif", {
+newRoom("ominouspath", "loc_path.gif", {
     'rm':function (ct) {
 	return (ct.arg == 'ThornyBrambles' ? 'rmBrambles' : '');
     }
@@ -298,22 +344,22 @@ var OminousLookingPath = newRoom("ominouspath", "loc_path.gif", {
 	.addCommand("rm")
 	.addListener("rmBrambles", function(){
 	    state.apply("rmBrambles");
-	});
-OminousLookingPath.newItem("brambles", "item_brambles.gif")
+	})
+  .newItem("brambles", "item_brambles.gif")
     .addCmdText("mv", _('item_brambles_mv'))
     .addCmdText("rm", _('item_brambles_rm'))
     .addValidCmd("rm");
 state.add("rmBrambles",function(){
-    link_rooms(OminousLookingPath, CaveOfDisgruntledTrolls) ;
-    if (re) OminousLookingPath.removeItem("ThornyBrambles");
+    link_rooms($ominouspath, CaveOfDisgruntledTrolls) ;
+    if (re) $ominouspath.removeItem("ThornyBrambles");
 });
 //SLIDE
-var Slide = newRoom("slide")
+newRoom("slide")
 	.removeCommand("cd")
 	.addCmdText("cd", _('room_slide_cd'));
 
 //KERNEL FILES
-var KernelFiles = newRoom("kernel")
+newRoom("kernel")
 	.addCommand("sudo")
 	.addCommand("grep")
 	.addCmdText("sudo", _('room_kernel_sudo'))
@@ -321,30 +367,30 @@ var KernelFiles = newRoom("kernel")
 	    state.apply("sudoComplete");
 	})
 	.addListener("tryEnterSudo", function(){
-	    KernelFiles.addCommand("IHTFP");
-	    KernelFiles.addCmdText("IHTFP", _('room_kernel_IHTFP'));
+	    $kernel.addCommand("IHTFP");
+	    $kernel.addCmdText("IHTFP", _('room_kernel_IHTFP'));
 	});
-KernelFiles.newItem('certificate');
-KernelFiles.newItem("instructions");
+$kernel.newItem('certificate');
+$kernel.newItem("instructions");
 state.add("sudoComplete",function(re){
-    KernelFiles.removeCommand("IHTFP");
-    KernelFiles.removeCmdText("IHTFP");
-    link_rooms(KernelFiles, Paradise);
-    enterRoom(Paradise,vt);
+    $kernel.removeCommand("IHTFP");
+    $kernel.removeCmdText("IHTFP");
+  link_rooms($kernel, $paradise);
+    enterRoom($paradise,vt);
 });
-var MoreKernelFiles = newRoom("morekernel");
-MoreKernelFiles.newItemBatch("bigfile",['L','M','Q','R','S','T','U','V','W']);
+
+newRoom("morekernel")
+  .newItemBatch("bigfile",['L','M','Q','R','S','T','U','V','W']);
 
 //PARADISE (end game screen)
-var Paradise = newRoom("paradise", "loc_theend.gif")
+newRoom("paradise", "loc_theend.gif")
 	.addCmdText("ls", _('room_paradise_ls'));
 
 //CAVE
-//Room beforeCave = new Room("CaveOfDisgruntledTrolls", "A patch of thorny brambles is growing at the mouth of the cave, blocking your way.", "loc_cave");
 var troll_evt=function(ct){
     return (ct.arg == 'UglyTroll' ? 'openSlide' : '' );
 };
-var CaveOfDisgruntledTrolls = newRoom("trollcave", "loc_cave.gif",
+newRoom("trollcave", "loc_cave.gif",
 				      {'mv':troll_evt,'rm':troll_evt})
 	.addCommand("rm")
 	.addCommand("mv")
@@ -354,40 +400,40 @@ var CaveOfDisgruntledTrolls = newRoom("trollcave", "loc_cave.gif",
 	});
 
 state.add("openSlide",function(re){
-    Slide.addCommand("cd");
-    Slide.addCmdText("cd", _('room_slide_cd2'));
-    if (re) CaveOfDisgruntledTrolls.removeItem("UglyTroll");
+    $slide.addCommand("cd");
+    $slide.addCmdText("cd", _('room_slide_cd2'));
+    if (re) $trollcave.removeItem("UglyTroll");
 });
-CaveOfDisgruntledTrolls.newPeople('troll1', "item_troll1.gif")
+$trollcave.newPeople('troll1', "item_troll1.gif")
     .addValidCmd("rm")
     .addCmdText("rm", _('people_troll11_rm'))
     .addValidCmd("mv")
     .addCmdText("mv", _('people_troll11_mv'))
     .addValidCmd("cp")
     .addCmdText("cp",_('people_troll11_cp'));
-CaveOfDisgruntledTrolls.newPeople('troll2', "item_troll2.gif")
+$trollcave.newPeople('troll2', "item_troll2.gif")
     .addValidCmd("rm")
     .addCmdText("rm",_('people_troll11_rm'));
 
-CaveOfDisgruntledTrolls.newPeople('supertroll', "item_supertroll.gif")
+$trollcave.newPeople('supertroll', "item_supertroll.gif")
     .addCmdText("rm", _('people_supertroll_rm'))
     .addCmdText("mv", _('people_supertroll_mv'));
 
 //CAGE
-var Cage = newRoom('cage', "item_cage.gif")
-	.removeCommand("cd")
-	.addCmdText("cd", _('room_cage_cd'));
-Cage.newItem('kidnapped', "item_cagedboy.gif")
-    .addCmdText("mv", _('people_kidnapped_mv'));
+newRoom('cage', "item_cage.gif")
+  .removeCommand("cd")
+  .addCmdText("cd", _('room_cage_cd'))
+  .newItem('kidnapped', "item_cagedboy.gif")
+  .addCmdText("mv", _('people_kidnapped_mv'));
 
 //Athena cluster
 var add_locker_func = function(){
     state.apply("addMagicLocker");
 };
 state.add("addMagicLocker",function(re){
-    link_rooms(Home, MagicLocker);
+    link_rooms($home, $magiclocker);
 });
-var AthenaCluster = newRoom('cluster',  "loc_cluster.gif",
+newRoom('cluster',  "loc_cluster.gif",
 			    inside_evts = {
 				cd:function(ct){
 				    return "AthenaClusterExited";
@@ -404,14 +450,14 @@ var AthenaCluster = newRoom('cluster',  "loc_cluster.gif",
 	.addCmdText("cd",_('room_cluster_cd'))
 	.addListener("addMagicLocker", add_locker_func)
 	.addListener("AthenaClusterExited", function(){
-	    AthenaCluster.removeCommand("cd");
+	    $cluster.removeCommand("cd");
 	})
 	.addCommand("tellme")
-	.addCommand("add");
+	.addCommand("add")
+  .newItem('workstation', "item_workstation.gif");
 
-AthenaCluster.newItem('workstation', "item_workstation.gif");
 //MIT
-var MIT = newRoom("mit" , "loc_MIT.gif")
+newRoom("mit" , "loc_MIT.gif")
 	.addListener("AthenaComboEntered", function(){
 	    state.apply("AthenaComboEntered");
 	})
@@ -419,31 +465,31 @@ var MIT = newRoom("mit" , "loc_MIT.gif")
 	.addCommand("add")
 	.addListener("addMagicLocker", add_locker_func)
 	.addListener("tryEnterAthenaCluster", function(){
-	    MIT.addCommand("terminus") .addCmdText("terminus", _('room_mit_terminus'));
-	    AthenaCluster.removeCommand("ls").addCmdText("ls", _('room_cluster_ls'));
-	});
-MIT.newItem("mitletter", "item_manuscript.gif");
+	    $mit.addCommand("terminus") .addCmdText("terminus", _('room_mit_terminus'));
+	    $cluster.removeCommand("ls").addCmdText("ls", _('room_cluster_ls'));
+	})
+  .newItem("mitletter", "item_manuscript.gif");
 
 state.add("AthenaComboEntered",function(re){
-    AthenaCluster.addCommand("ls");
-    AthenaCluster.removeCmdText("ls");
-    AthenaCluster.addCommand("cd");
-    // AthenaCluster.addCmdText("cd", "You have correctly entered the cluster combo. You may enter.");
-    enterRoom(AthenaCluster,vt);
-    MIT.removeCommand("terminus");
-    MIT.removeCmdText("terminus");
+    $cluster.addCommand("ls");
+    $cluster.removeCmdText("ls");
+    $cluster.addCommand("cd");
+    if (!re) enterRoom($cluster,vt);
+    $mit.removeCommand("terminus");
+    $mit.removeCmdText("terminus");
+    $cluster.removeOutsideEvt("cd");
 });
 //StataCenter
-var StataCenter = newRoom('stata', "loc_stata.gif")
+newRoom('stata', "loc_stata.gif")
 	.addCommand("tellme")
 	.addCommand("add")
 	.addListener("addMagicLocker", add_locker_func); 
-StataCenter.newPeople('gradstudent', "item_grad.gif");
-StataCenter.newPeople('assistant', "item_TA.gif");
+$stata.newPeople('gradstudent', "item_grad.gif");
+$stata.newPeople('assistant', "item_TA.gif");
 
 //Magic locker
-var MagicLocker = newRoom('magiclocker', "item_locker.gif");
-MagicLocker.newItem( 'morecoming', "item_comingsoon.gif");
+newRoom('magiclocker', "item_locker.gif")
+  .newItem( 'morecoming', "item_comingsoon.gif");
 
 /**
  * LINKS BETWEEN ROOMS
@@ -451,47 +497,47 @@ MagicLocker.newItem( 'morecoming', "item_comingsoon.gif");
  *
  * API: link(parentRoom, childRoom) 
  */
-function link_rooms(parentRoom, childRoom){if (!(childRoom in parentRoom.children)){parentRoom.addChild(childRoom);}if (!(parentRoom in childRoom.parents)){childRoom.addParent(parentRoom);}}
+function link_rooms(parentRoom, childRoom){
+  if (!(childRoom in parentRoom.children)){parentRoom.addChild(childRoom);}
+  if (!(parentRoom in childRoom.parents)){childRoom.addParent(parentRoom);}
+}
 
 
 // LEVEL 1 LINKS
-link_rooms(Home, WesternForest);
-link_rooms(WesternForest, SpellCastingAcademy);
-link_rooms(SpellCastingAcademy, PracticeRoom);
-link_rooms(PracticeRoom, Box);
-link_rooms(Home, NorthernMeadow);
-link_rooms(NorthernMeadow, EasternMountains);
-link_rooms(SpellCastingAcademy, Lessons);
-link_rooms(EasternMountains, Cave);
-link_rooms(Cave, DarkCorridor);
-link_rooms(Cave, Staircase);
-link_rooms(DarkCorridor, DankRoom);
-link_rooms(DankRoom, SmallHole);
-link_rooms(Tunnel, StoneChamber);
-link_rooms(StoneChamber, Portal);
+link_rooms($home, $western_forest);
+link_rooms($western_forest, $spell_casting_academy);
+link_rooms($spell_casting_academy, $academy_practice );
+link_rooms($academy_practice, $box);
+link_rooms($home, $meadow);
+link_rooms($meadow, $mountain);
+link_rooms($spell_casting_academy, $lessons);
+link_rooms($mountain, $cave);
+link_rooms($cave, $dark_corridor);
+link_rooms($cave, $staircase);
+link_rooms($dark_corridor, $dank);
+link_rooms($dank, $small_hole);
+link_rooms($tunnel, $stone_chamber);
+link_rooms($stone_chamber, $portal);
 
 //level 1 -> level 2
-link_rooms(Portal, TownSquare);
+link_rooms($portal, $townsquare);
 
 //LEVEL 2 LINKS
-link_rooms(TownSquare, Marketplace);
-link_rooms(TownSquare, Library);
-link_rooms(TownSquare, RockyPath);
-link_rooms(TownSquare, ArtisanShop);
-link_rooms(TownSquare, BrokenBridge);
-//link(library, backRoom); 
-// link_rooms(RockyPath, Farm);
-link_rooms(BrokenBridge, Clearing);
-link_rooms(Clearing, OminousLookingPath);
-// link_rooms(OminousLookingPath, CaveOfDisgruntledTrolls) ;
-link_rooms(CaveOfDisgruntledTrolls, Cage);
-link_rooms(Slide, KernelFiles);
-link_rooms(CaveOfDisgruntledTrolls, Slide);
-link_rooms(KernelFiles, MoreKernelFiles);
+link_rooms($townsquare, $market);
+link_rooms($townsquare, $library);
+link_rooms($townsquare, $rockypath);
+link_rooms($townsquare, $artisanshop);
+link_rooms($townsquare, $brokenbridge);
+link_rooms($brokenbridge, $clearing);
+link_rooms($clearing, $ominouspath);
+link_rooms($trollcave, $cage);
+link_rooms($slide, $kernel);
+link_rooms($trollcave, $slide);
+link_rooms($kernel, $morekernel);
 
 //MIT level links
-link_rooms(Home, MIT);
-link_rooms(MIT, StataCenter);
-link_rooms(MIT, AthenaCluster);
+link_rooms($home, $mit);
+link_rooms($mit, $stata);
+link_rooms($mit, $cluster);
 console.log("Game objects : init");
 start_game();// make views and interact

@@ -6,8 +6,9 @@ String.prototype.replaceAll = function(from, to){
 	return ret;
 };
 var global_spec={};
-function Room(roomname, introtext, roompic, inside_evts,outside_evts){
-	this.parents = [];
+function Room(roomname, introtext, roompic, inside_evts,outside_evts,varname){
+  this.name=varname;
+  this.parents = [];
   this.previous = this;
 	this.children = [];
 	this.items = [];
@@ -17,19 +18,25 @@ function Room(roomname, introtext, roompic, inside_evts,outside_evts){
 	this.intro_text = d(introtext, _('room_none_text'));
 	this.room_pic = d(new Pic(roompic), img.room_none);
   this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name])};
-	//for event handling
+	this.starter_msg=null;
+  //for event handling
 	this.ev = new EventTarget();
   this.cmd_inside_spec=d(inside_evts, {});
   global_spec[this.room_name]=d(outside_evts, {});
   EventTarget.call(this);
 }
 function newRoom(id, roompic, inside_evts,outside_evts){
-  return new Room(
+  //this function automatically set the variable $id to ease game saving
+  var varname= '$'+id;
+  var n= new Room(
     _('room_'+id,[],or='room_none'),
     _('room_'+id+'_text',[],or='room_none_text'),
     roompic,
     inside_evts,
-    outside_evts);
+    outside_evts,
+    varname);
+  window[varname]=n;
+  return n;
 }
 function enterRoom(new_room,vt){
   vt.push_img(null);
@@ -38,11 +45,13 @@ function enterRoom(new_room,vt){
   return [new_room.toString(), new_room.intro_text];
 }
 
-
 Room.prototype = {
   toString : function(){
     return this.room_name;
   },
+//  toString : function(){
+//    return this.room_name;
+//  },
 
   fire_event:function(cmd,args,idx,otherroomname){
     var ck=null;
@@ -58,9 +67,21 @@ Room.prototype = {
       this.ev.fire(ck);
     }
   },
-
-  changeIntroText : function(new_text){
-    this.intro_text = new_text;
+  // a message read on the terminal start
+  getStarterMsg: function(vt){
+//    vt.push_img(this.room_pic);
+    if (this.starter_msg){
+      return this.starter_msg;
+    } else {
+      return this.cmd_text['pwd'];
+    };
+  },
+  setStarterMsg: function(txt){
+    this.starter_msg = txt;
+  },
+  // text displayed at each change
+  changeIntroText : function(txt){
+    this.intro_text = txt;
   },
 
   addItem : function(newitem) {
@@ -167,7 +188,22 @@ Room.prototype = {
     this.ev.addListener(name,fun);
     return this;
   },
-
+  addInsideEvt: function(name,fun){
+    this.cmd_inside_spec[name]=fun;
+    return this;
+  },
+  removeInsideEvt: function(name){
+    delete this.cmd_inside_spec[name];
+    return this;
+  },
+  addOutsideEvt: function(name,fun){
+    global_spec[this.room_name][name]=fun;
+    return this;
+  },
+  removeOutsideEvt: function(name){
+    delete global_spec[this.room_name][name];
+    return this;
+  },
   addCommand : function(cmd){
 //    console.log(this,cmd);
     this.commands[this.commands.length] = cmd;
@@ -243,8 +279,8 @@ Room.prototype = {
       this.previous.previous=this;
       enterRoom(this.previous, vt);
     } else if (args.length === 0){
-      Home.previous=this;
-      enterRoom(Home, vt);
+      $home.previous=this;
+      enterRoom($home, vt);
       return _('cmd_cd_home');
     }else if (args[0] === "..") {
       this.fire_event('cd',args,0);
@@ -255,8 +291,8 @@ Room.prototype = {
         return _('cmd_cd_no_parent');
       }
     } else if (args[0] === "~"){
-      Home.previous=this;
-      enterRoom(Home, vt);
+      $home.previous=this;
+      enterRoom($home, vt);
       return _('cmd_cd_home');
     } else if (args[0] === ".") {
       vt.push_img(null);
@@ -308,8 +344,8 @@ Room.prototype = {
    * Returns false if it cannot
    *
    * 'arg' is a single node, not a path
-   * i.e. Home.can_cd("next_room") returns true
-   *      Home.can_cd("next_room/another_room") is invalid
+   * i.e. $home.can_cd("next_room") returns true
+   *      $home.can_cd("next_room/another_room") is invalid
    */
   can_cd : function(arg){
     //Don't allow for undefined or multiple paths
@@ -554,26 +590,6 @@ Room.prototype = {
     args.push(args.pop().replace(/\/$/,""));
     if( this.commands.indexOf(cmd) > -1 ){ 
       var prev = this;
-      //      if (args.length > 1 && args[1].indexOf("/") > 0){
-      //        var rooms_in_order = args[1].split("/");
-      //        var curr = this;
-      //        for (var i = 0; i < rooms_in_order.length; i++){
-      //          prev = curr;
-      //          var room_to_cd = rooms_in_order[i];
-      //          if (i > 0 && rooms_in_order[i-1] === "~"){
-      //            curr = Home.can_cd(room_to_cd);
-      //          } else if (room_to_cd === "~"){
-      //            curr = Home;
-      //          } else {
-      //            curr = curr.can_cd(room_to_cd);
-      //          }
-      //          if ((cmd === "cd" || cmd === "ls") && curr === false){
-      //            return "That is not reachable from here.";
-      //          }
-      //        }
-      //        args[1] = curr.room_name;
-      //      }
-//      console.log(args);
       var text_to_display = prev[cmd](args.slice(1),vt);
       if (text_to_display){
         return text_to_display;
@@ -587,7 +603,7 @@ Room.prototype = {
   },
 
   _completeRoomName : function(cmd,prefix){
-    var search_room = prefix.substring(0,1) == "~" ? Home : this;
+    var search_room = prefix.substring(0,1) == "~" ? $home : this;
     //Iterate through each room
     var lastchar=prefix.charAt(prefix.length-1);
     var path_rooms = prefix.split("/");

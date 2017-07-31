@@ -58,6 +58,7 @@ function _js(){
   return gulp.src([
     'src/js/engine/js.js',
     'src/js/engine/Gettext.js',
+    'src/js/engine/Cookie.js',
     'src/js/engine/GameState.js',
     'src/js/engine/EventTarget.js',
     'src/js/engine/VTerm.js',

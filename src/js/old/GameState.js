@@ -42,6 +42,7 @@ GameState.prototype.getCurrentRoom = function() {
 			this.applyState(param_pair[0], true);
 		}
 		newRoomToSet=window[room_name_to_set];
+    console.log(newRoomToSet);
 	}
 
 	//call setCurrentRoom to reset the expiration date on the cookie
