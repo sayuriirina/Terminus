@@ -12,19 +12,22 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 msgid "cannot_cast"
-msgstr "Ce sort ne peut pas être utilisé ici."
+msgstr "Ce sort ne peut pas être utilisé-e ici."
 
 msgid "cmd_exit"
 msgstr "Au revoir !"
 
+msgid "gamestart_text"
+msgstr "Bienvenue à toi apprenti sorcier ! \nPour réussir ta quête, tu devra écrire des sorts magiques appelées\ncommandes.\nCes commandes te permettront de te déplacer et de comprendre le monde \nplus rapidement que le commun des mortels. \n\nObserve l'endroit où tu te trouve avec la commande \"ls\". \nDéplace toi avec la commande \"cd \" \nTu peux revenir sur tes pas avec la commande \"cd ..\". \nTu peux utilisé-e des objets avec la commande \"less OBJET\" \nSi tu es perdu, écris \"pwd\" \nSi tu as la flemme d'écrire les noms en entier, appuis sur la touche TAB.\n\nMaintenant explore et va de l'avant."
+
 msgid "cmd_exit_html"
-msgstr "<p>Terminus a été arreté.</p><p>Au revoir !</p>"
+msgstr "<p>Terminus a été-e arreté.</p><p>Au revoir !</p>"
 
 msgid "cmd_cd"
-msgstr "Tu es entrée dans %s. %s"
+msgstr "Tu es entré-e dans %s. %s"
 
 msgid "cmd_cd_failed"
-msgstr "Il n'existe aucun lieu appelé %s. Retourne te Coucher."
+msgstr "Il n'existe aucun lieu appelé-e %s. Retourne te Coucher."
 
 msgid "cmd_cd_flood"
 msgstr "Nope nope nope. Tu ne peux pas te dédoubler et accéder à plusieurs salles en même temps. Seul le grand Tmux peut faire cette prouesse."
@@ -36,7 +39,7 @@ msgid "cmd_cd_no_parent"
 msgstr "Tu ne peux plus rebrousser chemin."
 
 msgid "cmd_cd_parent"
-msgstr "Tu es entrée dans %s. %s"
+msgstr "Tu es entré-e dans %s. %s"
 
 msgid "cmd_cp_copied"
 msgstr "%s vient d'être copier dans %s."
@@ -51,7 +54,7 @@ msgid "cmd_less_invalid"
 msgstr "Choisissez un autre objet à décrire..."
 
 msgid "cmd_less_missing"
-msgstr "%s n'a pas été trouvé."
+msgstr "%s n'a pas été-e trouvé."
 
 msgid "cmd_man_no_query"
 msgstr "Il faut poser une question pour obtenir une réponse. C'est ce que dit le grand manuscrit."
@@ -60,7 +63,7 @@ msgid "cmd_man_not_found"
 msgstr "Il n'y a rien d'écrit dans le grand manuscrit."
 
 msgid "cmd_mv_done"
-msgstr "%s a été déplacé vers %s."
+msgstr "%s a été-e déplacé-e vers %s."
 
 msgid "cmd_mv_flood"
 msgstr "Il est possible de déplacer un objet A dans un emplacement (ou lieu)  B.   Pour cela, utilisez mv [objetA] [emplacementB]."
@@ -113,6 +116,9 @@ msgstr "Ce sort n'existe pas"
 msgid "items"
 msgstr "Objets:\n%s"
 
+msgid "peoples"
+msgstr "Individus:\n%s"
+
 msgid "lock_added"
 msgstr "Tu viens d'ajouter le vérrou %s"
 
@@ -123,7 +129,7 @@ msgid "room_new_created"
 msgstr "Tu viens de créer un nouveau lieu : %s"
 
 msgid "room_wrong_password"
-msgstr "Le mot de passe est erroné. Avez vous oublié votre mot de passe ? Non, je blague. Déguerpissez !"
+msgstr "Le mot de passe est erroné. Avez vous oublié-e votre mot de passe ? Non, je blague. Déguerpissez !"
 
 msgid "room_wrong_syntax"
 msgstr "La syntaxe n'est pas valide. Relisez les instructions."
@@ -135,16 +141,16 @@ msgid "room_none_text"
 msgstr "C'est une pièce très banale."
 
 msgid "room_home"
-msgstr "Dossier Personnel"
+msgstr "DossierPersonnel"
 
 msgid "room_home_text"
-msgstr "Tu es confortablement installé dans ton dossier personnel; c'est là où tu ranges toutes tes affaires. \nDisons que c'est ici ta maison."
+msgstr "De retour au point de départ... \n"
 
 msgid "room_western_forest"
 msgstr "BoisDesLutins"
 
 msgid "room_western_forest_text"
-msgstr "Tu es entré dans la foret des Lutins . Le chemin semble mener à une école.\nUn panneau indique \"Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur. \""
+msgstr "Tu es entré-e dans la foret des Lutins . Le chemin semble mener à une école.\nUn panneau indique \"Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur. \""
 
 msgid "room_spell_casting_academy"
 msgstr "AcadémieDesBots"
@@ -168,7 +174,7 @@ msgid "item_welcome_letter"
 msgstr "LettreDeBienvenue"
 
 msgid "item_welcome_letter_text"
-msgstr "Bienvenue à toi apprenti sorcier ! \nPour réussir ta quête, tu devra écrire des sorts magiques appelées\ncommandes.\nCes commandes te permettront de te déplacer et de comprendre le monde \nplus rapidement que le commun des mortels. \n\nObserve l'endroit où tu te trouve avec la commande \"ls\". \nDéplace toi avec la commande \"cd \" \nTu peux revenir sur tes pas avec la commande \"cd ..\". \nTu peux utilisé des objets avec la commande \"less OBJET\" \nSi tu es perdu, écris \"pwd\" \nSi tu as la flemme d'écrire les noms en entier, appuis sur la touche TAB.\n\nMaintenant explore et va de l'avant."
+msgstr "Bienvenue à toi apprenti sorcier ! \nPour réussir ta quête, tu devra écrire des sorts magiques appelées\ncommandes.\nCes commandes te permettront de te déplacer et de comprendre le monde \nplus rapidement que le commun des mortels. \n\nObserve l'endroit où tu te trouve avec la commande \"ls\". \nDéplace toi avec la commande \"cd \" \nTu peux revenir sur tes pas avec la commande \"cd ..\". \nTu peux utilisé-e des objets avec la commande \"less OBJET\" \nSi tu es perdu, écris \"pwd\" \nSi tu as la flemme d'écrire les noms en entier, appuis sur la touche TAB.\n\nMaintenant explore et va de l'avant."
 
 msgid "item_practice_dummy"
 msgstr "PracticeDummy%d"
@@ -213,7 +219,7 @@ msgid "people_academy_student"
 msgstr "BotPressé-e"
 
 msgid "people_academy_student_text"
-msgstr "Tu tente de parler à un-e des élèves de l'académie. L'étudiant-e ne te vois pas et te rentre dedans. L'élève  se relève vite et te demande pardon et si tout va bien.« Pardon, Pardn, j'été pressé-e et je ne t'ai pas vu. Dis moi. Je ne t'ai jamais vu ? C'est ton premier jour ici ? » (Sourire) « Ne t'inquietes pas, il y a beaucoups de Noobs aujourd'hui. Pourquoi to n'essairai pas de commencer par le cours d'introduction ? Je pourrai t'accompagner mais je suis un peu pressé-e.Traverse le couloirs des cours et trouvera bien quelqu'un pour te guider.» L'élève disparait en courant aussi vite qu'elle ou il s'était relevé.  Vous avez remarqué que sa voix rendrait super bien dans votre groupe de Raggae.Malheureusement, tu n'as pas eu le temps de lui demandé son nom, ni même son adresse mail."
+msgstr "Tu tente de parler à un-e des élèves de l'académie. L'étudiant-e ne te vois pas et te rentre dedans. L'élève  se relève vite et te demande pardon et si tout va bien.« Pardon, Pardn, j'été-e pressé-e et je ne t'ai pas vu. Dis moi. Je ne t'ai jamais vu ? C'est ton premier jour ici ? » (Sourire) « Ne t'inquietes pas, il y a beaucoups de Noobs aujourd'hui. Pourquoi to n'essairai pas de commencer par le cours d'introduction ? Je pourrai t'accompagner mais je suis un peu pressé-e.Traverse le couloirs des cours et trouvera bien quelqu'un pour te guider.» L'élève disparait en courant aussi vite qu'elle ou il s'était relevé.  Vous avez remarqué-e que sa voix rendrait super bien dans votre groupe de Raggae.Malheureusement, tu n'as pas eu le temps de lui demandé-e son nom, ni même son adresse mail."
 
 msgid "room_mountain"
 msgstr "EasternMountains"
@@ -558,7 +564,7 @@ msgid "room_house_cd"
 msgstr "Tu entre dans la maison construite de tes mains."
 
 msgid "room_house_ls"
-msgstr "C'est toi qui l'a faite cette maison. Prends quelques instants pour apprécier ta fierté !"
+msgstr "C'est toi qui l'a faite cette maison. Prends quelques instants pour apprécier ta fierté-e !"
 
 msgid "room_clearing_less2"
 msgstr "Merci du fond du coeur pour m'avoir construit cette maison ! J'en pleure de joie."
@@ -777,37 +783,37 @@ msgid "item_morecoming_text"
 msgstr "The MagicLocker contains Items that can be \nused (and spells that can be used) anywhere else in the game once you add \nthe locker. MIT is making updates to the locker at all times, so check back \nfrequently."
 
 msgid "man_cd"
-msgstr "(Choisis ta destination) Utilises \"cd\" pour explorer le monde. \nIl faut écrire : cd LIEU_DE_DESTINATION"
+msgstr "(Choisis ta destination) Utilise \"cd\" pour explorer le monde. \nIl faut écrire : cd LIEU_DE_DESTINATION"
 
 msgid "man_mv"
-msgstr "(MouVement). \nUtilises \"mv\" pour déplacer un objet. \nIl faut écrire : mv OBJET LIEU_DE_DESTINATION"
+msgstr "(MouVement). \nUtilise \"mv\" pour déplacer un objet. \nIl faut écrire : mv OBJET LIEU_DE_DESTINATION"
 
 msgid "man_ls"
-msgstr "(Regarde autour de toi). \nUtilises \"ls\" pour voir ce qui se trouve dans un lieu donné. \nSoit tu observe là où tu es, soit tu observe un autre lieu.\nIl faut écrire : \n  ls              (pour voir autour de toi) \n-OU- \n  ls LOCATION     (pour voir là où tu ne peux pas choisir ta destination \"cd\" )\n"
+msgstr "(Regarde autour de toi). \nUtilise \"ls\" pour voir ce qui se trouve dans un lieu donné. \nSoit tu observe là où tu es, soit tu observe un autre lieu.\nIl faut écrire : \n  ls              (pour voir autour de toi) \n-OU- \n  ls LOCATION     (pour voir là où tu ne peux pas choisir ta destination \"cd\" )\n"
 
 msgid "man_less"
-msgstr "(Lire, Examiner ou parler). \nUtilises \"less\" pour connaître les secrets liés à un objet. \nIl faut écrire : \n  less ITEM\n"
+msgstr "(Lire, Examiner ou parler). \nUtilise \"less\" pour connaître les secrets liés à un objet. \nIl faut écrire : \n  less ITEM\n"
 
 msgid "man_man"
 msgstr "Le Grand Manuscrit possède le savoir indispensable aux sorciers.\nVoici les sorts que je pourrais t'enseigner : cd, ls, rm, mv, exit, help, man, touch, grep, pwd."
 
 msgid "man_help"
-msgstr "Écris \"man COMMANDE\" si tu as oublié comment utiliser une commande."
+msgstr "Écris \"man COMMANDE\" si tu as oublié-e comment utiliser une commande."
 
 msgid "man_exit"
-msgstr "(quitter) \nUtilises \"exit\" pour quitter le jeu."
+msgstr "(quitter) \nUtilise \"exit\" pour quitter le jeu."
 
 msgid "man cp"
-msgstr "(CoPy)\nUtilises \"cp\" pour cloner un item. \nIl faut écrire :\n  cp ITEM NEWNAME \n"
+msgstr "(CoPy)\nUtilise \"cp\" pour cloner un item. \nIl faut écrire :\n  cp ITEM NEWNAME \n"
 
 msgid "man_pwd"
 msgstr "(Te montre là où tu es) \nIl faut écrire : \n  \"pwd\" \n"
 
 msgid "man_grep"
-msgstr "(gReP : Récupère des parties) \nUtilises \"grep\" pour trouver les parties d'un texte qui contiennent le mot magique.\nIl faut écrire : \n  grep MOT_MAGIQUE LÀ_OU_TU_CHERCHE "
+msgstr "(gReP : Récupère des parties) \nUtilise \"grep\" pour trouver les parties d'un texte qui contiennent le mot magique.\nIl faut écrire : \n  grep MOT_MAGIQUE LÀ_OU_TU_CHERCHE "
 
 msgid "man_touch"
-msgstr "(Touche) En touchant un objet (même imaginaire), tu le fait (re)naître comme neuf.\nUtilises \"touch\"  pour créer de nouveaux objets.\nIl faut écrire :\n  touch OBJET"
+msgstr "(Touche) En touchant un objet (même imaginaire), tu le fait (re)naître comme neuf.\nUtilise \"touch\"  pour créer de nouveaux objets.\nIl faut écrire :\n  touch OBJET"
 
 msgid "man_tellme"
 msgstr "(tellme combo) vous donne la combinaison pour entrer dans le AthenaCluster du  MIT.\nIl faut écrire :\n  tellme combo"

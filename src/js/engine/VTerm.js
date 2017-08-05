@@ -5,15 +5,22 @@ function commonprefix(array) {
   while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
   return a1.substring(0, i);
 }
-
+function addspace(i){return i+' ';}
 function VTerm(context, container_id, img_id,img_mode,img_dir){
   var term = dom.Id(container_id);
   var cmd = dom.El('p'); cmd.className="input";
   var pr = dom.El('input');pr.autofocus='autofocus';pr.size=80;
   //  var cmdspan = dom.El('span'); cmdline.appendChild(cmdspan);
   //  this.cmdspan = cmdspan;  cmdspan.innerText=pr.value;
+  var t=this;
+  var sugkey=dom.El('button'); sugkey.onclick=function(e){t.make_suggestions();};
+  var exekey=dom.El('button');exekey.onclick=function(e){t.enter();};
+  exekey.className='key';exekey.innerText='↵';
+  sugkey.className='key';sugkey.innerText='↹';
   var sug=dom.El('div'); sug.className = "suggest";
   cmd.appendChild(pr);
+  cmd.appendChild(sugkey);
+  cmd.appendChild(exekey);
   cmd.appendChild(sug);
   term.appendChild(cmd);
   this.suggestions=sug;
@@ -31,11 +38,12 @@ function VTerm(context, container_id, img_id,img_mode,img_dir){
 }
 VTerm.prototype={
   start: function(ctx){
-    this.context=ctx;
+    this.setContext(ctx);
     this.behave();
   },
   setContext: function(ctx){
     this.context=ctx;
+    this.show_suggestions(this.context.commands.map(addspace));
   },
   push_img: function(img){
     this.imgs.push(img);
@@ -85,6 +93,7 @@ VTerm.prototype={
     msg.className = "input";
     this.container.insertBefore(msg,this.cmdline);
   },
+
   get_line:function(){
     return this.input.value.replace(/\s+/," ");
   },
@@ -95,12 +104,87 @@ VTerm.prototype={
     var m=dom.El('p'); m.innerText = txt; m.className = "msg";
     this.container.insertBefore(m,this.cmdline);
   },
-  show_suggestions: function (txt){
-    var m=dom.El('p'); m.innerText=txt;
-    this.suggestions.appendChild(m);
+  make_suggestions: function (autocomplete){
+    var t=this;    
+    var ac=d(autocomplete,true);
+    t.suggestions.innerHTML = '';
+    var l=t.get_line();
+    args=l.split(' ');
+    if (args.length > 0) {
+      var tocomplete;
+      if (args.length > 1) {
+        tocomplete=args.pop();
+        var match=t.context._completeArgs(args[0],tocomplete);
+      } else {
+        tocomplete="";
+        match=t.context.commands.map(addspace);
+      }
+      if (match.length == 0){
+        t.set_line(l+'?');
+        setTimeout(function(){t.set_line(l+'??');},100)
+        setTimeout(function(){t.set_line(l);},200)
+      } else if (match.length == 1 ){
+        if (ac) {
+          var lb=tocomplete.split('/');
+          lb.pop();
+          lb.push(match[0]);
+          args.push(lb.join('/'));
+          t.set_line(args.join(" "));
+        } else {
+          t.show_suggestions(match); 
+        }
+      } else {
+        var lcp=commonprefix(match);
+        t.show_suggestions(match);
+        if (lcp.length > 0 && ac){
+          args.push(lcp);
+          t.set_line(args.join(" "));
+        }
+      }
+    }
+  },
+  show_suggestions: function (list){
+    for (var i=0;i<list.length; i++){
+      this.show_suggestion(list[i]);
+    }
+  },
+  show_suggestion: function (txt){
+    var m=dom.El('button'); m.innerHTML=txt;
+    var t=this;
+    t.histindex=0;
+    m.onclick =function (e){
+      var l=t.get_line();
+      var newl=l+txt;
+      t.set_line(newl);
+      //      t.hide_suggestions();
+      if (t.argsValid(newl.replace(/\s+$/,"").split(" "))){
+        t.enter();
+      } else {
+        t.make_suggestions(false);
+      }
+    }
+    t.suggestions.appendChild(m);
   },
   hide_suggestions: function (){
     this.suggestions.innerHTML = '';
+  },
+  argsValid: function(args){
+    return this.context._validArgs(args.shift(),args);
+  },
+  enter : function(){
+    var t=this;   
+    var pr=t.input;
+    t.histindex=0;
+    // Enter -> exec command
+    args=t.get_line().replace(/\s+$/,"").split(' ');
+    echo=t.context.exec(t, args);
+    t.show_previous_prompt(pr.value);
+    t.history.push(pr.value);
+    t.show_img();
+    t.show_msg(echo);
+    t.set_line('');
+    t.hide_suggestions();
+      t.show_suggestions(this.context.commands.map(addspace));
   },
   behave: function (){
     // behavior 
@@ -166,49 +250,11 @@ VTerm.prototype={
       t.hide_suggestions();
       if (k === 13) { // ENTER
         overide=true;
-        t.histindex=0;
-        // Enter -> exec command
-        args=t.get_line().replace(/\s+$/,"").split(' ');
-        echo=t.context.exec(t, args);
-        t.show_previous_prompt(pr.value);
-        t.history.push(pr.value);
-        t.show_img();
-        t.show_msg(echo);
-        t.set_line('');
+        t.enter();
         window.scrollTo(0,t.cmdline.offsetTop + t.cmdline.offsetHeight);
       } else if (e.which === 9 && !(e.ctrlKey || e.altKey)) { // TAB
         overide=true;
-        t.histindex=0;
-        // Tab -> complete command
-        var l=t.get_line();
-        args=l.split(' ');
-        if (args.length > 0) {
-          var tocomplete;
-          if (args.length > 1) {
-            tocomplete=args.pop();
-          } else {
-            tocomplete="";
-          }
-          var match=t.context._completeRoomName(args[0],tocomplete);
-          if (match.length == 0){
-            t.set_line(l+'?');
-            setTimeout(function(){t.set_line(l+'??');},100)
-            setTimeout(function(){t.set_line(l);},200)
-          } else if (match.length == 1){
-//          console.log(match);
-            args.push(match[0]);
-            t.set_line(args.join(" "));
-          } else {
-            var lcp=commonprefix(match);
-            for (var i=0;i<match.length; i++){
-              t.show_suggestions(match[i]);
-            }
-            if (lcp.length > 0){
-              args.push(lcp);
-              t.set_line(args.join(" "));
-            }
-          }
-        }
+        t.make_suggestions();
         window.scrollTo(0,t.cmdline.offsetTop + t.cmdline.offsetHeight);
       } else if (k === 37 || k === 39 ) {
         // left /right

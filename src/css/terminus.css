@@ -1,4 +1,3 @@
-
 body {
   color: #efefef;
 /*  color: #000;*/
@@ -9,7 +8,8 @@ body {
   font-stretch:condensed;
 /*  overflow-x:hidden;*/
 }
-.msg {
+.msg, button {
+  font-size:inherit;
   font-family:inherit;
 }
 /*#term, ,#scene {*/
@@ -60,12 +60,23 @@ body {
 .suggest {
   height:2rem;
 }
-.suggest p {
+.suggest button {
   padding:0 1ch;
+
+  border:none;
   color:gray;
+  background:none;
   margin:0;
 }
-
+.suggest button:hover, .suggest button:focus {
+  color:#f4f4f4;
+}
+.key{
+  color:#f4f4f4;
+  float:left;
+  background:none;
+  border:none;
+}
 a {
   color: gray;
   text-align: center;

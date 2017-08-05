@@ -66,7 +66,8 @@
 
 //HOME - required
 newRoom('home', "loc_farm.gif")
-  .setStarterMsg(_('item_welcome_letter_text'));
+//  .setStarterMsg()
+;
 $home.newItem('welcome_letter');
 // Initiate Game state 
 var state = new GameState($home); // GameState to initialize in game script
@@ -76,6 +77,8 @@ function start_game(){
   var loaded=state.loadCookie('terminuscookie',7*24*60);// delay in minutes;the cookie expire in a week
   if (loaded){
     vt.show_msg(_("game_loaded"));
+  } else {
+    vt.show_msg(_('gamestart_text'));
   }
   gettext_check();
   vt.start(state.getCurrentRoom());

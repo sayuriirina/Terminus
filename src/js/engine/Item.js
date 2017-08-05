@@ -28,6 +28,7 @@ function People(name, intro, picname,alt,title){
   this.picture = picname ? new Pic(picname) : img.people_none;
   this.cmd_text = {less: intro ? intro : _('people_none_text')};
 	this.valid_cmds = ["less"];
+  this.people=true;
 }
 People.prototype.addCmdText = Item.prototype.addCmdText;
 People.prototype.addValidCmd = Item.prototype.addValidCmd;

@@ -268,8 +268,21 @@ Room.prototype = {
   },
 
   printLS : function(){
-    return _('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")]) +
-      "\n" + ( (this.items.length > 0) ? _('items', [" " + (this.items.toString()).replaceAll(",", "\n ")]) : '');
+    var ret="";
+    if (this.children.length > 0){
+      ret+=_('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")])+ "\n" ;
+    }
+    var itemset=this.items.filter(function(o){return !o.hasOwnProperty('people');});
+    var peopleset=this.items.filter(function(o){return o.hasOwnProperty('people');});
+    if (itemset.length > 0){
+      ret+=_('items', [" " + (itemset.toString()).replaceAll(",", "\n ")])+ "\n" ;
+    }
+    if (peopleset.length > 0){
+      ret+=_('peoples', [" " + (peopleset.toString()).replaceAll(",", "\n ")])+ "\n" ;
+    }
+return ret;
+    //    return _('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")]) +
+//      "\n" + ( (this.items.length > 0) ? _('items', [" " + (this.items.toString()).replaceAll(",", "\n ")]) : '');
   },
 
   cd : function(args,vt){
@@ -602,7 +615,20 @@ Room.prototype = {
     }
   },
 
-  _completeRoomName : function(cmd,prefix){
+  _validArgs : function(cmd,args){
+    console.log(cmd,args);
+    if (cmd =='ls') {
+      return true;
+    } else {
+      if (args.length == 1){
+        if (cmd == 'cd' || cmd == 'mkdir' || cmd == 'less' || cmd == 'touch'){
+          return true;
+        }
+      }
+      return false;
+    }
+  },
+  _completeArgs : function(cmd,prefix){
     var search_room = prefix.substring(0,1) == "~" ? $home : this;
     //Iterate through each room
     var lastchar=prefix.charAt(prefix.length-1);
@@ -641,16 +667,20 @@ Room.prototype = {
               }
             }
           }
+          //IF man, give commands
+          if(cmd == "man") {
+            ret=this.commands;
+          }
 
           //If one match exists
-          if(substring_matches.length == 1){
-            path_rooms.pop();
-            path_rooms.push(substring_matches[0]);
-            ret = [path_rooms.join("/")];
-          } else if(substring_matches.length > 1){
-            //If multiple matches exist
+//          if(substring_matches.length == 1){
+//            path_rooms.pop();
+//            path_rooms.push(substring_matches[0]);
+//            ret = [path_rooms.join("/")];
+//          } else if(substring_matches.length > 1){
+//If multiple matches exist
             ret =  substring_matches;
-          }
+//          }
         }
       }
     }
