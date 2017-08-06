@@ -214,6 +214,8 @@ VTerm.prototype={
         if ( diff > 0){
           window.scrollBy( 0,increment );
           setTimeout(scroller, time);
+        } else {
+          this.scrolling--;
         }
       } 
     }
