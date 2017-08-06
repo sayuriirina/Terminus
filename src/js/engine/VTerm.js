@@ -6,29 +6,37 @@ function commonprefix(array) {
   return a1.substring(0, i);
 }
 function addspace(i){return i+' ';}
+function addEl(root,tag,clss,txt,title,fun){
+  var el=dom.El(tag);
+  if (def(clss)) {el.className=clss;}
+  if (def(title)) {el.title=title;}
+  if (def(txt)) {el.innerHTML='<span>'+txt+'</span>';}
+  if (def(fun)) {el.onclick=fun;}
+  root.appendChild(el);
+  return el;
+}
+function addAttrs(el,attrs){
+  for (var i in attrs) {
+    if (attrs.hasOwnProperty(i)){
+      el.setAttribute(i,attrs[i]); 
+    }
+  }
+  return el;
+}
 function VTerm(context, container_id, img_id,img_mode,img_dir){
   var term = dom.Id(container_id);
-  var cmd = dom.El('p'); cmd.className="input";
-  var pr = dom.El('input');pr.autofocus='autofocus';pr.size=80;
-  //  var cmdspan = dom.El('span'); cmdline.appendChild(cmdspan);
-  //  this.cmdspan = cmdspan;  cmdspan.innerText=pr.value;
+  var cmd = addEl(term,'p','input');
   var t=this;
-  var sugkey=dom.El('button'); sugkey.onclick=function(e){t.make_suggestions();};
-  var exekey=dom.El('button');exekey.onclick=function(e){t.enter();};
-  var belt=dom.El('div');belt.className='belt';
-  exekey.className='key';exekey.innerHTML='<span>↵</span>';
-  sugkey.className='key';sugkey.innerHTML='<span>↹</span>';
-  var sug=dom.El('div'); sug.className = "suggest";
-  cmd.appendChild(pr);
-  belt.appendChild(sugkey);
-  belt.appendChild(exekey);
-  belt.appendChild(sug);
-  term.appendChild(cmd);
-  term.appendChild(belt);
-  this.suggestions=sug;
+  var belt=addEl(term,'div','belt');
+  var keys=addEl(belt,'div','keys');
+  addEl(keys,'button','key','✗','Ctrl-U',function(e){
+    t.set_line(''); t.show_suggestions(t.context.commands.map(addspace));
+  });
+  addEl(keys,'button','key','↹','Tab',function(e){t.make_suggestions();});
+  addEl(keys,'button','key','↵','Tab',function(e){t.enter();});
+  this.suggestions=addEl(belt,'div','suggest');
   this.cmdline = cmd;
-  this.footer = belt;
-  this.input = pr;
+  this.input = addAttrs(addEl(cmd,'input'),{autofocus:'autofocus',size:80});
   this.container = term;
   this.context = context;
   this.img_mode=img_mode.charAt(0);//follow or static
@@ -38,6 +46,7 @@ function VTerm(context, container_id, img_id,img_mode,img_dir){
   this.history=[];
   this.histchecking=false;
   this.histindex=0;
+  this.scrolling=0;
 }
 VTerm.prototype={
   start: function(ctx){
@@ -51,38 +60,31 @@ VTerm.prototype={
   push_img: function(img){
     this.imgs.push(img);
   },
-  imgElement: function(src,alt,title){
-    var e = this.img_element;
-    e.setAttribute("src", src);
-    e.setAttribute("alt", alt);
-    e.setAttribute("title", title);
-  },
   show_img: function(){
     var t=this;
-    if (this.imgs.length>0) {
-      if (this.img_mode === 's'){
-        var img=this.imgs.pop();
-        if (img.hasOwnProperty('src')){
-          t.imgElement(this.img_dir + img.src, img.alt, img.title);
+    if (t.imgs.length>0) {
+      if (t.img_mode === 's'){
+        var i=t.imgs.pop();
+        if (i.hasOwnProperty('src')){
+          addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
         } else {
           //Always show blank image when moving into a room
-          t.imgElement(this.img_dir + img.room_none.src, img.room_none.alt, img.room_none.title);
+          addAttrs(t.img_element, {src: t.img_dir + img.room_none.src, alt:img.room_none.alt, title:img.room_none.title});
         }
       } else {
         var c = dom.El('div'); c.className = "img-container";
-        for (var i in this.imgs) {
-          if (this.imgs.hasOwnProperty(i)){
-            var img=this.imgs[i];
-//            console.log(img);
-            if (img && img.alt.length > 0){
-              var el = dom.El('img');
-              el.src = this.img_dir + img.src;
-              el.title = img.title;
-              el.alt = img.alt;
-              c.appendChild(el);
-              el.onload=function(){
-                window.scrollTo(0,t.cmdline.offsetTop + t.cmdline.offsetHeight);
-              };
+        for (var i in t.imgs) {
+          if (t.imgs.hasOwnProperty(i)){
+            var im=t.imgs[i];
+            if (im && im.alt.length > 0){
+              addAttrs(addEl(c,'img'),{src:t.img_dir + im.src,title:im.title,alt:im.alt})
+                .
+//                onload=t.scrl;
+                onload=function(){
+//                  setTimeout(function() {
+                    t.scrl();
+//                  },200); 
+                };
             }
           } 
         }
@@ -116,9 +118,14 @@ VTerm.prototype={
     args=l.split(' ');
     if (args.length > 0) {
       var tocomplete;
+      var match;
       if (args.length > 1) {
         tocomplete=args.pop();
-        var match=t.context._completeArgs(args[0],tocomplete);
+        match=t.context._completeArgs(args[0],tocomplete);
+      } else if (args[0].length>0) {
+        tocomplete="";
+        t.set_line(l+' ');
+        match=t.context._completeArgs(args[0],tocomplete);
       } else {
         tocomplete="";
         match=t.context.commands.map(addspace);
@@ -148,6 +155,7 @@ VTerm.prototype={
     }
   },
   show_suggestions: function (list){
+    this.suggestions.innerHTML = '';
     for (var i=0;i<list.length; i++){
       this.show_suggestion(list[i]);
     }
@@ -168,6 +176,7 @@ VTerm.prototype={
       }
     }
     t.suggestions.appendChild(m);
+    t.scrl();
   },
   hide_suggestions: function (){
     this.suggestions.innerHTML = '';
@@ -188,8 +197,28 @@ VTerm.prototype={
     t.show_msg(echo);
     t.set_line('');
     t.hide_suggestions();
-      t.show_suggestions(this.context.commands.map(addspace));
+    t.show_suggestions(this.context.commands.map(addspace));
   },
+  scrl : function(){
+    // we want to scroll to the bottom
+    var c=this.container;
+    var increment = this.input.clientHeight, time = 300;
+    var tinc=1;var ttim=20;
+    var t=this;
+    this.scrolling++;
+    function scroller() {
+      if (this.scrolling>1){
+        this.scrooling--;
+      } else {
+        var diff= c.offsetTop + c.offsetHeight - window.pageYOffset - window.innerHeight;
+        if ( diff > 0){
+          window.scrollBy( 0,increment );
+          setTimeout(scroller, time);
+        }
+      } 
+    }
+    scroller();
+  }, 
   behave: function (){
     // behavior 
     var args;
@@ -207,13 +236,11 @@ VTerm.prototype={
     dom.body.onkeydown = function (e) {
       e = e || window.event;//Get event
       var k=e.which;
-      //      if (k === 33 || k  === 34 || k === 38 || k  === 40) {
       if (k === 33 || k  === 34 || k === 38 || k  === 40) {
       } else {
         var focused = d.activeElement;
         if ( !focused || focused != pr) {
-          pr.focus();
-          window.scrollTo(0,t.footer.offsetTop + t.footer.offsetHeight);
+          pr.focus();t.scrl();
         }
         pr.onkeydown(e);
       }
@@ -254,28 +281,21 @@ VTerm.prototype={
       t.hide_suggestions();
       if (k === 13) { // ENTER
         overide=true;
-        t.enter();
-        window.scrollTo(0,t.cmdline.offsetTop + t.cmdline.offsetHeight);
+        t.enter();t.scrl();
       } else if (e.which === 9 && !(e.ctrlKey || e.altKey)) { // TAB
         overide=true;
-        t.make_suggestions();
-        window.scrollTo(0,t.cmdline.offsetTop + t.cmdline.offsetHeight);
-      } else if (k === 37 || k === 39 ) {
-        // left /right
-        //                } else if (history && e.which === 38 ||
-        //                           (e.which === 80 && e.ctrlKey)) {
-        //UP ARROW or CTRL+P
-        //                } else if (e.which === 82 && e.ctrlKey) { // CTRL+R
-        //                        } else if (e.which === 88 || e.which === 67 || e.which === 84) {
-        //CTRL+X CTRL+C CTRL+W CTRL+T
+        t.make_suggestions();t.scrl();
       } else if (e.ctrlKey){
         if (k === 67) { // CTRL+C - clear
           overide=true;
           t.show_previous_prompt(t.get_line() + '^C');
           t.set_line('');
-          //        } else if ( k === 87 ) { // CTRL + W -remove last component
-        } else if ( k === 88 || k === 86 || k === 89 || k === 90  ) { // CTRL + X -replace CTRL + W - remove last component
-          // CTRL + V - CTRL + Z - CTRL +Y
+        } else if (k === 85) { // CTRL+U - clear line
+          overide=true;
+          t.set_line('');
+        } else if ( k === 88 || k === 86 || k === 89 || k === 90  ) {
+          // CTRL + X - CTRL + V - CTRL + Z - CTRL + Y
+          // replace CTRL + W - remove last component
           overide=true;
           var line=t.get_line();
           line=line.replace(/\/$/,"");

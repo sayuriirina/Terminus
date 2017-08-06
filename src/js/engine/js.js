@@ -1,7 +1,6 @@
 
 var dom = document;
 dom.Id = dom.getElementById;
-dom.Add = dom.appendChild;
 dom.El = dom.createElement;
 
 function objToStr(o){

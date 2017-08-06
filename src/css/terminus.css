@@ -43,26 +43,26 @@ body {
 }
 .suggest, .img-container {
   display:flex;
+  flex-wrap:wrap;
 /*  justify-content:center;*/
 /*  align-content:center;*/
 }
 .suggest {
 /*  height:2rem;*/
 }
+.belt {
+  display:flex; 
+}
 .belt button {
 /*  padding:0 1ch 0 0;*/
   padding:1ch;
+  margin:0;
 }
 .suggest button {
   color:gray;
-  margin:0;
 }
-/*.suggest button:hover, .suggest button:focus {*/
-/*  color:#f4f4f4;*/
-/*}*/
 .key{
   color:#f4f4f4;
-  float:left;
   background:none;
   border:none;
 }
@@ -83,6 +83,7 @@ button {
   transition:color .6s;
   position:relative;
   background:none;
+  height:3rem;
 }
 button span {
   position:relative;

@@ -71,7 +71,7 @@ newRoom('dank',"loc_darkroom.gif", {
 	.addListener("mvBoulder", function(){
 	    state.apply("mvBoulder");
 	})
-  .newItem('boulder','item_boulder.gif');
+var Boulder=$dank.newItem('boulder','item_boulder.gif');
 state.add("mvBoulder",function(re){ 
     link_rooms($dank, $tunnel);
     if (re) {

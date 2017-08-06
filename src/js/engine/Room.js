@@ -120,10 +120,10 @@ Room.prototype = {
     return ((idx == -1) ? null : this.items.splice(idx, 1)[0]);
   },
 
-//  removeItem : function(name){
-//    idx = this.idxItemFromName(name);
-//    return removeItemByIdx(idx);
-//  },
+  removeItem : function(name){
+    idx = this.idxItemFromName(name);
+    return this.removeItemByIdx(idx);
+  },
 
 //  itemStringArray : function(){
 //    itemstrarray = [];
@@ -616,12 +616,11 @@ return ret;
   },
 
   _validArgs : function(cmd,args){
-    console.log(cmd,args);
     if (cmd =='ls') {
       return true;
     } else {
       if (args.length == 1){
-        if (cmd == 'cd' || cmd == 'mkdir' || cmd == 'less' || cmd == 'touch'){
+        if (cmd == 'man' ||cmd == 'cd' || cmd == 'mkdir' || cmd == 'less' || cmd == 'touch'){
           return true;
         }
       }
@@ -635,8 +634,11 @@ return ret;
     var path_rooms = prefix.split("/");
     var new_room;
     var incomplete_room;
-    var ret = [];
     var substring_matches = [];
+    
+    if (cmd=='cd' && path_rooms.length == 1 && path_rooms[0].length == 0){
+      substring_matches.push('..'); 
+    }
     for (room_num=0;room_num<path_rooms.length;room_num++)
     {
       new_room = search_room.can_cd(path_rooms[room_num]);
@@ -667,24 +669,16 @@ return ret;
               }
             }
           }
+          
           //IF man, give commands
           if(cmd == "man") {
-            ret=this.commands;
+            substring_matches=this.commands;
           }
 
-          //If one match exists
-//          if(substring_matches.length == 1){
-//            path_rooms.pop();
-//            path_rooms.push(substring_matches[0]);
-//            ret = [path_rooms.join("/")];
-//          } else if(substring_matches.length > 1){
-//If multiple matches exist
-            ret =  substring_matches;
-//          }
         }
       }
     }
-    return ret;
+    return substring_matches;
   }
 
 
