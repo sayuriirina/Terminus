@@ -1,69 +1,6 @@
 /**
- * Objects used to build levels
+ * This is the game script and represent map too
  */
-
-/**
- * ROOMS
- * Players can cd between rooms
- *
- * API:
- *
- * ROOM   e.g. $home
- *    newRoom(id, img, evts, outer_evts) set a new room variable named $id
- *     id : non 'room_' part of a key 'room_<id>' in GameDialogs file
- *              GameDialogs file shall contain :
- *               - room_<roomid> :      the name of the room
- *               - room_<roomid>_text : the description of what happening in
- *                                      the room
- *     img : img file in image directory
- *
- *     cmds : hash { <cmd_name>: function(ct) return event name }
- *         ct  is an event context defined as  
- *         {room:<current_room>, args:<arguments_of_the_command>, arg:<current_argument>,  i:<idx_argument>};
- *
- *     outer_cmds : idem but event is fired when refering to (entering in) directory
- *
- *    Return the <Room> object
- *
- *    Note : $home is required , in order to define path '~/', and command 'cd'.
- *
- * ITEM (or PEOPLE) 
- *
- *     <Room>.newItem(id, img)  or <Room>.newPeople(id, img)
- *     id : non 'item_' (or 'people_') part of a key 'item_<id>' in GameDialogs file
- *              GameDialogs file shall contain :
- *               - item_<id>   :      the name of the item
- *              ( - people_<id> :      the name of the person )
- *               - item_<id>_text   : a description
- *              ( - people_<id>_text : a description )
- *     img : img file in image directory
- 
- *    Return the <Item> object
- *
- * FIRST PROMPT
- *
- *    If the player start a game or load it from saved state,
- *    you can display a message for the room she/he starts.
- *    Default is the result of 'pwd'.
- *    <Room>.setStarterMsg(<welcome_message>);
- *
- * COMMANDS
- *
- *    Commands are defined in Room class, (and in Item class for item description).
- *    However the access and the results are limited
- *    and controllable given the Room or the Item :
- *
- *    // disallow or allow usage of command
- *    <Room>.removeCommand(<cmd_name>)
- *    <Room>.addCommand(<cmd_name>)
- *    <Item>.addValidCmd(<cmd_name>)
- *
- *    // alter result of the command
- *    <Room>.addCmdText(<cmd_name>,<cmd_result>)
- *    <Item>.addCmdText(<cmd_name>,<cmd_result>)
- *
- */
-
 //HOME - required
 newRoom('home', "loc_farm.gif")
 //  .setStarterMsg()
@@ -511,6 +448,7 @@ link_rooms($home, $western_forest);
 link_rooms($western_forest, $spell_casting_academy);
 link_rooms($spell_casting_academy, $academy_practice );
 link_rooms($academy_practice, $box);
+
 link_rooms($home, $meadow);
 link_rooms($meadow, $mountain);
 link_rooms($spell_casting_academy, $lessons);
@@ -544,3 +482,67 @@ link_rooms($mit, $stata);
 link_rooms($mit, $cluster);
 console.log("Game objects : init");
 start_game();// make views and interact
+
+
+
+/**
+ * ROOMS
+ * Players can cd between rooms
+ *
+ * API:
+ *
+ * ROOM   e.g. $home
+ *    newRoom(id, img, evts, outer_evts) set a new room variable named $id
+ *     id : non 'room_' part of a key 'room_<id>' in GameDialogs file
+ *              GameDialogs file shall contain :
+ *               - room_<roomid> :      the name of the room
+ *               - room_<roomid>_text : the description of what happening in
+ *                                      the room
+ *     img : img file in image directory
+ *
+ *     cmds : hash { <cmd_name>: function(ct) return event name }
+ *         ct  is an event context defined as  
+ *         {room:<current_room>, args:<arguments_of_the_command>, arg:<current_argument>,  i:<idx_argument>};
+ *
+ *     outer_cmds : idem but event is fired when refering to (entering in) directory
+ *
+ *    Return the <Room> object
+ *
+ *    Note : $home is required , in order to define path '~/', and command 'cd'.
+ *
+ * ITEM (or PEOPLE) 
+ *
+ *     <Room>.newItem(id, img)  or <Room>.newPeople(id, img)
+ *     id : non 'item_' (or 'people_') part of a key 'item_<id>' in GameDialogs file
+ *              GameDialogs file shall contain :
+ *               - item_<id>   :      the name of the item
+ *              ( - people_<id> :      the name of the person )
+ *               - item_<id>_text   : a description
+ *              ( - people_<id>_text : a description )
+ *     img : img file in image directory
+ 
+ *    Return the <Item> object
+ *
+ * FIRST PROMPT
+ *
+ *    If the player start a game or load it from saved state,
+ *    you can display a message for the room she/he starts.
+ *    Default is the result of 'pwd'.
+ *    <Room>.setStarterMsg(<welcome_message>);
+ *
+ * COMMANDS
+ *
+ *    Commands are defined in Room class, (and in Item class for item description).
+ *    However the access and the results are limited
+ *    and controllable given the Room or the Item :
+ *
+ *    // disallow or allow usage of command
+ *    <Room>.removeCommand(<cmd_name>)
+ *    <Room>.addCommand(<cmd_name>)
+ *    <Item>.addValidCmd(<cmd_name>)
+ *
+ *    // alter result of the command
+ *    <Room>.addCmdText(<cmd_name>,<cmd_result>)
+ *    <Item>.addCmdText(<cmd_name>,<cmd_result>)
+ *
+ */

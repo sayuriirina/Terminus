@@ -15,16 +15,19 @@ function VTerm(context, container_id, img_id,img_mode,img_dir){
   var t=this;
   var sugkey=dom.El('button'); sugkey.onclick=function(e){t.make_suggestions();};
   var exekey=dom.El('button');exekey.onclick=function(e){t.enter();};
-  exekey.className='key';exekey.innerText='↵';
-  sugkey.className='key';sugkey.innerText='↹';
+  var belt=dom.El('div');belt.className='belt';
+  exekey.className='key';exekey.innerHTML='<span>↵</span>';
+  sugkey.className='key';sugkey.innerHTML='<span>↹</span>';
   var sug=dom.El('div'); sug.className = "suggest";
   cmd.appendChild(pr);
-  cmd.appendChild(sugkey);
-  cmd.appendChild(exekey);
-  cmd.appendChild(sug);
+  belt.appendChild(sugkey);
+  belt.appendChild(exekey);
+  belt.appendChild(sug);
   term.appendChild(cmd);
+  term.appendChild(belt);
   this.suggestions=sug;
   this.cmdline = cmd;
+  this.footer = belt;
   this.input = pr;
   this.container = term;
   this.context = context;
@@ -48,21 +51,22 @@ VTerm.prototype={
   push_img: function(img){
     this.imgs.push(img);
   },
+  imgElement: function(src,alt,title){
+    var e = this.img_element;
+    e.setAttribute("src", src);
+    e.setAttribute("alt", alt);
+    e.setAttribute("title", title);
+  },
   show_img: function(){
-    var imge = this.img_element;
     var t=this;
     if (this.imgs.length>0) {
       if (this.img_mode === 's'){
         var img=this.imgs.pop();
         if (img.hasOwnProperty('src')){
-          imge.setAttribute("src", this.img_dir + img.src);
-          imge.setAttribute("alt", img.alt);
-          imge.setAttribute("title", img.title);
+          t.imgElement(this.img_dir + img.src, img.alt, img.title);
         } else {
           //Always show blank image when moving into a room
-          imge.setAttribute("src", this.img_dir + img.room_none.src);
-          imge.setAttribute("alt", img.room_none.alt);
-          imge.setAttribute("title", img.room_none.title);
+          t.imgElement(this.img_dir + img.room_none.src, img.room_none.alt, img.room_none.title);
         }
       } else {
         var c = dom.El('div'); c.className = "img-container";
@@ -82,7 +86,7 @@ VTerm.prototype={
             }
           } 
         }
-        this.container.insertBefore(c, imge);
+        this.container.insertBefore(c, this.img_element);
       }
       this.imgs=[];
     } 
@@ -149,7 +153,7 @@ VTerm.prototype={
     }
   },
   show_suggestion: function (txt){
-    var m=dom.El('button'); m.innerHTML=txt;
+    var m=dom.El('button'); m.innerHTML='<span>'+txt+'</span>';
     var t=this;
     t.histindex=0;
     m.onclick =function (e){
@@ -209,7 +213,7 @@ VTerm.prototype={
         var focused = d.activeElement;
         if ( !focused || focused != pr) {
           pr.focus();
-          window.scrollTo(0,t.cmdline.offsetTop + t.cmdline.offsetHeight);
+          window.scrollTo(0,t.footer.offsetTop + t.footer.offsetHeight);
         }
         pr.onkeydown(e);
       }
