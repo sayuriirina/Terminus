@@ -4,6 +4,7 @@ body {
   font-family:sans-serif;
   font-size: 1.4rem;
   font-stretch:condensed;
+/*  transition:all 1s;*/
 }
 .msg, button {
   border:none;
@@ -12,12 +13,25 @@ body {
 }
 #term {
   margin:auto;
-  width:98vw;
+/*  width:100%;*/
   max-width:1024px;
   background:#000;
   padding:1rem;
   box-sizing:border-box;
 }
+img {
+ max-width:100%;
+}
+@media all and (max-width:800px){
+  img {
+    min-width:80%;
+  }
+}
+
+@media all and (max-width:1024px){
+
+}
+
 #term .input:before{
   content:"> ";
   position:absolute;
@@ -36,12 +50,12 @@ body {
   border:none;
   max-width:100%;
   font-size:inherit;
-  font-familly:inherit;
+  font-family:inherit;
   color:inherit;
   outline:none;
   z-index:99;
 }
-.suggest, .img-container {
+.suggest {
   display:flex;
   flex-wrap:wrap;
 /*  justify-content:center;*/
@@ -51,12 +65,13 @@ body {
 /*  height:2rem;*/
 }
 .belt {
-  display:flex; 
+  display:flex;
+  margin:0 0 1rem;
 }
 .belt button {
 /*  padding:0 1ch 0 0;*/
   padding:1ch;
-  margin:0;
+  margin:0
 }
 .suggest button {
   color:gray;
@@ -123,4 +138,30 @@ padding:3px;
 }
 .branchtitle {
   text-align:center;
+}
+.img-container {
+
+}
+.screen:not(:last-of-type){
+  opacity:.6;
+}
+.epicfromright {
+  overflow:hidden;
+}
+
+.epicfromright img {
+  position:relative;
+  left:100%;
+}
+  .epicfromright.loaded img {
+   animation:a 1s ease-out forwards;
+}
+
+@keyframes a {
+  from {
+    left:100%;
+  }
+  to {
+    left:0;
+  }
 }

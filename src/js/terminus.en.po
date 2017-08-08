@@ -54,6 +54,9 @@ msgstr "Just copied %s into %s."
 msgid "cmd_cp_unknown"
 msgstr "No item of that name to copy."
 
+msgid "tgt_already_exists"
+msgstr "Item '%s' already exists."
+
 msgid "cmd_help_suggestion"
 msgstr "Type 'man' to ask the man for help."
 
@@ -73,7 +76,7 @@ msgid "cmd_mv_done"
 msgstr "Moved %s to %s."
 
 msgid "cmd_mv_flood"
-msgstr "You need to move thing A to place B. Use mov [thingA] [placeB]."
+msgstr "You need to move thing A to place B. Use mv [thingA] [placeB]."
 
 msgid "cmd_mv_invalid"
 msgstr "Must be a valid item and location to move it."

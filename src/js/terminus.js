@@ -10,16 +10,22 @@ $home.newItem('welcome_letter');
 var state = new GameState($home); // GameState to initialize in game script
 var vt;
 function start_game(){
-  vt=new VTerm(null,'term',null,'follow','./img/');
+  vt=new VTerm('term','./img/');
   var loaded=state.loadCookie('terminuscookie',7*24*60);// delay in minutes;the cookie expire in a week
+  var mon=vt.monitor;
+  vt.monitor = addEl(mon,'div','start screen');
+  vt.epic_img_enter(new Pic('titlescreen.gif'),'epicfromright',2000,100,1);
+  vt.start(state.getCurrentRoom(),loaded);
   if (loaded){
     vt.show_msg(_("game_loaded"));
+    console.log("Game loaded");
+    vt.show_msg(vt.context.getStarterMsg());
   } else {
     vt.show_msg(_('gamestart_text'));
+    console.log("Game Started");
   }
+  vt.monitor=mon;
   gettext_check();
-  vt.start(state.getCurrentRoom());
-  console.log("Game loaded");
 }
 //WESTERN FOREST
 newRoom('western_forest', "loc_forest.gif");
@@ -174,14 +180,14 @@ newRoom("artisanshop", "loc_artisanshop.gif",{
 	}
     },
     'cp': function(ct){
-	var re=new RegExp(_("item_gear")+"\d");
-	if (re.test(ct.arg)){
-	    for (var j=1; j<6;j++) {
-		if (ct.room.getItemFromName(_("item_gear")+j) == -1){
-		    return '';
-		}
-		return "FiveGearsCopied";
-	    }
+      var re=new RegExp(_('item_gear')+"\\d");
+      if (re.test(ct.arg)){
+        for (var j=1; j<6;j++) {
+          if (ct.room.getItemFromName(_('item_gear')+j) == -1){
+            return '';
+          }
+          return "FiveGearsCopied";
+        }
 	}
     },
 }).addCommand("touch")
@@ -192,13 +198,13 @@ newRoom("artisanshop", "loc_artisanshop.gif",{
 state.add("touchGear", function (re){
     Artisan.addCmdText("less", _('item_gear_touch'));
     $artisanshop.addCommand("cp");
-    if (re) $artisanshop.addItem(new Item("Gear", _('item_gear_text'),"item_gear.gif"));
-    else $artisanshop.getItemFromName("Gear").changePic("item_gear.gif");
+    if (re) $artisanshop.addItem(new Item('gear', _('item_gear_text'),"item_gear.gif"));
+    else $artisanshop.getItem('gear').changePic("item_gear.gif");
 });
 state.add("FiveGearsCopied",function(re){
     Artisan.addCmdText("less", _('item_gear_artisans_ok'));
     if (re){
-	$artisanshop.newItemBatch("gear",['1','2','3','4','5']);
+      $artisanshop.newItemBatch("gear",['1','2','3','4','5']);
     }
 });
 $artisanshop.newItem("strangetrinket", "item_trinket.gif")
@@ -248,7 +254,7 @@ state.add("HouseMade",function(re){
 	.addCmdText("cd", _('room_house_cd') )
 	.addCmdText("ls", _('room_house_ls') );
     $clearing.removeCmdText("cd");
-    $clearing.changeIntroText(_('room_clearing_text2'));
+    $clearing.setIntroText(_('room_clearing_text2'));
     CryingMan.addCmdText("less", _('room_clearing_less2'));
 });
 var CryingMan=$clearing.newPeople('cryingman',"item_man.gif");
@@ -270,7 +276,7 @@ state.add("touchPlank",function(){
     $clearing.addCommand("cd");
     $clearing.removeCmdText("cd");
     $brokenbridge.removeCmdText("cd");
-    $brokenbridge.changeIntroText(_('room_brokenbridge_text2'));
+    $brokenbridge.setIntroText(_('room_brokenbridge_text2'));
     if (re) $brokenbridge.addNewItem('plank',"item_plank.gif");
     else $brokenbridge.getItemFromName(_('item_plank')).changePic("item_plank.gif");
 });

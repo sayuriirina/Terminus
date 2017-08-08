@@ -49,10 +49,6 @@ Room.prototype = {
   toString : function(){
     return this.room_name;
   },
-//  toString : function(){
-//    return this.room_name;
-//  },
-
   fire_event:function(cmd,args,idx,otherroomname){
     var ck=null;
     var context={room:this, arg:args[idx], args:args, i:idx};
@@ -67,9 +63,12 @@ Room.prototype = {
       this.ev.fire(ck);
     }
   },
-  // a message read on the terminal start
-  getStarterMsg: function(vt){
-//    vt.push_img(this.room_pic);
+  // text displayed at each change
+  setIntroText : function(txt){
+    this.intro_text = txt;
+  },
+  // a message displayed on game start
+  getStarterMsg: function(){
     if (this.starter_msg){
       return this.starter_msg;
     } else {
@@ -79,16 +78,20 @@ Room.prototype = {
   setStarterMsg: function(txt){
     this.starter_msg = txt;
   },
-  // text displayed at each change
-  changeIntroText : function(txt){
-    this.intro_text = txt;
+
+  // Room picture
+  getPic: function(){
+    return this.room_pic;
+  },
+  setPic: function(pic){
+    this.room_pic=pic;
   },
 
+  // item & people management
   addItem : function(newitem) {
     pushDef(newitem,this.items);
     return this;
   },
-
   newItem : function(id,picname) {
     var name = _('item_'+id,[],'item_none');
     var intro = _('item_'+id+'_text',[],'item_none_text');
@@ -96,7 +99,6 @@ Room.prototype = {
     this.addItem(ret);
     return ret;
   },
-
   newPeople : function(id,picname) {
     var name = _('people_'+id,or='people_none');
     var intro = _('people_'+id+'_text',or='people_none_text');
@@ -104,7 +106,6 @@ Room.prototype = {
     this.addItem(ret);
     return ret;
   },
-
   newItemBatch: function(id, names, picname) {
     var ret=[], name, intro;
     for (var i = 0; i < names.length; i++){
@@ -115,75 +116,46 @@ Room.prototype = {
     }
     return ret;
   },
-
   removeItemByIdx : function(idx){
     return ((idx == -1) ? null : this.items.splice(idx, 1)[0]);
   },
-
   removeItem : function(name){
     idx = this.idxItemFromName(name);
     return this.removeItemByIdx(idx);
   },
-
-//  itemStringArray : function(){
-//    itemstrarray = [];
-//    for (var i = 0; i < this.items.length; i++){
-//      itemstrarray[itemstrarray.length] = this.items[i].toString();
-//    }
-//    return itemstrarray.map(objToStr);
-//  },
-
   idxItemFromName : function(name){
     return this.items.map(objToStr).indexOf(name);
   },
   idxChildFromName : function(name){
     return this.children.map(objToStr).indexOf(name);
   },
-//  childStringArray : function(){
-//    childstrarray = [];
-//    for (var i = 0; i < this.children.length; i++){
-//      childstrarray[childstrarray.length] = this.children[i].toString();
-//    }
-//    return childstrarray.map(objToStr);
-//  },
-
   getItemFromName : function(name){
     idx = this.idxItemFromName(name);
     return ((idx == -1) ? null : this.items[idx]);
   },
+  getItem : function(name){
+    return this.getItemFromName(_('item_'+name));
+  },
 
+  // linked room management
   getChildFromName : function(name){
     idx = this.children.map(objToStr).indexOf(name);
     return ((idx == -1) ? null : this.children[idx]);
-//    if (childindex > -1)
-//      return this.children[childindex];
-//    return -1;
   },
-
   addChild : function(newchild){
     pushDef(newchild,this.children);
   },
-
   removeChild : function(child){
     index = this.children.indexOf(child);
     if (index != -1){
       this.children.splice(index, 1);
     }
   },
-
-  childrenStringArray : function(child){
-    return this.children.map(objToStr);
-    //    childrenstrarray = [];
-//    for (var i = 0; i < this.children.length; i++){
-//      childrenstrarray[childrenstrarray.length] = this.children[i].toString();
-//    }
-//    return childrenstrarray;
-  },
-
   addParent : function(parent){
     this.parents[0] = parent;
   },
 
+  // Events management
   addListener : function(name,fun){
     this.ev.addListener(name,fun);
     return this;
@@ -204,6 +176,8 @@ Room.prototype = {
     delete global_spec[this.room_name][name];
     return this;
   },
+
+  // command management
   addCommand : function(cmd){
 //    console.log(this,cmd);
     this.commands[this.commands.length] = cmd;
@@ -228,6 +202,36 @@ Room.prototype = {
     return this;
   },
 
+  /*Checks if arg can be reached from this room
+   * Returns the room if it can
+   * Returns false if it cannot
+   *
+   * 'arg' is a single node, not a path
+   * i.e. $home.can_cd("next_room") returns true
+   *      $home.can_cd("next_room/another_room") is invalid
+   */
+  can_cd : function(arg){
+    //Don't allow for undefined or multiple paths
+    if (arg === undefined || arg.indexOf("/") > -1){
+      return false;
+    }
+    else if(arg === "..") {
+      return this.parents[0];
+    } else if (arg === ".") {
+      return this;
+    } else {
+      for (var i = 0; i < this.children.length; i++){
+        if (arg === this.children[i].toString()){
+          return this.children[i];
+        }
+      }
+      return false;
+    }
+  },
+
+  /* Returns the room and the item corresponding to the path
+   * if item is null, then the path describe a room and  room is the full path
+   * else room is the room containing the item */
   traversee: function(path){
       var pat=path.split('/');
       var room=this;
@@ -280,9 +284,7 @@ Room.prototype = {
     if (peopleset.length > 0){
       ret+=_('peoples', [" " + (peopleset.toString()).replaceAll(",", "\n ")])+ "\n" ;
     }
-return ret;
-    //    return _('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")]) +
-//      "\n" + ( (this.items.length > 0) ? _('items', [" " + (this.items.toString()).replaceAll(",", "\n ")]) : '');
+    return ret;
   },
 
   cd : function(args,vt){
@@ -310,21 +312,6 @@ return ret;
     } else if (args[0] === ".") {
       vt.push_img(null);
       return _('cmd_cd',enterRoom(this, vt));
-      // } else if (args[0].indexOf("/") > 0){
-      // 	var rooms_in_order = args[0].split("/");
-      // 	var cur_room_to_test = this;
-      // 	for (var i = 0; i < rooms_in_order.length; i++){
-      // 		cur_room_to_test = cur_room_to_test.can_cd(rooms_in_order[i]);
-      // 		if (cur_room_to_test === false){
-      // 			return "That is not reachable from here.";
-      // 		}
-      // 	}
-      // 	enterRoom(cur_room_to_test);
-      // 	return "You  have moved to " + cur_room_to_test.toString() + ". " + current_room.intro_text;
-      //  } else if (args[0][0] === "/") {
-      // /* testing ... */
-      //    roomname = args[0].substr(1);
-      //    this.fire_event('cd',args,O,roomname);
     } else {
       var room=this.traversee(args[0])[0];
       if (room) {
@@ -336,50 +323,11 @@ return ret;
           return room.cmd_text.cd;
         }
       }
-      //      roomname = args[0];
-      //      for (var i = 0; i < this.children.length; i++){
-      //        if (roomname === this.children[i].toString()){
-      //          if (this.children[i].commands.indexOf("cd") > -1){
-      //            this.children[i].previous=this;
-      //            return _('cmd_cd',enterRoom(this.children[i],vt));
-      //          } else {
-      //            this.fire_event('cd',args,0,roomname);
-      //            return this.children[i].cmd_text.cd;
-      //          }
-      //        }
-      //    }
       return _('cmd_cd_failed', args);
     }
   },
 
-  /*Checks if arg can be reached from this room
-   * Returns the room if it can
-   * Returns false if it cannot
-   *
-   * 'arg' is a single node, not a path
-   * i.e. $home.can_cd("next_room") returns true
-   *      $home.can_cd("next_room/another_room") is invalid
-   */
-  can_cd : function(arg){
-    //Don't allow for undefined or multiple paths
-    if (arg === undefined || arg.indexOf("/") > -1){
-      return false;
-    }
-    else if(arg === "..") {
-      return this.parents[0];
-    } else if (arg === ".") {
-      return this;
-    } else {
-      for (var i = 0; i < this.children.length; i++){
-        if (arg === this.children[i].toString()){
-          return this.children[i];
-        }
-      }
-      return false;
-    }
-  },
-
-  less : function(args,vt){
+  less : function(args,vt){// event arg -> object
     if (args.length < 1){
       return _('cmd_less_invalid');
     } else {
@@ -399,7 +347,7 @@ return ret;
   },
 
   //only valid for command names
-  man : function(args){
+  man : function(args){// event arg -> cmd
     if (args.length < 1){
       return _('cmd_man_no_query');
     } else {
@@ -427,7 +375,7 @@ return ret;
     return "";
   },
 
-  mv : function(args){
+  mv : function(args){// event arg -> object (source)
     if (args.length != 2){
       return _('cmd_mv_flood');
     } else {
@@ -445,7 +393,7 @@ return ret;
     }
   },
 
-  rm : function(args){
+  rm : function(args){// event arg -> object
     if (args.length < 1){
       return _("cmd_rm_miss");
     } else {
@@ -498,7 +446,9 @@ return ret;
     } else {
       var createdItemsString = "";
       for (var i = args.length - 1; i >= 0; i--) {
-        if (args[i].length > 0){
+        if (this.getItemFromName(args[i])){
+          return _('tgt_already_exists',[args[i]]);
+        } else if (args[i].length > 0){
           this.addItem(new Item(args[i], _('item_intro', [args[i]])));
           createdItemsString += args[i];
           this.fire_event('touch',args,i);
@@ -512,21 +462,25 @@ return ret;
     return _('cmd_unknown');
   },
 
-  cp : function(args){
+  cp : function(args){//event arg -> destination item
     if (args.length != 2){
       return _('incorrect_syntax');
     } else {
-      var item_to_copy_name = args[0];
-      var new_item_name = args[1];
-      var item = this.getItemFromName(item_to_copy_name);
+      var i = args[0];
+      var nu = args[1];
+      var item = this.getItemFromName(i);
       if (item){
-        var newItem = new Item(new_item_name);
-        newItem.picture = item.picture;
-        newItem.cmd_text = item.cmd_text;
-        newItem.valid_cmds = item.valid_cmds;
-        this.addItem(newItem);
-        this.fire_event('cp',args,0);
-        return _('cmd_cp_copied', [item_to_copy_name ,new_item_name]);
+        if (this.getItemFromName(nu)){
+          return _('tgt_already_exists',[nu]);
+        } else {
+          var nut = new Item(nu);
+          nut.picture = item.picture;
+          nut.cmd_text = item.cmd_text;
+          nut.valid_cmds = item.valid_cmds;
+          this.addItem(nut);
+          this.fire_event('cp',args,1);
+          return _('cmd_cp_copied', [i ,nu]);
+        }
       }
       return _('cmd_cp_unknown');
     }
@@ -547,7 +501,7 @@ return ret;
     return _('incorrect_syntax');
   },
 
-  mkdir : function(args){
+  mkdir : function(args){//event arg -> created dir
     if (this.commands.indexOf("mkdir") > 0){
       if (args.length === 1){
         link_rooms(this, new Room(args[0]));

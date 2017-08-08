@@ -7,21 +7,31 @@ String.prototype.printf=function (vars){
       return vars[i];
     });
 };
+var var_regexp=/\{\{\w+\}\}/g;
 function _(str,vars,or) {
   vars = d(vars, []);
   or = d(or, '');
+  var ret;
   if (str in dialog) {
-    return dialog[str].printf(vars);
+    ret=dialog[str].printf(vars);
   } else {
     if (typeof pogen == 'function' ){
       pogen(str);
     }
     if (or && or in dialog) {
-      return dialog[or].printf(vars);
+      ret=dialog[or].printf(vars);
+    } else {
+      ret=str + ' ' + vars.join(' ');
     }
-    return str + vars.join(' ');
   }
-};
+
+  while (var_regexp.test(ret)) {
+    ret=ret.replace(var_regexp, function (a) {
+      return _(a.substring(2,a.length-2));
+      });
+  }
+  return ret;
+}
 function gettext_check(){
   if (typeof pogen_deliver == 'function' ){pogen_deliver();}
 }

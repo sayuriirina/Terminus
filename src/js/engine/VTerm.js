@@ -1,3 +1,5 @@
+/* Terminal interface which solve completion problem */
+
 function commonprefix(array) {
   //https://stackoverflow.com/questions/1916218/find-the-longest-common-starting-substring-in-a-set-of-strings/1917041#1917041
   var A= array.concat().sort(), 
@@ -6,47 +8,33 @@ function commonprefix(array) {
   return a1.substring(0, i);
 }
 function addspace(i){return i+' ';}
-function addEl(root,tag,clss,txt,title,fun){
-  var el=dom.El(tag);
-  if (def(clss)) {el.className=clss;}
-  if (def(title)) {el.title=title;}
-  if (def(txt)) {el.innerHTML='<span>'+txt+'</span>';}
-  if (def(fun)) {el.onclick=fun;}
-  root.appendChild(el);
-  return el;
-}
-function addAttrs(el,attrs){
-  for (var i in attrs) {
-    if (attrs.hasOwnProperty(i)){
-      el.setAttribute(i,attrs[i]); 
-    }
-  }
-  return el;
-}
-function VTerm(context, container_id, img_id,img_mode,img_dir){
-  var term = dom.Id(container_id);
-  var cmd = addEl(term,'p','input');
+
+function VTerm(container_id, img_dir,  img_id, context){
   var t=this;
-  var belt=addEl(term,'div','belt');
-  var keys=addEl(belt,'div','keys');
-  addEl(keys,'button','key','✗','Ctrl-U',function(e){
-    t.set_line(''); t.show_suggestions(t.context.commands.map(addspace));
-  });
-  addEl(keys,'button','key','↹','Tab',function(e){t.make_suggestions();});
-  addEl(keys,'button','key','↵','Tab',function(e){t.enter();});
-  this.suggestions=addEl(belt,'div','suggest');
-  this.cmdline = cmd;
-  this.input = addAttrs(addEl(cmd,'input'),{autofocus:'autofocus',size:80});
-  this.container = term;
-  this.context = context;
-  this.img_mode=img_mode.charAt(0);//follow or static
-  this.img_dir=img_dir; // shall contains last slash './img/'
-  this.img_element= (img_id ? dom.Id(img_id) : cmd );
-  this.imgs=[];
-  this.history=[];
-  this.histchecking=false;
-  this.histindex=0;
-  this.scrolling=0;
+  /* non dom properties */
+  t.context = context;
+  t.img_dir=(img_dir ? img_dir : './img/'); // shall contains last slash './img/'
+  t.imgs=[];
+  t.history=[];
+  t.histchecking=false;
+  t.histindex=0;
+  // live properties
+  t.scrolling=0;
+  /* dom properties (view) */
+  t.container = dom.Id(container_id);
+  t.monitor = addEl(t.container,'div','monitor');
+  t.cmdline = addEl(t.container,'p','input');
+//  t.input = addAttrs(addEl(t.cmdline,'input'),{autofocus:'autofocus',size:80});
+  t.input = addAttrs(addEl(t.cmdline,'input'),{size:80});
+  var b=addEl(t.container,'div','belt');
+  var k=addEl(b,'div','keys');
+  t.suggestions= addEl(b,'div','suggest');
+  // buttons
+  addEl(k,'button','key','✗','Ctrl-U',function(e){ t.set_line(''); t.show_suggestions(t.context.commands.map(addspace)); });
+  addEl(k,'button','key','↹','Tab',function(e){t.make_suggestions();});
+  addEl(k,'button','key','↵','Enter',function(e){t.enter();});
+  // img element if exist
+  t.img_element= (img_id ? dom.Id(img_id) : null );
 }
 VTerm.prototype={
   start: function(ctx){
@@ -59,11 +47,29 @@ VTerm.prototype={
   },
   push_img: function(img){
     this.imgs.push(img);
+    return this;
+  },
+  epic_img_enter: function(i, clss, scrl_timeout, scrl_period, scrl_inc){
+    var t=this;
+    var timeout=d(scrl_timeout,1000);
+    var period=d(scrl_period,1000);
+    if (t.img_element){
+      addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
+    } else {
+      var c = addEl(t.monitor,'div', "img-container "+clss);
+      addAttrs(addEl(c,'img'),{src:t.img_dir + i.src,title:i.title,alt:i.alt})
+        .onload=function(){
+          c.className+=' loaded';
+          setTimeout(function(){ 
+            t.scrl(period,scrl_inc); 
+          },timeout);
+        };
+    }
   },
   show_img: function(){
     var t=this;
     if (t.imgs.length>0) {
-      if (t.img_mode === 's'){
+      if (t.img_element){
         var i=t.imgs.pop();
         if (i.hasOwnProperty('src')){
           addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
@@ -72,32 +78,28 @@ VTerm.prototype={
           addAttrs(t.img_element, {src: t.img_dir + img.room_none.src, alt:img.room_none.alt, title:img.room_none.title});
         }
       } else {
-        var c = dom.El('div'); c.className = "img-container";
+        var c = addEl(t.monitor,'div', "img-container");
         for (var i in t.imgs) {
           if (t.imgs.hasOwnProperty(i)){
             var im=t.imgs[i];
             if (im && im.alt.length > 0){
               addAttrs(addEl(c,'img'),{src:t.img_dir + im.src,title:im.title,alt:im.alt})
                 .
-//                onload=t.scrl;
+                //                onload=t.scrl;
                 onload=function(){
-//                  setTimeout(function() {
-                    t.scrl();
-//                  },200); 
+                  //                  setTimeout(function() {
+                  t.scrl();
+                  //                  },200); 
                 };
             }
-          } 
+          }
         }
-        this.container.insertBefore(c, this.img_element);
       }
       this.imgs=[];
     } 
   },
   show_previous_prompt: function (txt){
-    var msg=dom.El('p');
-    msg.innerText = txt;
-    msg.className = "input";
-    this.container.insertBefore(msg,this.cmdline);
+    addEl(this.monitor,'p','input').innerText = txt;
   },
 
   get_line:function(){
@@ -107,8 +109,7 @@ VTerm.prototype={
     this.input.value = val;
   },
   show_msg: function (txt){
-    var m=dom.El('p'); m.innerText = txt; m.className = "msg";
-    this.container.insertBefore(m,this.cmdline);
+    addEl(this.monitor,'p','msg').innerText = txt;
   },
   make_suggestions: function (autocomplete){
     var t=this;    
@@ -118,14 +119,24 @@ VTerm.prototype={
     args=l.split(' ');
     if (args.length > 0) {
       var tocomplete;
-      var match;
+      var match=[];
+//      console.log('suggestions',ac,l,args);
       if (args.length > 1) {
         tocomplete=args.pop();
         match=t.context._completeArgs(args[0],tocomplete);
-      } else if (args[0].length>0) {
+      } else if (args[0].length>0){
+        if (t.context.commands.indexOf(args[0])>-1) {
         tocomplete="";
         t.set_line(l+' ');
         match=t.context._completeArgs(args[0],tocomplete);
+        } else {
+          tocomplete=args.pop();
+          for(var i = 0; i<t.context.commands.length; i++){
+            if(t.context.commands[i].match("^"+tocomplete)){
+                match.push(t.context.commands[i]);
+            }
+          }
+        }
       } else {
         tocomplete="";
         match=t.context.commands.map(addspace);
@@ -134,7 +145,8 @@ VTerm.prototype={
         t.set_line(l+'?');
         setTimeout(function(){t.set_line(l+'??');},100)
         setTimeout(function(){t.set_line(l);},200)
-      } else if (match.length == 1 ){
+      }
+      else if (match.length == 1 ){
         if (ac) {
           var lb=tocomplete.split('/');
           lb.pop();
@@ -142,11 +154,17 @@ VTerm.prototype={
           args.push(lb.join('/'));
           t.set_line(args.join(" "));
         } else {
-          t.show_suggestions(match); 
+          if (match[0] == tocomplete) {
+            t.set_line(l+' ');
+          }
+          t.show_suggestions(match);
         }
       } else {
         var lcp=commonprefix(match);
         t.show_suggestions(match);
+        if (match.indexOf(lcp)>-1){
+          t.set_line(l+' ');
+        }
         if (lcp.length > 0 && ac){
           args.push(lcp);
           t.set_line(args.join(" "));
@@ -187,6 +205,8 @@ VTerm.prototype={
   enter : function(){
     var t=this;   
     var pr=t.input;
+    var mon=t.monitor;
+    t.monitor = addEl(mon,'div','screen');
     t.histindex=0;
     // Enter -> exec command
     args=t.get_line().replace(/\s+$/,"").split(' ');
@@ -198,12 +218,12 @@ VTerm.prototype={
     t.set_line('');
     t.hide_suggestions();
     t.show_suggestions(this.context.commands.map(addspace));
+    t.monitor = mon;
   },
-  scrl : function(){
+  scrl : function(period,increment){
     // we want to scroll to the bottom
     var c=this.container;
-    var increment = this.input.clientHeight, time = 300;
-    var tinc=1;var ttim=20;
+    var increment = d(increment,4), time = d(period,1);
     var t=this;
     this.scrolling++;
     function scroller() {
@@ -217,7 +237,7 @@ VTerm.prototype={
         } else {
           this.scrolling--;
         }
-      } 
+      }
     }
     scroller();
   }, 
@@ -227,18 +247,14 @@ VTerm.prototype={
     var t=this;
     var pr=t.input;
     //    var cmd=this.cmdspan;
-    var term=this.container;
-    
-    var echo=t.context.getStarterMsg(t);
-    if (echo) {
-      t.show_img();
-      t.show_msg(echo);
-    }
-    
+
     dom.body.onkeydown = function (e) {
       e = e || window.event;//Get event
       var k=e.which;
       if (k === 33 || k  === 34 || k === 38 || k  === 40) {
+        if (e.shiftKey){
+          e.preventDefault(); 
+        }
       } else {
         var focused = d.activeElement;
         if ( !focused || focused != pr) {
@@ -247,9 +263,12 @@ VTerm.prototype={
         pr.onkeydown(e);
       }
     }
-    term.onclick = function (e) {
-      pr.focus();
-    }
+    var scrollenable=function (e) {
+      t.scrolling=true;
+    };
+
+    t.container.onscroll=scrollenable;
+    t.container.onclick=scrollenable;
     window.onbeforeunload = function(e) {
       return 'Quit the game ?';
     }
@@ -260,7 +279,7 @@ VTerm.prototype={
         overide=true;
       } else if ( e.ctrlKey ) {
         if (k === 67  || k === 88 || k === 86 || k === 89 || k === 90  ) { 
-            // CTRL+C - CTRL+X - CTRL+V - CTRL+Y -CTRL+Z
+          // CTRL+C - CTRL+X - CTRL+V - CTRL+Y -CTRL+Z
           overide=true;
         }
       } else if (k === 33 || k  === 34 ){
@@ -321,7 +340,7 @@ VTerm.prototype={
           t.set_line(t.history[t.history.length-1-t.histindex]);
         } 
       } else if ( k === 38) {//up
-//        console.log(t.histindex, t.history);
+        //        console.log(t.histindex, t.history);
         if (t.histindex < t.history.length){
           var prev=t.history[t.history.length-1-t.histindex];
           if (t.histindex==0){
@@ -336,7 +355,7 @@ VTerm.prototype={
       } else {
 
       }
-//      console.log(k);
+      //      console.log(k);
       //    cmdspan.innerText=pr.value;
       if (overide) {
         e.stopPropagation();
