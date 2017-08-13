@@ -6,6 +6,7 @@ body {
   font-stretch:condensed;
 /*  transition:all 1s;*/
 }
+
 .msg, button {
   border:none;
   font-size:inherit;
@@ -165,3 +166,7 @@ padding:3px;
     left:0;
   }
 }
+input[disabled=""] {
+  opacity:0;
+}
+

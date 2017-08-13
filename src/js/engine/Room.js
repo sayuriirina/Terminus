@@ -12,11 +12,12 @@ function Room(roomname, introtext, roompic, inside_evts,outside_evts,varname){
   this.previous = this;
 	this.children = [];
 	this.items = [];
+  this.commands_lock={};
 	this.commands = ["cd", "ls", "less", "man", "help", "exit", "pwd"];
   this.fire = null;
 	this.room_name = d(roomname, _('room_none'));
 	this.intro_text = d(introtext, _('room_none_text'));
-	this.room_pic = d(new Pic(roompic), img.room_none);
+  this.room_pic = ( def(roompic) ? new Pic(roompic) : img.room_none);
   this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name])};
 	this.starter_msg=null;
   //for event handling
@@ -39,7 +40,7 @@ function newRoom(id, roompic, inside_evts,outside_evts){
   return n;
 }
 function enterRoom(new_room,vt){
-  vt.push_img(null);
+  vt.push_img(img.room_none);
   vt.setContext(new_room);
   state.setCurrentRoom(new_room);
   return [new_room.toString(), new_room.intro_text];
@@ -49,18 +50,22 @@ Room.prototype = {
   toString : function(){
     return this.room_name;
   },
-  fire_event:function(cmd,args,idx,otherroomname){
-    var ck=null;
-    var context={room:this, arg:args[idx], args:args, i:idx};
-    if (typeof otherroomname === 'string' ) {
-      if ((otherroomname in global_spec) && (cmd in global_spec[otherroomname])) {
-        ck = global_spec[otherroomname][cmd](context);
+  fire_event :function(vt,cmd,args,idx,ct){
+    ct=d(ct,{});
+    var ev_trigger=null;
+    var context={term:vt, room:this, arg:args[idx], args:args, i:idx,ct:ct};
+    if (ct.hasOwnProperty('unreachable_room')) {
+      if ((ct.unreachable_room.room_name in global_spec) && (cmd in global_spec[ct.unreachable_room.room_name])) {
+        ev_trigger=global_spec[ct.unreachable_room.room_name][cmd];
       }
     } else if (cmd in this.cmd_inside_spec) {
-      ck = this.cmd_inside_spec[cmd](context);
+      ev_trigger=this.cmd_inside_spec[cmd];
     }
-    if (ck) {
-      this.ev.fire(ck);
+    if (ev_trigger) {
+      var ck=(typeof ev_trigger === "function" ? ev_trigger(context) : ev_trigger);
+      if (ck){
+        this.ev.fire(ck);
+      }
     }
   },
   // text displayed at each change
@@ -72,8 +77,8 @@ Room.prototype = {
     if (this.starter_msg){
       return this.starter_msg;
     } else {
-      return this.cmd_text['pwd'];
-    };
+      return this.cmd_text.pwd;
+    }
   },
   setStarterMsg: function(txt){
     this.starter_msg = txt;
@@ -90,6 +95,7 @@ Room.prototype = {
   // item & people management
   addItem : function(newitem) {
     pushDef(newitem,this.items);
+    newitem.room=this;
     return this;
   },
   newItem : function(id,picname) {
@@ -108,7 +114,7 @@ Room.prototype = {
   },
   newItemBatch: function(id, names, picname) {
     var ret=[], name, intro;
-    for (var i = 0; i < names.length; i++){
+    for (let i = 0; i < names.length; i++){
       name = _('item_'+id, [names[i]], or='item_none');
       intro = _('item_'+id+'_text', [names[i]], or='item_none_text');
       ret[i]=new Item(name,intro,picname);
@@ -119,8 +125,16 @@ Room.prototype = {
   removeItemByIdx : function(idx){
     return ((idx == -1) ? null : this.items.splice(idx, 1)[0]);
   },
-  removeItem : function(name){
+  removeItemByName : function(name){
     idx = this.idxItemFromName(name);
+    return this.removeItemByIdx(idx);
+  },
+  removeItem : function(name){
+    idx = this.idxItemFromName(_('item_'+name));
+    return this.removeItemByIdx(idx);
+  },
+  removePeople : function(name){
+    idx = this.idxItemFromName(_('people_'+name));
     return this.removeItemByIdx(idx);
   },
   idxItemFromName : function(name){
@@ -143,7 +157,9 @@ Room.prototype = {
     return ((idx == -1) ? null : this.children[idx]);
   },
   addChild : function(newchild){
-    pushDef(newchild,this.children);
+    if (pushDef(newchild,this.children)){
+      newchild.addParent(this);
+    }
   },
   removeChild : function(child){
     index = this.children.indexOf(child);
@@ -178,9 +194,32 @@ Room.prototype = {
   },
 
   // command management
-  addCommand : function(cmd){
+  setCommandOptions : function(cmd,options){
+    this.commands_lock[cmd]=options;
+    return this;
+  },
+  removeCommandOptions : function(cmd){
+    delete this.commands_lock[cmd];
+    return this;
+  },
+  getCommands : function(){
+    var ret=[];
+    for (let i=0;i<this.commands.length;i++){
+      if (this.hasCommand(this.commands[i])){
+        ret.push(this.commands[i]);
+      }
+    }
+    return ret;
+  },
+  hasCommand : function(cmd){
+    return ( (this.commands.indexOf(cmd) > -1) && ( global_commands.indexOf(cmd) > -1 ) );
+  },
+  addCommand : function(cmd,options){
 //    console.log(this,cmd);
-    this.commands[this.commands.length] = cmd;
+    this.commands.push(cmd);
+    if (def(options)){
+      this.setCommandOptions(cmd,options);
+    }
     return this;
   },
 
@@ -214,13 +253,14 @@ Room.prototype = {
     //Don't allow for undefined or multiple paths
     if (arg === undefined || arg.indexOf("/") > -1){
       return false;
-    }
-    else if(arg === "..") {
+    } else if(arg === "~") {
+      return $home;
+    } else if(arg === "..") {
       return this.parents[0];
     } else if (arg === ".") {
       return this;
     } else {
-      for (var i = 0; i < this.children.length; i++){
+      for (let i = 0; i < this.children.length; i++){
         if (arg === this.children[i].toString()){
           return this.children[i];
         }
@@ -233,37 +273,51 @@ Room.prototype = {
    * if item is null, then the path describe a room and  room is the full path
    * else room is the room containing the item */
   traversee: function(path){
-      var pat=path.split('/');
-      var room=this;
-      var item=null;
-      var i;
-      for (i = 0; i < pat.length-1; i++){
-        if (room){
-          room=room.can_cd(pat[i]);
-        } else {
-          return _("room_unreachable");
+    var pat=path.split('/');
+    var room=this;
+    var item=null;
+    var lastcomponent=null;
+    var i;
+    var cancd=true;
+    for (i = 0; i < pat.length-1; i++){
+      if (cancd){
+        cancd=room.can_cd(pat[i]);
+        if (cancd) {
+          room=cancd;
+        } else  {
+          room=null;break;
         }
       }
+    }
+    if (room){
+      lastcomponent=pat[pat.length-1];
       for (i = 0; i < room.items.length; i++){
-        if (pat[pat.length-1] === room.items[i].toString()){
-          item=pat[pat.length-1]
+        if (lastcomponent === room.items[i].toString()){
+          item=room.items[i];
           break;
         }
       }
       if (!item){
-         room=room.can_cd(pat[pat.length-1])
+        cancd=room.can_cd(pat[pat.length-1]);
+        if (cancd) {
+          room=cancd;
+          lastcomponent=null;
+        }
       }
-      return [room,item];
+    }
+    return [room,item,lastcomponent,i];
   },
 
   ls : function(args,vt){
     if (args.length > 0){
       var room=this.traversee(args[0])[0];
       if (room) {
-        if (room.children.length == 0 && room.items.length == 0 ){
+        if (room.children.length === 0 && room.items.length === 0 ){
           return _("room_empty");
         }
         return room.printLS();
+      } {
+          return _("room_unreachable");
       }
     } else {
       vt.push_img(this.room_pic); // Display image of room
@@ -293,35 +347,34 @@ Room.prototype = {
     } else if (args[0] === "-") {
       this.previous.previous=this;
       enterRoom(this.previous, vt);
-    } else if (args.length === 0){
+    } else if (args.length === 0 || args[0] === "~"){
       $home.previous=this;
       enterRoom($home, vt);
       return _('cmd_cd_home');
-    }else if (args[0] === "..") {
-      this.fire_event('cd',args,0);
+    } else if (args[0] === "..") {
+      this.fire_event(vt,'cd',args,0);
       if (this.parents.length >= 1){
         this.parents[0].previous=this;
         return _('cmd_cd_parent', enterRoom(this.parents[0], vt));
       } else {
         return _('cmd_cd_no_parent');
       }
-    } else if (args[0] === "~"){
-      $home.previous=this;
-      enterRoom($home, vt);
-      return _('cmd_cd_home');
     } else if (args[0] === ".") {
-      vt.push_img(null);
+      vt.push_img(img.room_none);
       return _('cmd_cd',enterRoom(this, vt));
     } else {
-      var room=this.traversee(args[0])[0];
-      if (room) {
-        if (room.commands.indexOf("cd") > -1){
+      var traversee=this.traversee(args[0]);
+      var room=traversee[0];var lastcomponent=traversee[2];
+      if (room && !lastcomponent) {
+        this.fire_event(vt,'cd',args,0,{'unreachable_room':room});
+        if (room.hasCommand("cd")){
           room.previous=this;
           return _('cmd_cd',enterRoom(room,vt));
         } else {
-          this.fire_event('cd',args,0,room.room_name);
           return room.cmd_text.cd;
         }
+//      } else {
+//        return _("room_unreachable");
       }
       return _('cmd_cd_failed', args);
     }
@@ -333,14 +386,17 @@ Room.prototype = {
     } else {
       var traversee=this.traversee(args[0]);
       var room=traversee[0];
-      var item=traversee[1];
-      for (i = 0; i < room.items.length; i++){
-        if (item === room.items[i].toString()){
-          vt.push_img(room.items[i].picture); // Display image of item
-          var ret=room.items[i].cmd_text.less;
-          room.fire_event('less',args,0);
-          return ret;
+      if (room){
+        var item=traversee[1];
+        if (item) {
+            vt.push_img(item.picture); // Display image of item
+            room.fire_event(vt,'less',args,0);
+            return item.cmd_text.less;
+        } else {
+          return _("item_not_exists",args[0]);
         }
+      } else {
+        return _("room_unreachable");
       }
       return _('cmd_less_invalid',args);
     }
@@ -379,17 +435,38 @@ Room.prototype = {
     if (args.length != 2){
       return _('cmd_mv_flood');
     } else {
-      var item_idx = this.idxItemFromName(args[0]);
-      var child_idx = this.idxChildFromName(args[1]);
-      if ((item_idx >= 0) && ( child_idx >= 0)){
-        itemtoadd = this.items[item_idx];
-        this.children[child_idx].addItem(itemtoadd);
-        this.fire_event('mv',args,0);
-        this.removeItemByIdx(item_idx);
-        return _('cmd_mv_done', args);
-      } else {
-        return _("cmd_mv_invalid");
+      var src = this.traversee(args[0]);
+      if (src[0] && src[1]){
+        var item_idx = src[3];
+        var dest = this.traversee(args[1]);
+        if ((item_idx >= 0) && ( dest[0] )){
+          itemtoadd = src[0].items[item_idx];
+          console.log(itemtoadd);
+          if (itemtoadd.valid_cmds.indexOf("mv")>-1){
+            if (dest[1]){
+              dest[0].removeItemByIdx(dest[3]);
+            }
+            dest[0].addItem(itemtoadd);
+            if (dest[2]){
+              itemtoadd.itemname=dest[2];
+            }
+            src[0].fire_event(vt,'mv',args,0);
+            src[0].removeItemByIdx(item_idx);
+            if (src[0].room_name !== dest[0].room_name){
+              itemtoadd.fire_event(vt,'mv',args,0);
+              if ("mv" in itemtoadd.cmd_text){
+                return itemtoadd.cmd_text.mv;
+              }
+            }
+            return _('cmd_mv_done', args);
+          } else if ("mv" in itemtoadd.cmd_text){
+            return itemtoadd.cmd_text.mv;
+          } else {
+            return _('cmd_mv_fixed'); 
+          }
+        }
       }
+      return _("cmd_mv_invalid"); 
     }
   },
 
@@ -398,15 +475,17 @@ Room.prototype = {
       return _("cmd_rm_miss");
     } else {
       var stringtoreturn = "";
-      var item;
-      for (var i = 0; i < args.length; i++){
-        idx = this.idxItemFromName(args[i]);
-        if (idx != -1){
-          item=this.items[idx];
+      var item,room,idx;
+      for (let i = 0; i < args.length; i++){
+        var traversee = this.traversee(args[i]);
+        room = traversee[0];
+        item = traversee[1];
+        idx = traversee[3];
+        if (item){
           if (item.valid_cmds.indexOf("rm") > 0){
-            var removedItem = this.removeItemByIdx(idx);
+            var removedItem = room.removeItemByIdx(idx);
             if (removedItem) {
-              this.fire_event('rm',args,i);
+              room.fire_event(vt,'rm',args,i);
               if ("rm" in removedItem.cmd_text){
                 stringtoreturn += removedItem.cmd_text.rm + "\n";
               } else {
@@ -416,6 +495,9 @@ Room.prototype = {
               stringtoreturn += _('cmd_rm_failed');
             }
           } else {
+            if ("rm" in item.cmd_text){
+              return item.cmd_text.rm;
+            }
             return _('cmd_rm_invalid');
           }
         }
@@ -425,16 +507,18 @@ Room.prototype = {
   },
 
   grep : function(args){
-    if (this.commands.indexOf("grep") > 0){
+    if (this.hasCommand("grep")){
       var word_to_find = args[0];
-      var item=this.getItemFromName(args[1]);
+//      var item=this.getItemFromName(args[1]);
+      var traversee=this.traversee(args[1]);
+      var item=traversee[1];
       if (item){
         var item_to_find_in_text = item.cmd_text.less;
         var line_array = item_to_find_in_text.split("\n");
-        var return_arr = jQuery.grep(line_array, function(line){ return (line.indexOf(word_to_find) > 0);});
+        var return_arr = line_array.filter(function(line){ return (line.indexOf(word_to_find) > 0);});
         return return_arr.join("\n");
       } else {
-        return "Not a valid item to search in.";
+        return _('item_not_exists', args[0]);
       }
     }
     return _('cmd_unknown');
@@ -445,13 +529,13 @@ Room.prototype = {
       return _('cmd_touch_nothing');
     } else {
       var createdItemsString = "";
-      for (var i = args.length - 1; i >= 0; i--) {
+      for (let i = args.length - 1; i >= 0; i--) {
         if (this.getItemFromName(args[i])){
           return _('tgt_already_exists',[args[i]]);
         } else if (args[i].length > 0){
           this.addItem(new Item(args[i], _('item_intro', [args[i]])));
           createdItemsString += args[i];
-          this.fire_event('touch',args,i);
+          this.fire_event(vt,'touch',args,i);
         }
       }
       if (createdItemsString === ""){
@@ -468,17 +552,22 @@ Room.prototype = {
     } else {
       var i = args[0];
       var nu = args[1];
-      var item = this.getItemFromName(i);
+//      var item = this.getItemFromName(i);
+      var src=this.traversee(args[0]);
+      var dest=this.traversee(args[1]);
+      var item=src[1];
+      var nit=dest[1];
+      var nro=dest[0];
       if (item){
-        if (this.getItemFromName(nu)){
-          return _('tgt_already_exists',[nu]);
-        } else {
-          var nut = new Item(nu);
+        if (nit){
+          return _('tgt_already_exists',[nit.itemname]);
+        } else if (nro) {
+          var nut = new Item(nit.itemname);
           nut.picture = item.picture;
           nut.cmd_text = item.cmd_text;
           nut.valid_cmds = item.valid_cmds;
-          this.addItem(nut);
-          this.fire_event('cp',args,1);
+          nro.addItem(nut);
+          nro.fire_event(vt,'cp',args,1);
           return _('cmd_cp_copied', [i ,nu]);
         }
       }
@@ -502,10 +591,10 @@ Room.prototype = {
   },
 
   mkdir : function(args){//event arg -> created dir
-    if (this.commands.indexOf("mkdir") > 0){
+    if (this.hasCommand("mkdir")){
       if (args.length === 1){
         link_rooms(this, new Room(args[0]));
-        this.fire_event('mkdir',args,0);
+        this.fire_event(vt,'mkdir',args,0);
         return _("room_new_created", args);
       }
       return _("incorrect_syntax");
@@ -514,7 +603,7 @@ Room.prototype = {
   },
 
   sudo : function(args){
-    if (this.commands.indexOf("sudo") > 0){
+    if (this.hasCommand("sudo")){
       if (args[0] === "less" && args[1] === "Certificate"){
         this.ev.fire("tryEnterSudo");
         return;
@@ -525,20 +614,20 @@ Room.prototype = {
     return _("cannot_cast");
   },
 
-  IHTFP : function(args){
-    if (this.commands.indexOf("IHTFP") > 0){
-      if (args.length === 0){
-        var text_to_return = this.cmd_text.IHTFP;
-        this.ev.fire("sudoComplete");
-        return text_to_return;
-      }
-      return _('room_wrong_password');
-    }
-    return _('invalid_spell');
-  },
-
+//  IHTFP : function(args){
+//    if (this.commands.indexOf("IHTFP") > 0){
+//      if (args.length === 0){
+//        var text_to_return = this.cmd_text.IHTFP;
+//        this.ev.fire("sudoComplete");
+//        return text_to_return;
+//      }
+//      return _('room_wrong_password');
+//    }
+//    return _('invalid_spell');
+//  },
+//
   add : function(args){
-    if (this.commands.indexOf("add") > 0){
+    if (this.hasCommand("add")){
       if (args[0] === "MagicLocker"){
         this.ev.fire("addMagicLocker");
         if (typeof this.cmd_text.add === 'undefined'){
@@ -552,20 +641,63 @@ Room.prototype = {
     }
     return _('invalid_spell');
   },
-  exec : function (vt, args){
-    var cmd = args[0];
-    args.push(args.pop().replace(/\/$/,""));
-    if( this.commands.indexOf(cmd) > -1 ){ 
-      var prev = this;
-      var text_to_display = prev[cmd](args.slice(1),vt);
-      if (text_to_display){
-        return text_to_display;
+  exec : function (vt, arrs){
+    var cmd = arrs[0];
+    var ret = "";
+    var t=this;
+    arrs.push(arrs.pop().replace(/\/$/,""));
+    var args=arrs.slice(1);
+    if((args.length === 0 || cmd == 'mkdir' || cmd == 'touch' ) && !t.hasCommand(cmd) ){ 
+      return _('cmd_not_found',[cmd,t.room_name]);
+    } 
+    var callback=function(passok,cmdpass){
+      var ret = "";
+//      t.fire_event(vt,cmd,args,0,{answer:passok,left:cmdpass});
+      if (passok) {
+        var text_to_display = t[cmd](args,vt);
+        if (text_to_display){
+          ret=text_to_display;
+        } else if (cmd in t.cmd_text){
+          ret=t.cmd_text[cmd];
+        }
+      } else {
+        ret=_('room_wrong_password');
       }
-      if (cmd in this.cmd_text){
-        return this.cmd_text[cmd];
+      return ret;
+    };
+    var cmdpass=[];
+    if (cmd in this.commands_lock){
+      if (cmd.locked_inside) {
+        cmdpass.push(this.commands_lock[cmd]);
       }
-    } else{
-      return "Command '"+cmd+"' not found in room '"+this.room_name+"'";
+    }
+      for (let i=0;i<args.length;i++ ){
+        var traversee=this.traversee(args[i]);
+        var cur;
+        if (traversee[0]){
+          if (traversee[1]){
+            //don't ask passwd for items
+            continue;
+          }
+          cur=traversee[0];
+        } else {
+          continue;
+        }
+        if (i===0 && !cur.hasCommand(cmd)){
+          return _('cmd_not_found',[cmd,cur.room_name]);
+        }
+        if (cmd in cur.commands_lock){
+          if(cmd === "sudo" && cur.hasOwnProperty('supass') && cur.supass){
+            continue;
+          }
+          // ask password
+          cmdpass.push(cur.commands_lock[cmd]);
+        }
+      }
+    if (cmdpass.length > 0){
+      vt.ask_password(cmdpass,callback);
+    } else {
+      return callback(true);
     }
   },
 
@@ -590,7 +722,7 @@ Room.prototype = {
     var incomplete_room;
     var substring_matches = [];
     
-    if (cmd=='cd' && path_rooms.length == 1 && path_rooms[0].length == 0){
+    if (cmd=='cd' && path_rooms.length == 1 && path_rooms[0].length === 0){
       substring_matches.push('..'); 
     }
     for (room_num=0;room_num<path_rooms.length;room_num++)

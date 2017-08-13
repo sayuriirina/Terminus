@@ -65,6 +65,9 @@ msgstr "Je ne vois aucun objet qui pourrait porter ce nom."
 msgid "tgt_already_exists"
 msgstr "'%s' existe déjà."
 
+msgid "item_not_exists"
+msgstr "Item '%s' not exists."
+
 msgid "cmd_help_suggestion"
 msgstr "Écris 'man' pour avoir accès aux informations contenues dans la manuscrit"
 
@@ -80,6 +83,9 @@ msgstr "Il faut poser une question pour obtenir une réponse. C'est ce que dit l
 msgid "cmd_man_not_found"
 msgstr "Il n'y a rien d'écrit dans le grand manuscrit."
 
+msgid "cmd_not_found"
+msgstr "Command '%s' not found in room '%s'."
+
 msgid "cmd_mv_done"
 msgstr "%s a été-e déplacé-e vers %s."
 
@@ -88,6 +94,9 @@ msgstr "Il est possible de déplacer un objet A dans un emplacement (ou lieu)  B
 
 msgid "cmd_mv_invalid"
 msgstr "Il faut un objet déplaçable et un emplacement de destination pour réaliser un déplacement."
+
+msgid "cmd_mv_fixed"
+msgstr "This can't be moved."
 
 msgid "cmd_pwd"
 msgstr "Tu te trouve dans %s."
@@ -748,7 +757,7 @@ msgstr ""
 "\"Ruined! I'm ruined! Look at these crops... almost nothing left!\n"
 "The wizard's minions were here last week... they destroyed everything.\n"
 "How will I feed my 3 children with just one ear of corn?\n"
-"I could really use AnotherEarOfCorn! \""
+"I could really use {{item_another_earofcorn}}! \""
 
 msgid "room_clearing"
 msgstr "Clearing"
@@ -779,22 +788,22 @@ msgstr ""
 "\"Hm? Well, I guess it's true that you don't look like one of the wizard's minions.\n"
 "Still, I don't trust you magicfolk. \n"
 "If you really are who you say you are, then prove your good intentions \n"
-"by making me a new House!\""
+"by making me a new {{room_house}}!\""
 
 msgid "room_house"
 msgstr "Maison"
 
 msgid "room_house_text"
-msgstr "Ça ! c'est une maison."
+msgstr "Ça ! c'est une {{room_house}}."
 
 msgid "room_house_cd"
-msgstr "Tu entre dans la maison construite de tes mains."
+msgstr "Tu entre dans la {{room_house}} construite de tes mains."
 
 msgid "room_house_ls"
-msgstr "C'est toi qui l'a faite cette maison. Prends quelques instants pour apprécier ta fierté-e !"
+msgstr "C'est toi qui l'a faite cette {{room_house}}. Prends quelques instants pour apprécier ta fierté-e !"
 
 msgid "room_clearing_less2"
-msgstr "Merci du fond du coeur pour m'avoir construit cette maison ! J'en pleure de joie."
+msgstr "Merci du fond du coeur pour m'avoir construit cette {{room_house}} ! J'en pleure de joie."
 
 msgid "room_clearing_text2"
 msgstr ""
@@ -807,7 +816,7 @@ msgstr "BrokenBridge"
 msgid "room_brokenbridge_text"
 msgstr ""
 "A creaky wooden bridges stretches across a chasm.\n"
-"But it's missing a Plank, and the gap is too far to jump."
+"But it's missing a {{item_plank}}, and the gap is too far to jump."
 
 msgid "room_brokenbridge_text2"
 msgstr "Devant vous, un pont tenu par des cordes s'étend vers l'abîme."
@@ -816,7 +825,7 @@ msgid "item_plank"
 msgstr "Plank"
 
 msgid "item_plank_text"
-msgstr "This is a Plank."
+msgstr "This is a {{item_plank}}."
 
 msgid "room_ominouspath"
 msgstr "OminousLookingPath"
@@ -858,8 +867,9 @@ msgstr "KernelFiles"
 msgid "room_kernel_text"
 msgstr "The KernelFiles hold the sudo-secret (no, not pseudo). You'd better read the Instructions."
 
-msgid "room_kernel_sudo"
+msgid "ask_password"
 msgstr "Password:"
+
 
 msgid "room_kernel_IHTFP"
 msgstr "You have correctly entered the password. You are now in Paradise. Take a look around, and congratulations."
@@ -1010,7 +1020,7 @@ msgstr ""
 "things indeed were really impossible. \n"
 "\n"
 "There seemed to be no use in waiting by the little door, so she went \n"
-"back to the table, half hoping she might find another key on it, or at \n"
+"back to the table, half hoping she might find password=IHTFP another key on it, or at \n"
 "any rate a book of rules for shutting people up like telescopes: this \n"
 "time she found a little bottle on it, ('which certainly was not here \n"
 "before,' said Alice,) and round the neck of the bottle was a paper \n"
@@ -1129,8 +1139,7 @@ msgstr "AthenaCluster"
 
 msgid "room_cluster_text"
 msgstr ""
-"None shall pass without the combination. You \n"
-"have one chance to enter the combination. Enter password:"
+"None shall pass without the combination."
 
 msgid "room_cluster_ls"
 msgstr "You must enter the Athena cluster combo first."

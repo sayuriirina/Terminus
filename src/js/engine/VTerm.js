@@ -24,15 +24,17 @@ function VTerm(container_id, img_dir,  img_id, context){
   t.container = dom.Id(container_id);
   t.monitor = addEl(t.container,'div','monitor');
   t.cmdline = addEl(t.container,'p','input');
+  t.password_input = null;
 //  t.input = addAttrs(addEl(t.cmdline,'input'),{autofocus:'autofocus',size:80});
   t.input = addAttrs(addEl(t.cmdline,'input'),{size:80});
   var b=addEl(t.container,'div','belt');
   var k=addEl(b,'div','keys');
   t.suggestions= addEl(b,'div','suggest');
   // buttons
-  addEl(k,'button','key','✗','Ctrl-U',function(e){ t.set_line(''); t.show_suggestions(t.context.commands.map(addspace)); });
-  addEl(k,'button','key','↹','Tab',function(e){t.make_suggestions();});
-  addEl(k,'button','key','↵','Enter',function(e){t.enter();});
+  t.btn_clear=addEl(k,'button','key','✗','Ctrl-U',function(e){
+    t.set_line(''); t.show_suggestions(this.context.getCommands().map(addspace)); });
+  t.btn_tab=addEl(k,'button','key','↹','Tab',(e)=>t.make_suggestions());
+  t.btn_enter=addEl(k,'button','key','↵','Enter',(e)=>t.enterKey());
   // img element if exist
   t.img_element= (img_id ? dom.Id(img_id) : null );
 }
@@ -43,10 +45,12 @@ VTerm.prototype={
   },
   setContext: function(ctx){
     this.context=ctx;
-    this.show_suggestions(this.context.commands.map(addspace));
+    this.show_suggestions(this.context.getCommands().map(addspace));
   },
   push_img: function(img){
-    this.imgs.push(img);
+    if (img) {
+      this.imgs.push(img);
+    }
     return this;
   },
   epic_img_enter: function(i, clss, scrl_timeout, scrl_period, scrl_inc){
@@ -66,6 +70,62 @@ VTerm.prototype={
         };
     }
   },
+  ask_password_rec:function(cmdpass,callback){
+    var t=this;
+    if (cmdpass.length > 0){
+      var p=cmdpass.shift();
+      var question=d(p.question,_('ask_password'));
+      t.show_msg(question);
+      t.enterKey=function(){
+        var ret = t.password_input.value;
+        t.password_input.value="";
+        if (p.password === ret){
+          t.ask_password_rec(cmdpass,callback); 
+        } else {
+          t.show_msg(callback(false,cmdpass));
+          t.end_password();
+        }
+      };
+      t.scrl();
+    } else {
+      t.show_msg(callback(true,cmdpass));
+      t.end_password();
+    }
+  },
+  begin_password: function(){
+    var t = this;
+    t.set_line('');
+    t.password_input = addAttrs(addEl(t.cmdline,'input'),{size:20,type:'password'});
+    t.password_input.focus();
+    t.password_input.onkeyup=function(e){
+      var k=e.which;
+      if (k === 13) { // ENTER
+        t.enterKey();
+        e.preventDefault();
+        t.scrl();
+      }
+    }
+    t.btn_clear.setAttribute('disabled','');
+    t.btn_tab.setAttribute('disabled','');
+    t.cmdline.removeChild(t.input);
+    t.suggestions.setAttribute('style','display:none');
+  },
+  end_password: function(){
+    var t = this;
+    t.show_previous_prompt(shuffleStr(t.password_input.value,0.5));
+    t.cmdline.appendChild(t.input);
+    t.cmdline.removeChild(t.password_input);
+    t.password_input = null;
+    t.btn_clear.removeAttribute('disabled');
+    t.btn_tab.removeAttribute('disabled');
+    t.enterKey=t.enter;
+    t.suggestions.removeAttribute('style');
+    t.input.focus();
+  },
+  ask_password: function(cmdpass,callback){
+    this.begin_password();
+    this.ask_password_rec(cmdpass,callback);
+  },
   show_img: function(){
     var t=this;
     if (t.imgs.length>0) {
@@ -73,13 +133,10 @@ VTerm.prototype={
         var i=t.imgs.pop();
         if (i.hasOwnProperty('src')){
           addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
-        } else {
-          //Always show blank image when moving into a room
-          addAttrs(t.img_element, {src: t.img_dir + img.room_none.src, alt:img.room_none.alt, title:img.room_none.title});
         }
       } else {
         var c = addEl(t.monitor,'div', "img-container");
-        for (var i in t.imgs) {
+        for (let i in t.imgs) {
           if (t.imgs.hasOwnProperty(i)){
             var im=t.imgs[i];
             if (im && im.alt.length > 0){
@@ -125,21 +182,22 @@ VTerm.prototype={
         tocomplete=args.pop();
         match=t.context._completeArgs(args[0],tocomplete);
       } else if (args[0].length>0){
-        if (t.context.commands.indexOf(args[0])>-1) {
+        if (t.context.hasCommand(args[0])) {
         tocomplete="";
         t.set_line(l+' ');
         match=t.context._completeArgs(args[0],tocomplete);
         } else {
           tocomplete=args.pop();
-          for(var i = 0; i<t.context.commands.length; i++){
-            if(t.context.commands[i].match("^"+tocomplete)){
-                match.push(t.context.commands[i]);
+          var cmds=t.context.getCommands();
+          for(var i = 0; i<cmds.length; i++){
+            if(cmds.match("^"+tocomplete)){
+                match.push(cmds[i]);
             }
           }
         }
       } else {
         tocomplete="";
-        match=t.context.commands.map(addspace);
+        match=t.context.getCommands().map(addspace);
       }
       if (match.length == 0){
         t.set_line(l+'?');
@@ -174,7 +232,7 @@ VTerm.prototype={
   },
   show_suggestions: function (list){
     this.suggestions.innerHTML = '';
-    for (var i=0;i<list.length; i++){
+    for (let i=0;i<list.length; i++){
       this.show_suggestion(list[i]);
     }
   },
@@ -203,23 +261,29 @@ VTerm.prototype={
     return this.context._validArgs(args.shift(),args);
   },
   enter : function(){
-    var t=this;   
-    var pr=t.input;
-    var mon=t.monitor;
-    t.monitor = addEl(mon,'div','screen');
-    t.histindex=0;
     // Enter -> exec command
-    args=t.get_line().replace(/\s+$/,"").split(' ');
-    echo=t.context.exec(t, args);
-    t.show_previous_prompt(pr.value);
-    t.history.push(pr.value);
-    t.show_img();
-    t.show_msg(echo);
-    t.set_line('');
-    t.hide_suggestions();
-    t.show_suggestions(this.context.commands.map(addspace));
-    t.monitor = mon;
+    var t=this;
+    var l=t.get_line().replace(/\s+$/,"");
+    if (l.length>0){
+      var pr=t.input;
+      var mon=t.monitor;
+      t.monitor = addEl(mon,'div','screen');
+      t.histindex=0;
+      t.show_previous_prompt(pr.value);
+      t.history.push(pr.value);
+      var args=l.split(' ');
+      var echo=t.context.exec(t, args);
+      if (def(echo)){
+      t.show_img();
+      t.show_msg(echo);
+      t.set_line('');
+      t.hide_suggestions();
+      t.show_suggestions(this.context.getCommands().map(addspace));
+      t.monitor = mon;
+      }
+    }
   },
+  enterKey : this.enter,
   scrl : function(period,increment){
     // we want to scroll to the bottom
     var c=this.container;
@@ -302,7 +366,7 @@ VTerm.prototype={
       t.hide_suggestions();
       if (k === 13) { // ENTER
         overide=true;
-        t.enter();t.scrl();
+        t. enter();t.scrl();
       } else if (e.which === 9 && !(e.ctrlKey || e.altKey)) { // TAB
         overide=true;
         t.make_suggestions();t.scrl();

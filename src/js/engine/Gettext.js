@@ -11,6 +11,7 @@ var var_regexp=/\{\{\w+\}\}/g;
 function _(str,vars,or) {
   vars = d(vars, []);
   or = d(or, '');
+//  console.log(str);
   var ret;
   if (str in dialog) {
     ret=dialog[str].printf(vars);

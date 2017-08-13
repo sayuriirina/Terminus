@@ -15,6 +15,7 @@ EventTarget.prototype = {
     },
 
     fire: function(event){
+        console.log(event);
         if (typeof event == "string"){
             event = { type: event };
         }

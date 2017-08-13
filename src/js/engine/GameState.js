@@ -18,6 +18,7 @@ GameState.prototype = {
     this.actions[param_name]=fun;
   },
   apply : function(param_name, replay){
+    console.log('apply '+param_name);
     this.params[param_name] = 1;
     if (param_name in this.actions) {
       this.actions[param_name]((typeof replay === 'undefined') ? false : replay);

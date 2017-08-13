@@ -57,6 +57,9 @@ msgstr "No item of that name to copy."
 msgid "tgt_already_exists"
 msgstr "Item '%s' already exists."
 
+msgid "item_not_exists"
+msgstr "Item '%s' not exists."
+
 msgid "cmd_help_suggestion"
 msgstr "Type 'man' to ask the man for help."
 
@@ -72,6 +75,9 @@ msgstr "Must ask the man about something to receive a response."
 msgid "cmd_man_not_found"
 msgstr "There is no man page for that command."
 
+msgid "cmd_not_found"
+msgstr "Command '%s' not found in room '%s'."
+
 msgid "cmd_mv_done"
 msgstr "Moved %s to %s."
 
@@ -80,6 +86,9 @@ msgstr "You need to move thing A to place B. Use mv [thingA] [placeB]."
 
 msgid "cmd_mv_invalid"
 msgstr "Must be a valid item and location to move it."
+
+msgid "cmd_mv_fixed"
+msgstr "This can't be moved."
 
 msgid "cmd_pwd"
 msgstr "You are in %s."
@@ -811,7 +820,7 @@ msgstr ""
 "\"Ruined! I'm ruined! Look at these crops... almost nothing left!\n"
 "The wizard's minions were here last week... they destroyed everything.\n"
 "How will I feed my 3 children with just one ear of corn?\n"
-"I could really use AnotherEarOfCorn! \""
+"I could really use {{item_another_earofcorn}}! \""
 
 msgid "room_clearing"
 msgstr "Clearing"
@@ -844,23 +853,23 @@ msgstr ""
 "minions.\n"
 "Still, I don't trust you magicfolk. \n"
 "If you really are who you say you are, then prove your good intentions \n"
-"by making me a new House!\""
+"by making me a new {{room_house}}!\""
 
 msgid "room_house"
 msgstr "House"
 
 msgid "room_house_text"
-msgstr "This is a House"
+msgstr "This is a {{room_house}}"
 
 msgid "room_house_cd"
-msgstr "You are entering the House that you made."
+msgstr "You are entering the {{room_house}} that you made."
 
 msgid "room_house_ls"
 msgstr "You made this house for the man. How thoughtful of you!"
 
 msgid "room_clearing_less2"
 msgstr ""
-"Thank you for making me the House!  Why am I still crying?  These are tears "
+"Thank you for making me the {{room_house}}!  Why am I still crying?  These are tears "
 "of joy.  Can't a man openly express his emotions?"
 
 msgid "room_clearing_text2"
@@ -874,7 +883,7 @@ msgstr "BrokenBridge"
 msgid "room_brokenbridge_text"
 msgstr ""
 "A creaky wooden bridges stretches across a chasm.\n"
-"But it's missing a Plank, and the gap is too far to jump."
+"But it's missing a {{item_plank}}, and the gap is too far to jump."
 
 msgid "room_brokenbridge_text2"
 msgstr "A creaky rope bridges stretches across a chasm."
@@ -931,8 +940,9 @@ msgstr ""
 "The KernelFiles hold the sudo-secret (no, not pseudo). You'd better read the "
 "Instructions."
 
-msgid "room_kernel_sudo"
+msgid "ask_password"
 msgstr "Password:"
+
 
 msgid "room_kernel_IHTFP"
 msgstr ""
@@ -1105,7 +1115,7 @@ msgstr ""
 "things indeed were really impossible. \n"
 "\n"
 "There seemed to be no use in waiting by the little door, so she went \n"
-"back to the table, half hoping she might find another key on it, or at \n"
+"back to the table, half hoping she might find password=IHTFP another key on it, or at \n"
 "any rate a book of rules for shutting people up like telescopes: this \n"
 "time she found a little bottle on it, ('which certainly was not here \n"
 "before,' said Alice,) and round the neck of the bottle was a paper \n"
@@ -1236,8 +1246,7 @@ msgstr "AthenaCluster"
 
 msgid "room_cluster_text"
 msgstr ""
-"None shall pass without the combination. You \n"
-"have one chance to enter the combination. Enter password:"
+"None shall pass without the combination."
 
 msgid "room_cluster_ls"
 msgstr "You must enter the Athena cluster combo first."

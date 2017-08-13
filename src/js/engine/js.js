@@ -38,7 +38,9 @@ function ndef(v){
 function pushDef(v,h){
   if (typeof v !== 'undefined'){
     h.push(v);
+    return true;
   }
+return false;
 }
 function hdef(h,k,v){
   if (ndef(h[k])){
@@ -46,3 +48,11 @@ function hdef(h,k,v){
   }
   h[k].push(v);
 };
+function shuffleStr(src,complexity){
+  var randsArr = ("!@#$)*(%^&").repeat(src.length/10+1).split('').sort(function () { return 0.5 - Math.random()});
+  var ret='';
+  for (var i=0;i<src.length;i++){
+    ret+= (Math.random()>complexity ? src[i] : randsArr.shift());
+  }
+  return ret;
+}
