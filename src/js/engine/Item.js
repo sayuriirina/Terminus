@@ -9,17 +9,33 @@ function Item(name, intro, picname){
 }
 Item.prototype = {
   fire_event:function(vt,cmd,args,idx){
-    var ck=null;
+    var ev_trigger=null;
     var context={term:vt,room:this.room, item:this, arg:args[idx], args:args, i:idx};
     if (cmd in this.cmd_event) {
-      ck = this.cmd_event[cmd](context);
+      ev_trigger = this.cmd_event[cmd];
     }
-    if (ck) {
-      this.ev.fire(ck);
+    if (ev_trigger) {
+      var ck=(typeof ev_trigger === "function" ? ev_trigger(context) : ev_trigger);
+      if (ck) {
+        this.ev.fire(ck);
+      }
     }
   },
   addListener : function(name,fun) {
     this.ev.addListener(name,fun);
+    return this;
+  },
+  addStates : function(h){
+    for (var i in h) {
+      if (h.hasOwnProperty(i)){
+        this.ev.addListener(i,state.Event);
+        state.add(i,h[i]);
+      }
+    }
+    return this;
+  },
+  removeCmdEvent : function(cmd) {
+    delete this.cmd_event[cmd];
     return this;
   },
   addCmdEvent : function(cmd, fun) {
@@ -49,7 +65,7 @@ Item.prototype = {
 
 // Useless : just used for making distinction between living being and non-living things
 // Does people are items ?
-function People(name, intro, picname,alt,title){
+function People(name, intro, picname){
   this.itemname = name;
   this.picture = picname ? new Pic(picname) : img.people_none;
   this.cmd_text = {less: intro ? intro : _('people_none_text')};
@@ -61,7 +77,9 @@ function People(name, intro, picname,alt,title){
 }
 People.prototype.addCmdText = Item.prototype.addCmdText;
 People.prototype.addCmdEvent = Item.prototype.addCmdEvent;
+People.prototype.removeCmdEvent = Item.prototype.removeCmdEvent;
 People.prototype.addListener = Item.prototype.addListener;
+People.prototype.addStates = Item.prototype.addStates;
 People.prototype.addValidCmd = Item.prototype.addValidCmd;
 People.prototype.moveTo = Item.prototype.moveTo;
 People.prototype.toString = Item.prototype.toString;

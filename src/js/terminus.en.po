@@ -655,10 +655,10 @@ msgstr ""
 "You find a librarian alone with a small elf.\n"
 "You hope you're not interrupting."
 
-msgid "item_grep"
+msgid "people_grep"
 msgstr "Grep"
 
-msgid "item_grep_text"
+msgid "people_grep_text"
 msgstr ""
 "The exceptionally ugly elf turns to you with a sour expression. \n"
 "\"Greeeeeep,\" he says sullenly."
@@ -763,7 +763,7 @@ msgstr ""
 "Then come back.\""
 
 msgid "item_gear"
-msgstr "gear"
+msgstr "gear%s"
 
 msgid "item_gear_artisans_ok"
 msgstr ""

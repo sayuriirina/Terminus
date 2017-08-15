@@ -5,13 +5,11 @@
 // that will be improved with events
 // it aims to force the player to explore the world to learn the commands
 var global_commands=["cd", "ls", "less", "man", "help", "exit", "pwd"];
-global_commands.push("touch")
-global_commands.push("grep");
-//HOME - required
+//$home - required
 newRoom('home', "loc_farm.gif") ;
 $home.newItem('welcome_letter');
 
-// Initiate Game state 
+// Initiate Game state - required to be called 'state'
 var state = new GameState($home); // GameState to initialize in game script
 var vt;
 function start_game(){
@@ -77,20 +75,19 @@ newRoom('staircase', "loc_stair.gif")
   .newItem('dead_end', "item_sign.gif");
 
 //DANK ROOM
-newRoom('dank',"loc_darkroom.gif", {
-  'mv':function(ct){return (ct.arg == 'Boulder' ? 'mvBoulder' : '');}
-}).addCommand("mv")
-  .addListener("mvBoulder", function(){
-    state.apply("mvBoulder");
-  });
-var Boulder=$dank.newItem('boulder','item_boulder.gif').addValidCmd('mv');
-state.add("mvBoulder",function(re){ 
-  link_rooms($dank, $tunnel);
-  if (re) {
-    $small_hole.addItem(Boulder);
-    $dank.removeItem('boulder');
-  }
-});
+newRoom('dank',"loc_darkroom.gif").addCommand("mv")
+  .newItem('boulder','item_boulder.gif').addValidCmd('mv')
+  .addCmdEvent('mv','mvBoulder')
+  .addStates({
+    mvBoulder: function(re){
+      link_rooms($dank, $tunnel);
+      if (re) {
+        $dank.getItem('boulder').moveTo($small_hole);
+      }
+    }
+  })
+;
+
 //SMALL HOLE
 newRoom('small_hole')
   .addCmdText("cd", _('room_small_hole_cd'));
@@ -115,53 +112,62 @@ $townsquare.newPeople('citizen2',"item_citizen2.gif");
 $townsquare.newPeople('citizen3',"item_lady.gif");
 
 //MARKETPLACE
-state.add("rm",(re) => global_commands.push('rm'));
-state.add("mkdir",(re) => global_commands.push('mkdir'));
-
-newRoom('market',"loc_market.gif",{
-  less:(ct) => (ct.arg == _('item_rm_spell') ? 'rm' : (ct.arg == _('item_mkdir_spell') ? 'mkdir':''))
-  })
+newRoom('market',"loc_market.gif")
   .addCommand('rm')
   .addCommand('mv')
-  .addListener('rm',()=>state.apply('rm'))
-  .addListener('mkdir',()=>state.apply('mkdir'))
 ;
 $market.newPeople("vendor", "item_merchant.gif")
   .addCmdText("rm", _('people_vendor_rm'));
+
 $market.newItem("backpack","item_backpack.gif")
   .addValidCmd('mv')
 //  .addCmdText("mv", _('item_backpack_stolen'));
   .addCmdEvent("mv", function(ct){
     vt.show_msg(_('item_backpack_stolen'));
   });
-$market.newItem("rm_spell","item_manuscript.gif");
-$market.newItem("mkdir_spell","item_manuscript.gif");
+
+$market.newItem("rm_spell","item_manuscript.gif").addCmdEvent('less','rm').addStates({
+  rm:function(re){global_commands.push('rm');}
+});
+
+$market.newItem("mkdir_spell","item_manuscript.gif").addCmdEvent('less','mkdir').addStates({
+  mkdir:function(re){global_commands.push('mkdir');}
+});
 
 //LIBRARY
-newRoom("library", "loc_library.gif", {
-  'less':(ct)=> (ct.arg == _('item_lever') ? 'pullLever': ( ct.arg == _('item_vimbook') ? 'openVim': ''))
-  })
-  .addCommand("grep")
-  .addListener("pullLever", function(){
-    state.apply("pullLever");
-  })
-  .addListener("openVim", function(){
-    $library.removeItem('vimbook');
-  });
+newRoom("library", "loc_library.gif")
+  .addCommand("grep");
 $library.newItem('radspellbook',"item_radspellbook.gif");
 $library.newItem('romancebook',"item_romancenovel.gif");
 $library.newItem('historybook',"item_historybook.gif");
 $library.newItem('nostalgicbook',"item_historybook.gif");
-$library.newItem('vimbook',"item_historybook.gif");
-$library.newItem("lever", "item_lever.gif");
-state.add("pullLever", function(re){
-  link_rooms($library, $backroom);
-});
+$library.newItem('vimbook',"item_historybook.gif")
+  .addCmdEvent('less','openVim')
+  .addListener("openVim", function(){
+    $library.removeItem('vimbook');
+  });
+$library.newItem("lever", "item_lever.gif")
+  .addCmdEvent('less','pullLever')
+  .addStates({
+    pullLever:function(re){
+      link_rooms($library, $backroom);
+    }
+  })
+  ;
 
 //BACK ROOM
 newRoom('backroom',"loc_backroom.gif")
   .addCommand("grep");
-$backroom.newItem("grep", "grep.gif");
+
+$backroom.newPeople("grep", "grep.gif")
+  .addCmdEvent('less','grep')
+  .addStates({
+    grep:function(re){
+      global_commands.push('grep');
+    }
+  })
+  ;
+
 $backroom.newItem("practicebook");
 $backroom.newPeople("librarian", "item_librarian.gif");
 
@@ -194,39 +200,48 @@ newRoom("artisanshop", "loc_artisanshop.gif",{
   },
   'cp': function(ct){
     var re=new RegExp(_('item_gear')+"\\d");
+    console.log('five ?');
     if (re.test(ct.arg)){
-      for (let j=1; j<6;j++) {
-        if (ct.room.getItemFromName(_('item_gear')+j) == -1){
+      for (var j=1; j<6;j++) {
+        if (!ct.room.getItemFromName(_('item_gear',[j]))){
           return '';
         }
-        return "FiveGearsCopied";
       }
+      return "FiveGearsCopied";
     }
   },
 }).addCommand("touch")
-  .addListener("touchGear", function(){ state.apply("touchGear"); })
-  .addListener("FiveGearsCopied", function(){ state.apply("FiveGearsCopied"); })
+  .addStates({
+    'touchGear': function (re){
+      Artisan.addCmdText("less", _('item_gear_touch'));
+      $artisanshop.addCommand("cp");
+      if (re) $artisanshop.newItem('gear',"item_gear.gif");
+      else $artisanshop.getItem('gear').changePic("item_gear.gif");
+    },
+    "FiveGearsCopied": function(re){
+      Artisan.addCmdText("less", _('item_gear_artisans_ok'));
+      if (re){
+        $artisanshop.newItemBatch("gear",['1','2','3','4','5']);
+      }
+    }
+  })
 ;
 
-state.add("touchGear", function (re){
-  Artisan.addCmdText("less", _('item_gear_touch'));
-  $artisanshop.addCommand("cp");
-  if (re) $artisanshop.addItem(new Item('gear', _('item_gear_text'),"item_gear.gif"));
-  else $artisanshop.getItem('gear').changePic("item_gear.gif");
-});
-state.add("FiveGearsCopied",function(re){
-  Artisan.addCmdText("less", _('item_gear_artisans_ok'));
-  if (re){
-    $artisanshop.newItemBatch("gear",['1','2','3','4','5']);
-  }
-});
 $artisanshop.newItem("strangetrinket", "item_trinket.gif")
   .addCmdText("rm", _('item_strangetrinket_rm'))
   .addCmdText("mv", _('item_strangetrinket_mv'));
 $artisanshop.newItem("dragon", "item_clockdragon.gif")
   .addCmdText("rm", _('item_dragon_rm'))  
   .addCmdText("mv", _('item_dragon_mv')); 
-var Artisan=$artisanshop.newPeople("artisan", "item_artisan.gif");
+var Artisan=$artisanshop.newPeople("artisan", "item_artisan.gif")
+  .addCmdEvent('less', 'touch' )
+  .addStates({
+    'touch': function(re){
+      global_commands.push('touch');
+      Artisan.removeCmdEvent('less');
+    }
+  })
+  ;
 
 //FARM
 newRoom("farm", "loc_farm.gif",{
@@ -236,16 +251,15 @@ newRoom("farm", "loc_farm.gif",{
     }
   }
 }).addCommand("cp")
-  .addListener("CornCopied", function(){
-    state.apply("CornCopied");
+  .addStates({
+    CornCopied:function(re){
+      Farmer.addCmdText("less", _('corn_farmer_ok'));
+      if (re) $farm.newItem('another_earofcorn');
+    }
   })
   .newItem("earofcorn", "item_corn.gif")
   .addCmdText("rm",_('item_earofcorn_rm'));
 
-state.add("CornCopied",function(re){
-  Farmer.addCmdText("less", _('corn_farmer_ok'));
-  if (re) $farm.newItem('another_earofcorn');
-});
 var Farmer=$farm.newPeople('farmer',"item_farmer.gif");
 
 //CLEARING
@@ -257,42 +271,35 @@ newRoom("clearing", "loc_clearing.gif", {
   .removeCommand("cd")
   .addCmdText("cd", _('room_clearing_cd'))
   .addCommand("mkdir")
-  .addListener("HouseMade", function(){
-    state.apply("HouseMade");    
+  .addStates({
+    HouseMade: function(re){
+      if (re) { $clearing.addChild(newRoom('house')); }
+      $clearing.getChildFromName(_('room_house'))
+        .addCmdText("cd", _('room_house_cd') )
+        .addCmdText("ls", _('room_house_ls') );
+      $clearing.removeCmdText("cd");
+      $clearing.setIntroText(_('room_clearing_text2'));
+      CryingMan.addCmdText("less", _('room_clearing_less2'));
+    }
   })
 ;
-state.add("HouseMade",function(re){
-  if (re) { $clearing.addChild(newRoom('house')); }
-  $clearing.getChildFromName(_('room_house'))
-    .addCmdText("cd", _('room_house_cd') )
-    .addCmdText("ls", _('room_house_ls') );
-  $clearing.removeCmdText("cd");
-  $clearing.setIntroText(_('room_clearing_text2'));
-  CryingMan.addCmdText("less", _('room_clearing_less2'));
-});
 var CryingMan=$clearing.newPeople('cryingman',"item_man.gif");
 
 //BROKEN BRIDGE
 newRoom("brokenbridge", "loc_bridge.gif",{
-  'touch':function(ct){
-    if (ct.arg === _("item_plank")){
-      return "touchPlank";
-    }
-  }
+  touch:function(ct){return (ct.arg === _("item_plank")) ? "touchPlank" : "";}
 })
   .addCommand("touch")
-  .addListener("touchPlank", function(){
-    state.apply("touchPlank");
+  .addStates({
+    touchPlank: function(re){
+      $clearing.addCommand("cd");
+      $clearing.removeCmdText("cd");
+      $brokenbridge.removeCmdText("cd");
+      $brokenbridge.setIntroText(_('room_brokenbridge_text2'));
+      if (re) $brokenbridge.newItem('plank',"item_plank.gif");
+      else $brokenbridge.getItem('plank').changePic("item_plank.gif");
+    }
   });
-
-state.add("touchPlank",function(re){
-  $clearing.addCommand("cd");
-  $clearing.removeCmdText("cd");
-  $brokenbridge.removeCmdText("cd");
-  $brokenbridge.setIntroText(_('room_brokenbridge_text2'));
-  if (re) $brokenbridge.newItem('plank',"item_plank.gif");
-  else $brokenbridge.getItem('plank').changePic("item_plank.gif");
-});
 
 //OMINOUS-LOOKING PATH
 newRoom("ominouspath", "loc_path.gif", {
@@ -318,22 +325,23 @@ newRoom("slide")
   .addCmdText("cd", _('room_slide_cd'));
 
 //KERNEL FILES
-state.add("sudo",(re) => global_commands.push('sudo'));
-newRoom("kernel",undefined,{
-  less:(ct) => (ct.arg == _('item_instructions') ? 'sudo':'')
-})
+newRoom("kernel")
   .addCommand("sudo",{question:undefined,password:"IHTFP"})
   .addCommand("grep")
   .addCmdText("sudo", _('room_kernel_sudo'))
-  .addListener('sudo',()=>state.apply('sudo'))
-  .addListener("sudoComplete", function(){
-    state.apply("sudoComplete");
+  .addStates({
+    sudoComplete : function(re){
+      link_rooms($kernel, $paradise);
+    }
   });
 $kernel.newItem('certificate');
-$kernel.newItem("instructions");
-state.add("sudoComplete",function(re){
-  link_rooms($kernel, $paradise);
-});
+$kernel.newItem("instructions")
+  .addCmdEvent('less','sudo')
+  .addStates({
+    sudo : function(re){
+      global_commands.push('sudo');
+    }
+  });
 
 newRoom("morekernel")
   .addCommand("grep")

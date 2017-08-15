@@ -18,7 +18,7 @@ function Room(roomname, introtext, roompic, inside_evts,outside_evts,varname){
 	this.room_name = d(roomname, _('room_none'));
 	this.intro_text = d(introtext, _('room_none_text'));
   this.room_pic = ( def(roompic) ? new Pic(roompic) : img.room_none);
-  this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name])};
+  this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name]) + "\n" + this.intro_text };
 	this.starter_msg=null;
   //for event handling
 	this.ev = new EventTarget();
@@ -53,17 +53,20 @@ Room.prototype = {
   fire_event :function(vt,cmd,args,idx,ct){
     ct=d(ct,{});
     var ev_trigger=null;
+    console.log('fire '+cmd);
     var context={term:vt, room:this, arg:args[idx], args:args, i:idx,ct:ct};
     if (ct.hasOwnProperty('unreachable_room')) {
       if ((ct.unreachable_room.room_name in global_spec) && (cmd in global_spec[ct.unreachable_room.room_name])) {
         ev_trigger=global_spec[ct.unreachable_room.room_name][cmd];
       }
     } else if (cmd in this.cmd_inside_spec) {
+//      console.log(cmd,this.cmd_inside_spec[cmd].toString());
       ev_trigger=this.cmd_inside_spec[cmd];
     }
     if (ev_trigger) {
       var ck=(typeof ev_trigger === "function" ? ev_trigger(context) : ev_trigger);
       if (ck){
+    console.log('FIRE '+ck);
         this.ev.fire(ck);
       }
     }
@@ -98,25 +101,26 @@ Room.prototype = {
     newitem.room=this;
     return this;
   },
-  newItem : function(id,picname) {
-    var name = _('item_'+id,[],'item_none');
-    var intro = _('item_'+id+'_text',[],'item_none_text');
+  newItem : function(id,picname,name_vars) {
+    var name = _('item_'+id,name_vars,'item_none');
+    var intro = _('item_'+id+'_text',name_vars,'item_none_text');
     var ret=new Item(name, intro, picname);
     this.addItem(ret);
     return ret;
   },
-  newPeople : function(id,picname) {
-    var name = _('people_'+id,or='people_none');
-    var intro = _('people_'+id+'_text',or='people_none_text');
+  newPeople : function(id,picname,name_vars) {
+    var name = _('people_'+id,name_vars,'people_none');
+    var intro = _('people_'+id+'_text',name_vars,'people_none_text');
     var ret = new People(name,intro, picname);
     this.addItem(ret);
     return ret;
   },
   newItemBatch: function(id, names, picname) {
     var ret=[], name, intro;
-    for (let i = 0; i < names.length; i++){
-      name = _('item_'+id, [names[i]], or='item_none');
-      intro = _('item_'+id+'_text', [names[i]], or='item_none_text');
+    for (var i = 0; i < names.length; i++){
+      name = _('item_'+id, [names[i]], 'item_none');
+      intro = _('item_'+id+'_text', [names[i]], 'item_none_text');
+      console.log(name,intro,picname);
       ret[i]=new Item(name,intro,picname);
       this.addItem(ret[i]);
     }
@@ -176,6 +180,15 @@ Room.prototype = {
     this.ev.addListener(name,fun);
     return this;
   },
+  addStates : function(h){
+    for (var i in h) {
+      if (h.hasOwnProperty(i)){
+        this.ev.addListener(i,state.Event);
+        state.add(i,h[i]);
+      }
+    }
+    return this;
+  },
   addInsideEvt: function(name,fun){
     this.cmd_inside_spec[name]=fun;
     return this;
@@ -204,7 +217,7 @@ Room.prototype = {
   },
   getCommands : function(){
     var ret=[];
-    for (let i=0;i<this.commands.length;i++){
+    for (var i=0;i<this.commands.length;i++){
       if (this.hasCommand(this.commands[i])){
         ret.push(this.commands[i]);
       }
@@ -260,7 +273,7 @@ Room.prototype = {
     } else if (arg === ".") {
       return this;
     } else {
-      for (let i = 0; i < this.children.length; i++){
+      for (var i = 0; i < this.children.length; i++){
         if (arg === this.children[i].toString()){
           return this.children[i];
         }
@@ -291,7 +304,9 @@ Room.prototype = {
     }
     if (room){
       lastcomponent=pat[pat.length-1];
+//      console.log(room.items);
       for (i = 0; i < room.items.length; i++){
+//      console.log(room.items[i].toString());
         if (lastcomponent === room.items[i].toString()){
           item=room.items[i];
           break;
@@ -386,11 +401,13 @@ Room.prototype = {
     } else {
       var traversee=this.traversee(args[0]);
       var room=traversee[0];
+//      console.log(args,traversee);
       if (room){
         var item=traversee[1];
         if (item) {
             vt.push_img(item.picture); // Display image of item
             room.fire_event(vt,'less',args,0);
+            item.fire_event(vt,'less',args,0);
             return item.cmd_text.less;
         } else {
           return _("item_not_exists",args[0]);
@@ -441,7 +458,7 @@ Room.prototype = {
         var dest = this.traversee(args[1]);
         if ((item_idx >= 0) && ( dest[0] )){
           itemtoadd = src[0].items[item_idx];
-          console.log(itemtoadd);
+//          console.log(itemtoadd);
           if (itemtoadd.valid_cmds.indexOf("mv")>-1){
             if (dest[1]){
               dest[0].removeItemByIdx(dest[3]);
@@ -476,7 +493,7 @@ Room.prototype = {
     } else {
       var stringtoreturn = "";
       var item,room,idx;
-      for (let i = 0; i < args.length; i++){
+      for (var i = 0; i < args.length; i++){
         var traversee = this.traversee(args[i]);
         room = traversee[0];
         item = traversee[1];
@@ -529,7 +546,7 @@ Room.prototype = {
       return _('cmd_touch_nothing');
     } else {
       var createdItemsString = "";
-      for (let i = args.length - 1; i >= 0; i--) {
+      for (var i = args.length - 1; i >= 0; i--) {
         if (this.getItemFromName(args[i])){
           return _('tgt_already_exists',[args[i]]);
         } else if (args[i].length > 0){
@@ -562,7 +579,7 @@ Room.prototype = {
         if (nit){
           return _('tgt_already_exists',[nit.itemname]);
         } else if (nro) {
-          var nut = new Item(nit.itemname);
+          var nut = new Item(dest[2]);
           nut.picture = item.picture;
           nut.cmd_text = item.cmd_text;
           nut.valid_cmds = item.valid_cmds;
@@ -648,7 +665,12 @@ Room.prototype = {
     arrs.push(arrs.pop().replace(/\/$/,""));
     var args=arrs.slice(1);
     if((args.length === 0 || cmd == 'mkdir' || cmd == 'touch' ) && !t.hasCommand(cmd) ){ 
-      return _('cmd_not_found',[cmd,t.room_name]);
+      if (cmd in t.cmd_text){
+        ret=t.cmd_text[cmd];
+      } else {
+        ret=_('cmd_not_found',[cmd,t.room_name]);
+      }
+      return ret;
     } 
     var callback=function(passok,cmdpass){
       var ret = "";
@@ -671,7 +693,7 @@ Room.prototype = {
         cmdpass.push(this.commands_lock[cmd]);
       }
     }
-      for (let i=0;i<args.length;i++ ){
+      for (var i=0;i<args.length;i++ ){
         var traversee=this.traversee(args[i]);
         var cur;
         if (traversee[0]){
@@ -684,7 +706,12 @@ Room.prototype = {
           continue;
         }
         if (i===0 && !cur.hasCommand(cmd)){
-          return _('cmd_not_found',[cmd,cur.room_name]);
+          if (cmd in cur.cmd_text){
+            ret=cur.cmd_text[cmd];
+          } else {
+            ret = _('cmd_not_found',[cmd,cur.room_name]);
+          }
+          return ret;
         }
         if (cmd in cur.commands_lock){
           if(cmd === "sudo" && cur.hasOwnProperty('supass') && cur.supass){

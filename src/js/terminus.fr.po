@@ -12,6 +12,22 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
+
+msgid "item_none"
+msgstr "GenericItem"
+
+msgid "item_none_text"
+msgstr "This is a generic item."
+
+msgid "item_intro"
+msgstr "This is a %s."
+
+msgid "people_none"
+msgstr "SomePeople"
+
+msgid "people_none_text"
+msgstr "This person seems to be a bot."
+
 msgid "cannot_cast"
 msgstr "Ce sort ne peut pas être utilisé-e ici."
 
@@ -168,10 +184,10 @@ msgid "room_wrong_syntax"
 msgstr "La syntaxe n'est pas valide. Relisez les instructions."
 
 msgid "room_none"
-msgstr "Pièce banale"
+msgstr "LieuBanal"
 
 msgid "room_none_text"
-msgstr "C'est une pièce très banale."
+msgstr "C'est un endroit très banal."
 
 msgid "room_home"
 msgstr "DossierPersonnel"
@@ -597,10 +613,10 @@ msgstr ""
 "You find a librarian alone with a small elf.\n"
 "You hope you're not interrupting."
 
-msgid "item_grep"
+msgid "people_grep"
 msgstr "Grep"
 
-msgid "item_grep_text"
+msgid "people_grep_text"
 msgstr ""
 "The exceptionally ugly elf turns to you with a sour expression. \n"
 "\"Greeeeeep,\" he says sullenly."
@@ -703,7 +719,7 @@ msgstr ""
 "Where ITEM is the name of the thing you want to create. Now make me a {{item_gear}}! Then come back.\""
 
 msgid "item_gear"
-msgstr "rouage"
+msgstr "rouage%s"
 
 msgid "item_gear_artisans_ok"
 msgstr ""

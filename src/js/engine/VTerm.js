@@ -33,8 +33,8 @@ function VTerm(container_id, img_dir,  img_id, context){
   // buttons
   t.btn_clear=addEl(k,'button','key','✗','Ctrl-U',function(e){
     t.set_line(''); t.show_suggestions(this.context.getCommands().map(addspace)); });
-  t.btn_tab=addEl(k,'button','key','↹','Tab',(e)=>t.make_suggestions());
-  t.btn_enter=addEl(k,'button','key','↵','Enter',(e)=>t.enterKey());
+  t.btn_tab=addEl(k,'button','key','↹','Tab',function(e){t.make_suggestions();});
+  t.btn_enter=addEl(k,'button','key','↵','Enter',function(e){t.enterKey();});
   // img element if exist
   t.img_element= (img_id ? dom.Id(img_id) : null );
 }
@@ -104,7 +104,7 @@ VTerm.prototype={
         e.preventDefault();
         t.scrl();
       }
-    }
+    };
     t.btn_clear.setAttribute('disabled','');
     t.btn_tab.setAttribute('disabled','');
     t.cmdline.removeChild(t.input);
@@ -136,18 +136,12 @@ VTerm.prototype={
         }
       } else {
         var c = addEl(t.monitor,'div', "img-container");
-        for (let i in t.imgs) {
+        for (var i in t.imgs) {
           if (t.imgs.hasOwnProperty(i)){
             var im=t.imgs[i];
             if (im && im.alt.length > 0){
               addAttrs(addEl(c,'img'),{src:t.img_dir + im.src,title:im.title,alt:im.alt})
-                .
-                //                onload=t.scrl;
-                onload=function(){
-                  //                  setTimeout(function() {
-                  t.scrl();
-                  //                  },200); 
-                };
+                .onload=function(){t.scrl()};
             }
           }
         }
@@ -189,6 +183,7 @@ VTerm.prototype={
         } else {
           tocomplete=args.pop();
           var cmds=t.context.getCommands();
+          console.log(cmds);
           for(var i = 0; i<cmds.length; i++){
             if(cmds.match("^"+tocomplete)){
                 match.push(cmds[i]);
@@ -199,10 +194,10 @@ VTerm.prototype={
         tocomplete="";
         match=t.context.getCommands().map(addspace);
       }
-      if (match.length == 0){
+      if (match.length === 0){
         t.set_line(l+'?');
-        setTimeout(function(){t.set_line(l+'??');},100)
-        setTimeout(function(){t.set_line(l);},200)
+        setTimeout(function(){t.set_line(l+'??');},100);
+        setTimeout(function(){t.set_line(l);},200);
       }
       else if (match.length == 1 ){
         if (ac) {
@@ -232,7 +227,7 @@ VTerm.prototype={
   },
   show_suggestions: function (list){
     this.suggestions.innerHTML = '';
-    for (let i=0;i<list.length; i++){
+    for (var i=0;i<list.length; i++){
       this.show_suggestion(list[i]);
     }
   },
@@ -250,7 +245,7 @@ VTerm.prototype={
       } else {
         t.make_suggestions(false);
       }
-    }
+    };
     t.suggestions.appendChild(m);
     t.scrl();
   },
@@ -286,20 +281,21 @@ VTerm.prototype={
   enterKey : this.enter,
   scrl : function(period,increment){
     // we want to scroll to the bottom
-    var c=this.container;
-    var increment = d(increment,4), time = d(period,1);
     var t=this;
+    var c=this.container;
+    increment = d(increment,4);
+    var time = d(period,1);
     this.scrolling++;
-    function scroller() {
-      if (this.scrolling>1){
-        this.scrooling--;
+    var scroller= function() {
+      if (t.scrolling>1){
+        t.scrooling--;
       } else {
         var diff= c.offsetTop + c.offsetHeight - window.pageYOffset - window.innerHeight;
         if ( diff > 0){
           window.scrollBy( 0,increment );
           setTimeout(scroller, time);
         } else {
-          this.scrolling--;
+          t.scrolling--;
         }
       }
     }
@@ -326,7 +322,7 @@ VTerm.prototype={
         }
         pr.onkeydown(e);
       }
-    }
+    };
     var scrollenable=function (e) {
       t.scrolling=true;
     };
@@ -335,7 +331,7 @@ VTerm.prototype={
     t.container.onclick=scrollenable;
     window.onbeforeunload = function(e) {
       return 'Quit the game ?';
-    }
+    };
     pr.onkeydown = function (e) {
       var k=e.which;
       var overide=false;
@@ -358,7 +354,7 @@ VTerm.prototype={
         e.stopPropagation();
         return false;
       }
-    }
+    };
     pr.onkeyup = function (e) {
       var k=e.which;
       var echo="";
@@ -407,7 +403,7 @@ VTerm.prototype={
         //        console.log(t.histindex, t.history);
         if (t.histindex < t.history.length){
           var prev=t.history[t.history.length-1-t.histindex];
-          if (t.histindex==0){
+          if (t.histindex===0){
             var txt=t.get_line();
             if (txt.length>0 && txt !== prev ){
               t.history.push(txt);
@@ -426,9 +422,9 @@ VTerm.prototype={
         e.preventDefault();
         return false;
       }
-    }
+    };
   }
-}
+};
 
 
 

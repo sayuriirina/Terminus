@@ -5,7 +5,6 @@
 function EventTarget(){
     this._listeners = {};
 }
-
 EventTarget.prototype = {
 
     constructor: EventTarget,

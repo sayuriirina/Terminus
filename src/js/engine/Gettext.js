@@ -8,29 +8,33 @@ String.prototype.printf=function (vars){
     });
 };
 var var_regexp=/\{\{\w+\}\}/g;
+var var_resolve=function(a){return _(a.substring(2,a.length-2));}
 function _(str,vars,or) {
-  vars = d(vars, []);
+  if (typeof vars !== 'object' || vars.length === 0 ){
+    vars=['','','',''];
+  }
   or = d(or, '');
-//  console.log(str);
+//  console.log(str,vars);
   var ret;
   if (str in dialog) {
-    ret=dialog[str].printf(vars);
+    ret=dialog[str];
   } else {
     if (typeof pogen == 'function' ){
       pogen(str);
     }
     if (or && or in dialog) {
-      ret=dialog[or].printf(vars);
+      ret=dialog[or];
     } else {
-      ret=str + ' ' + vars.join(' ');
+      ret=str;
+      if (vars.length > 0) ret+=' ' + vars.join(' ');
+      return ret;
     }
   }
-
   while (var_regexp.test(ret)) {
-    ret=ret.replace(var_regexp, function (a) {
-      return _(a.substring(2,a.length-2));
-      });
+    ret=ret.replace(var_regexp, var_resolve );
   }
+  ret=ret.printf(vars);
+
   return ret;
 }
 function gettext_check(){

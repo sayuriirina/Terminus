@@ -2,6 +2,7 @@ function GameState(first_room){
 	this.params = {'':first_room.name};
   this.actions = {};
   this.cookie=null;
+  this.Event=function(e){state.apply(e.type);};
 }
 GameState.prototype = {
   getCurrentRoom : function() {
