@@ -120,7 +120,7 @@ Room.prototype = {
     for (var i = 0; i < names.length; i++){
       name = _('item_'+id, [names[i]], 'item_none');
       intro = _('item_'+id+'_text', [names[i]], 'item_none_text');
-      console.log(name,intro,picname);
+//      console.log(name,intro,picname);
       ret[i]=new Item(name,intro,picname);
       this.addItem(ret[i]);
     }

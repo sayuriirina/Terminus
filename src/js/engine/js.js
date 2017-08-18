@@ -4,13 +4,21 @@ var dom = document;
 dom.Id = dom.getElementById;
 dom.El = dom.createElement;
 
-function addEl(root,tag,clss,txt,title,fun){
-  var el=dom.El(tag);
+function addBtn(root,clss,txt,title,fun){
+  var el=dom.El('button');
   if (def(clss)) {el.className=clss;}
   if (def(title)) {el.title=title;}
   if (def(txt)) {el.innerHTML='<span>'+txt+'</span>';}
   if (def(fun)) {el.onclick=fun;}
   root.appendChild(el);
+  return el;
+}
+function addEl(root,tag,attrs){
+  var el=dom.El(tag);
+  root.appendChild(el);
+  var ty=typeof attrs;
+  if (ty == 'string'){el.className=attrs;}
+  else if (ty=='object'){addAttrs(el,attrs);}
   return el;
 }
 
@@ -22,7 +30,6 @@ function addAttrs(el,attrs){
   }
   return el;
 }
-
 function objToStr(o){
   return o.toString();
 }

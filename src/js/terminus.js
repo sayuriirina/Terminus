@@ -14,21 +14,28 @@ var state = new GameState($home); // GameState to initialize in game script
 var vt;
 function start_game(){
   vt=new VTerm('term','./img/');
-  var loaded=state.loadCookie('terminuscookie',7*24*60);// delay in minutes;the cookie expire in a week
   var mon=vt.monitor;
   vt.monitor = addEl(mon,'div','start screen');
   vt.epic_img_enter(new Pic('titlescreen.gif'),'epicfromright',2000,100,1);
-  vt.start(state.getCurrentRoom(),loaded);
-  if (loaded){
-    vt.show_msg(_("game_loaded"));
-    console.log("Game loaded");
-    vt.show_msg(vt.context.getStarterMsg());
-  } else {
-    vt.show_msg(_('gamestart_text'));
-    console.log("Game Started");
+  var game_start=function(use_cookies){
+    var loaded=false;
+    if(use_cookies==0){
+      // delay in minutes;the cookie expire in a week
+      loaded=state.loadCookie('terminuscookie',7*24*60);
+    }
+    if (loaded){
+      vt.show_msg(_("game_loaded"));
+      console.log("Game loaded");
+      vt.show_msg(vt.context.getStarterMsg());
+    } else {
+      vt.show_msg(_('gamestart_text'));
+      console.log("Game Started");
+    }
+    vt.monitor=mon;
+    vt.start(state.getCurrentRoom());
+    gettext_check();
   }
-  vt.monitor=mon;
-  gettext_check();
+  vt.ask_choose('Do you want to use cookies ?', ['yes','no'],game_start);
 }
 
 //WESTERN FOREST

@@ -18,30 +18,26 @@ function VTerm(container_id, img_dir,  img_id, context){
   t.history=[];
   t.histchecking=false;
   t.histindex=0;
-  // live properties
-  t.scrolling=0;
   /* dom properties (view) */
   t.container = dom.Id(container_id);
   t.monitor = addEl(t.container,'div','monitor');
   t.cmdline = addEl(t.container,'p','input');
-  t.password_input = null;
-//  t.input = addAttrs(addEl(t.cmdline,'input'),{autofocus:'autofocus',size:80});
-  t.input = addAttrs(addEl(t.cmdline,'input'),{size:80});
+  t.input = addEl(t.cmdline,'input',{size:80});
   var b=addEl(t.container,'div','belt');
   var k=addEl(b,'div','keys');
   t.suggestions= addEl(b,'div','suggest');
   // buttons
-  t.btn_clear=addEl(k,'button','key','✗','Ctrl-U',function(e){
+  t.btn_clear=addBtn(k,'key','✗','Ctrl-U',function(e){
     t.set_line(''); t.show_suggestions(this.context.getCommands().map(addspace)); });
-  t.btn_tab=addEl(k,'button','key','↹','Tab',function(e){t.make_suggestions();});
-  t.btn_enter=addEl(k,'button','key','↵','Enter',function(e){t.enterKey();});
+  t.btn_tab=addBtn(k,'key','↹','Tab',function(e){t.make_suggestions();});
+  t.btn_enter=addBtn(k,'key','↵','Enter',function(e){t.enterKey();});
   // img element if exist
   t.img_element= (img_id ? dom.Id(img_id) : null );
+    this.behave();
 }
 VTerm.prototype={
   start: function(ctx){
     this.setContext(ctx);
-    this.behave();
   },
   setContext: function(ctx){
     this.context=ctx;
@@ -61,7 +57,7 @@ VTerm.prototype={
       addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
     } else {
       var c = addEl(t.monitor,'div', "img-container "+clss);
-      addAttrs(addEl(c,'img'),{src:t.img_dir + i.src,title:i.title,alt:i.alt})
+      addEl(c,'img',{src:t.img_dir + i.src,title:i.title,alt:i.alt})
         .onload=function(){
           c.className+=' loaded';
           setTimeout(function(){ 
@@ -70,7 +66,160 @@ VTerm.prototype={
         };
     }
   },
-  ask_password_rec:function(cmdpass,callback){
+  disable_input:function(){
+    var t=this;
+    t.btn_clear.setAttribute('disabled','');
+    t.btn_tab.setAttribute('disabled','');
+    t.cmdline.removeChild(t.input);
+    t.suggestions.setAttribute('style','display:none');
+    
+  },
+  enable_input:function(){
+    var t=this;
+    t.cmdline.appendChild(t.input);
+    t.btn_clear.removeAttribute('disabled');
+    t.btn_tab.removeAttribute('disabled');
+    t.enterKey=t.enter;
+    t.suggestions.removeAttribute('style');
+    t.input.focus();
+  },
+  _begin_choose: function(){//TODO
+    var t = this;
+    t.set_line('');
+    t.choose_input = addEl(t.cmdline,'fieldset');
+//    t.choose_input.focus();
+//    t.choose_input.onkeyup=function(e){
+//      var k=e.which;
+//      if (k === 13) { // ENTER
+//        t.enterKey();
+//        e.preventDefault();
+//        t.scrl();
+//      }
+//    };
+    t.disable_input();
+  },
+  _end_choose: function(){
+    var t = this;
+    t.show_previous_prompt(t.choose_input.value);
+    t.cmdline.removeChild(t.choose_input);
+    t.choose_input = undefined;t.enable_input();
+  },
+  _ask_choose:function(question,choices,callback){//TODO
+    var t=this;
+    var choices_btn=[];
+    var curidx=0;
+    t.show_msg(question);
+    var click=function(e){
+      var i=e.target.getAttribute('idx');
+      addAttrs(choices_btn[curidx],{checked:''});
+      addAttrs(choices_btn[i],{checked:'checked'});
+      curidx=i;
+      return t.enterKey();
+    };
+    t.enterKey=function(e){
+      t.choose_input.value=choices[curidx];
+      t._end_choose();
+      t.show_msg(callback(i));
+    };
+    t._choose_key=function(k,e){
+      if (k==38||k==39||(!e.shiftKey && k==9)){
+        if (curidx<choices_btn.length){
+          addAttrs(choices_btn[curidx],{checked:''});
+          addAttrs(choices_btn[++curidx],{checked:'checked'});
+        }
+      }else if (k==37||k==40||(e.shiftKey && k==9)){
+        if (curidx>0){
+          addAttrs(choices_btn[curidx],{checked:''});
+          addAttrs(choices_btn[--curidx],{checked:'checked'});
+        }
+      } else if (k==13) {
+        t.enterKey();
+      }
+      e.preventDefault(); 
+    };
+
+    for (var i=0;i<choices.length;i++){
+      choices_btn.push(
+        addEl(t.choose_input,'input',{
+          type:'radio',
+          name:'choose',
+          idx:i,id:'radio'+i
+        })
+      )
+      choices_btn[i].onclick=click;
+      addEl(t.choose_input,'label',{
+        for:'radio'+i
+      }).innerText=choices[i];
+    };
+    addAttrs(choices_btn[0],{checked:'checked'});
+    t.scrl();
+  }, 
+  ask_choose: function(question,choices,callback){
+    this._begin_choose();
+    this._ask_choose(question,choices,callback);
+  },
+  _begin_answer: function(){
+    var t = this;
+    t.set_line('');
+    t.answer_input =addEl(t.cmdline,'input',{size:80});
+    t.answer_input.focus();
+    t.answer_input.onkeyup=function(e){
+      var k=e.which;
+      if (k === 13) { // ENTER
+        t.enterKey();
+        e.preventDefault();
+        t.scrl();
+      }
+    };
+    t.disable_input();
+  },
+  _end_answer: function(){
+    var t = this;
+    t.show_previous_prompt(t.answer_input.value);
+    t.cmdline.removeChild(t.answer_input);
+    t.answer_input = undefined;t.enable_input();
+  },
+  _answer_key:function(k,e){
+  //nothing
+  },
+  _ask_answer:function(question,callback){
+    var t=this;
+    t.show_msg(question);
+    t.enterKey=function(){
+      var ret = t.answer_input.value;
+      t._end_answer();
+      t.show_msg(callback(ret));
+    }
+  }, 
+  ask: function(question,callback){
+    this._begin_answer();
+    this._ask_answer(question,callback);
+  },
+  _begin_password: function(){
+    var t = this;
+    t.set_line('');
+    t.password_input =addEl(t.cmdline,'input',{size:20,type:'password'});
+    t.password_input.focus();
+    t.password_input.onkeyup=function(e){
+      var k=e.which;
+      if (k === 13) { // ENTER
+        t.enterKey();
+        e.preventDefault();
+        t.scrl();
+      }
+    };
+    t.disable_input();
+  },
+  _end_password: function(){
+    var t = this;
+    t.show_previous_prompt(shuffleStr(t.password_input.value,0.5));
+    t.cmdline.removeChild(t.password_input);
+    t.password_input = undefined;t.enable_input();
+  },
+  _password_key:function(k,e){
+  //nothing
+  },
+  _ask_password_rec:function(cmdpass,callback){
     var t=this;
     if (cmdpass.length > 0){
       var p=cmdpass.shift();
@@ -83,48 +232,18 @@ VTerm.prototype={
           t.ask_password_rec(cmdpass,callback); 
         } else {
           t.show_msg(callback(false,cmdpass));
-          t.end_password();
+          t._end_password();
         }
       };
       t.scrl();
     } else {
       t.show_msg(callback(true,cmdpass));
-      t.end_password();
+      t._end_password();
     }
-  },
-  begin_password: function(){
-    var t = this;
-    t.set_line('');
-    t.password_input = addAttrs(addEl(t.cmdline,'input'),{size:20,type:'password'});
-    t.password_input.focus();
-    t.password_input.onkeyup=function(e){
-      var k=e.which;
-      if (k === 13) { // ENTER
-        t.enterKey();
-        e.preventDefault();
-        t.scrl();
-      }
-    };
-    t.btn_clear.setAttribute('disabled','');
-    t.btn_tab.setAttribute('disabled','');
-    t.cmdline.removeChild(t.input);
-    t.suggestions.setAttribute('style','display:none');
-  },
-  end_password: function(){
-    var t = this;
-    t.show_previous_prompt(shuffleStr(t.password_input.value,0.5));
-    t.cmdline.appendChild(t.input);
-    t.cmdline.removeChild(t.password_input);
-    t.password_input = null;
-    t.btn_clear.removeAttribute('disabled');
-    t.btn_tab.removeAttribute('disabled');
-    t.enterKey=t.enter;
-    t.suggestions.removeAttribute('style');
-    t.input.focus();
-  },
+  }, 
   ask_password: function(cmdpass,callback){
-    this.begin_password();
-    this.ask_password_rec(cmdpass,callback);
+    this._begin_password();
+    this._ask_password_rec(cmdpass,callback);
   },
   show_img: function(){
     var t=this;
@@ -140,7 +259,7 @@ VTerm.prototype={
           if (t.imgs.hasOwnProperty(i)){
             var im=t.imgs[i];
             if (im && im.alt.length > 0){
-              addAttrs(addEl(c,'img'),{src:t.img_dir + im.src,title:im.title,alt:im.alt})
+              addEl(c,'img',{src:t.img_dir + im.src,title:im.title,alt:im.alt})
                 .onload=function(){t.scrl()};
             }
           }
@@ -160,7 +279,10 @@ VTerm.prototype={
     this.input.value = val;
   },
   show_msg: function (txt){
-    addEl(this.monitor,'p','msg').innerText = txt;
+    if (def(txt)){
+      addEl(this.monitor,'p','msg').innerText = txt;
+      this.scrl();
+    }
   },
   make_suggestions: function (autocomplete){
     var t=this;    
@@ -232,10 +354,9 @@ VTerm.prototype={
     }
   },
   show_suggestion: function (txt){
-    var m=dom.El('button'); m.innerHTML='<span>'+txt+'</span>';
     var t=this;
     t.histindex=0;
-    m.onclick =function (e){
+    addBtn(t.suggestions,undefined,txt,txt,function (e){
       var l=t.get_line();
       var newl=l+txt;
       t.set_line(newl);
@@ -245,8 +366,7 @@ VTerm.prototype={
       } else {
         t.make_suggestions(false);
       }
-    };
-    t.suggestions.appendChild(m);
+    });
     t.scrl();
   },
   hide_suggestions: function (){
@@ -280,26 +400,9 @@ VTerm.prototype={
   },
   enterKey : this.enter,
   scrl : function(period,increment){
-    // we want to scroll to the bottom
     var t=this;
     var c=this.container;
-    increment = d(increment,4);
-    var time = d(period,1);
-    this.scrolling++;
-    var scroller= function() {
-      if (t.scrolling>1){
-        t.scrooling--;
-      } else {
-        var diff= c.offsetTop + c.offsetHeight - window.pageYOffset - window.innerHeight;
-        if ( diff > 0){
-          window.scrollBy( 0,increment );
-          setTimeout(scroller, time);
-        } else {
-          t.scrolling--;
-        }
-      }
-    }
-    scroller();
+    window.scroll( {top:c.offsetTop + c.offsetHeight,behavior:'smooth'});
   }, 
   behave: function (){
     // behavior 
@@ -311,24 +414,25 @@ VTerm.prototype={
     dom.body.onkeydown = function (e) {
       e = e || window.event;//Get event
       var k=e.which;
-      if (k === 33 || k  === 34 || k === 38 || k  === 40) {
-        if (e.shiftKey){
-          e.preventDefault(); 
+      if(def(t.choose_input)){
+        t._choose_key(k,e);
+      }else if(def(t.password_input)){
+        t._password_key(k,e);
+      }else{
+        if (k === 33 || k  === 34 || k === 38 || k  === 40) {
+          if (e.shiftKey){
+            e.preventDefault(); 
         }
       } else {
-        var focused = d.activeElement;
+        var focused = dom.activeElement;
         if ( !focused || focused != pr) {
           pr.focus();t.scrl();
         }
         pr.onkeydown(e);
       }
-    };
-    var scrollenable=function (e) {
-      t.scrolling=true;
+    }
     };
 
-    t.container.onscroll=scrollenable;
-    t.container.onclick=scrollenable;
     window.onbeforeunload = function(e) {
       return 'Quit the game ?';
     };
