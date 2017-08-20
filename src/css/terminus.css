@@ -20,8 +20,10 @@ body {
   padding:1rem;
   box-sizing:border-box;
 }
+fieldset{border:none;}
 img {
- max-width:100%;
+display:block;
+  max-width:100%;
 }
 @media all and (max-width:800px){
   img {

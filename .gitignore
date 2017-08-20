@@ -8,9 +8,14 @@
 *.svn
 
 *.swp
+#backups
+*.bak
+bak
+#trashes
+_trash
 
 #report files
 *.pdf
 
 #screenshots
-*.png
+# *.png

@@ -280,7 +280,10 @@ VTerm.prototype={
   },
   show_msg: function (txt){
     if (def(txt)){
-      addEl(this.monitor,'p','msg').innerText = txt;
+//      txttab=txt.split(/\r?\n/).map(function(i){return '<p>'+i+'</p>';}).join('');
+      txttab=txt.split(/\r?\n/).join('<br>');
+
+      addEl(this.monitor,'p','msg').innerHTML = txttab;
       this.scrl();
     }
   },
