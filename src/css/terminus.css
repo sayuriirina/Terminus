@@ -1,3 +1,6 @@
+
+
+body { overflow-x:hidden}
 body {
   color: #efefef;
   background:#000;
@@ -12,18 +15,67 @@ body {
   font-size:inherit;
   font-family:inherit;
 }
+.msg pre{
+  display:inline;
+}
+.img-container {
+}
+.epicfromright {
+  overflow:hidden;
+}
+
+.epicfromright img {
+  position:relative;
+  left:100%;
+}
+  .epicfromright.loaded img {
+   animation:a 1s ease-out forwards;
+}
+.msg img {
+  float:left;
+}
+
+#term .input-container {
+  position:fixed;
+  background:#000;
+  bottom:0;
+  left:0;
+  width:100%;
+}
+#term .input-div {
+  padding:0 1rem;
+}
+#term .input-div,
 #term {
   margin:auto;
 /*  width:100%;*/
-  max-width:1024px;
+/*  max-width:1024px;*/
+  max-width:80ch;
   background:#000;
-  padding:1rem;
   box-sizing:border-box;
+}
+
+#term{
+  padding:1rem;
+   position:relative;
+   top:-10rem;
+margin-top:10rem;
 }
 fieldset{border:none;}
 img {
 display:block;
+/*  max-width:12ch;*/
+}
+:not(.msg) > img {
   max-width:100%;
+  animation:fromfull 2s 1s forwards;
+}
+.msg > img {
+max-width:12ch;
+}
+@keyframes fromfull{
+ from {max-width:100%;}
+ to {max-width:12ch;}
 }
 @media all and (max-width:800px){
   img {
@@ -34,6 +86,38 @@ display:block;
 @media all and (max-width:1024px){
 
 }
+
+.contribute:before {
+   content:"<<";
+   display:block;
+   background:black;
+   position:absolute;
+   left:-2rem;
+  width:100%;
+  height:100%;
+}
+.contribute a {
+   display:block;
+  color: pink;
+  text-align: center;
+  position:relative;
+  z-index:2;
+}
+.contribute{
+  padding:1rem;
+  margin:0;
+   position:fixed;
+   left:100%;
+   top:2em;
+   background:#000;
+   width:100%;
+   transition:all .6s ease-in;
+}
+.contribute:hover {
+   left:0;
+}
+
+
 
 #term .input:before{
   content:"> ";
@@ -84,19 +168,6 @@ display:block;
   background:none;
   border:none;
 }
-a {
-  color: gray;
-  text-align: center;
-  display: block;
-  position:relative;
-  bottom:-1rem;
-  padding:1rem;
-  transition:all .6s;
-}
-a:hover {
-  bottom:1rem;
-}
-
 button {
   transition:color .6s;
   position:relative;
@@ -142,22 +213,8 @@ padding:3px;
 .branchtitle {
   text-align:center;
 }
-.img-container {
-
-}
 .screen:not(:last-of-type){
   opacity:.6;
-}
-.epicfromright {
-  overflow:hidden;
-}
-
-.epicfromright img {
-  position:relative;
-  left:100%;
-}
-  .epicfromright.loaded img {
-   animation:a 1s ease-out forwards;
 }
 
 @keyframes a {

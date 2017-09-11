@@ -13,7 +13,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 //require("es6-promise").polyfill();
 //const fs = require('fs');
 const gulp = require("gulp");
@@ -25,8 +25,8 @@ const htmlminifier = require("gulp-html-minifier");
 const uglify = require('gulp-uglify');
 const postcss = require("gulp-postcss");
 var postcss_plugins = [
-  require("autoprefixer"),
-  require("cssnano")
+    require("autoprefixer"),
+    require("cssnano")
 ];
 
 const po2json = require('po2json');
@@ -62,6 +62,8 @@ function _js(){
     'src/js/engine/Cookie.js',
     'src/js/engine/GameState.js',
     'src/js/engine/EventTarget.js',
+    'src/js/engine/Sound.js',
+    'src/js/engine/Music.js',
     'src/js/engine/VTerm.js',
     'src/js/engine/Pic.js',
     'src/js/engine/Item.js',

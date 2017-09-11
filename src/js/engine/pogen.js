@@ -50,11 +50,10 @@ var textFile = null,
 function pogen_deliver(){
 if (pogencnt>0){
   console.log(pogencnt+' translations are missing for '+LANG+". Please download the missing translations file.");
-  var dl = document.createElement('a');
+  var dl = addEl(addEl(document.body,'div','contribute'),'a');
   dl.setAttribute('download', APP_NAME+'.'+LANG+'.po');
   dl.href = makeTextFile(pogen_content());
   dl.innerText = "Contribute to the translation : Download .po file ("+pogencnt+" missing translations) for you lang, fill it. And enter 'make' in a terminal.";
-  document.body.appendChild(dl);
 }
 }
 console.log('pogen loaded');

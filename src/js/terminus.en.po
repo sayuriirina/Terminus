@@ -27,6 +27,15 @@ msgstr ""
 "Go ahead, explore. We hope you enjoy what you find. Do ls as your first "
 "command."
 
+msgid "cookie"
+msgstr "In order to save/restore the game, you need eat cookies.\nDo you want to activate cookies ?"
+
+msgid "yes"
+msgstr "yes"
+
+msgid "no"
+msgstr "no"
+
 msgid "cannot_cast"
 msgstr "You cannot cast this spell here."
 

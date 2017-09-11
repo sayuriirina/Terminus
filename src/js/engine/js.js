@@ -13,6 +13,14 @@ function addBtn(root,clss,txt,title,fun){
   root.appendChild(el);
   return el;
 }
+function prEl(root,tag,attrs){
+  var el=dom.El(tag);
+  root.prepend(el);
+  var ty=typeof attrs;
+  if (ty == 'string'){el.className=attrs;}
+  else if (ty=='object'){addAttrs(el,attrs);}
+  return el;
+}
 function addEl(root,tag,attrs){
   var el=dom.El(tag);
   root.appendChild(el);

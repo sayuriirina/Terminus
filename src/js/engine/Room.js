@@ -432,7 +432,13 @@ Room.prototype = {
   },
 
   help : function(args){
-    return _('cmd_help_suggestion');
+    ret=_('cmd_help_begin')+"\n";
+    for (var i=0;i<this.commands.length;i++){
+      if (this.hasCommand(this.commands[i])){
+        ret+='<pre>'+this.commands[i]+'\t</pre>: '+_('help_'+this.commands[i])+"\n";
+      }
+    }
+    return ret;
   },
 
   exit : function(args){

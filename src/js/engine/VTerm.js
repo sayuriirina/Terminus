@@ -14,16 +14,19 @@ function VTerm(container_id, img_dir,  img_id, context){
   /* non dom properties */
   t.context = context;
   t.img_dir=(img_dir ? img_dir : './img/'); // shall contains last slash './img/'
+  t.charduration=10;
   t.imgs=[];
   t.history=[];
   t.histchecking=false;
   t.histindex=0;
+  t.scrl_lock=false;
   /* dom properties (view) */
   t.container = dom.Id(container_id);
   t.monitor = addEl(t.container,'div','monitor');
-  t.cmdline = addEl(t.container,'p','input');
+  inputdiv = addEl(addEl(t.container,'div','input-container'),'div','input-div');
+  t.cmdline = addEl(inputdiv,'p','input');
   t.input = addEl(t.cmdline,'input',{size:80});
-  var b=addEl(t.container,'div','belt');
+  var b=addEl(inputdiv,'div','belt');
   var k=addEl(b,'div','keys');
   t.suggestions= addEl(b,'div','suggest');
   // buttons
@@ -33,12 +36,17 @@ function VTerm(container_id, img_dir,  img_id, context){
   t.btn_enter=addBtn(k,'key','↵','Enter',function(e){t.enterKey();});
   // img element if exist
   t.img_element= (img_id ? dom.Id(img_id) : null );
-    this.behave();
+  t.msg_idx=0;
+  t.soundbank={};
+//     char:null,
+//     ret:null,
+//     space:null,
+//     choosemove:null,
+//     chooseselect:null
+  this.behave();
 }
 VTerm.prototype={
-  start: function(ctx){
-    this.setContext(ctx);
-  },
+  /* API part */
   setContext: function(ctx){
     this.context=ctx;
     this.show_suggestions(this.context.getCommands().map(addspace));
@@ -49,10 +57,9 @@ VTerm.prototype={
     }
     return this;
   },
-  epic_img_enter: function(i, clss, scrl_timeout, scrl_period, scrl_inc){
+  epic_img_enter: function(i, clss, scrl_timeout,callback){
     var t=this;
-    var timeout=d(scrl_timeout,1000);
-    var period=d(scrl_period,1000);
+    t.scrl_lock=true;
     if (t.img_element){
       addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
     } else {
@@ -60,11 +67,41 @@ VTerm.prototype={
       addEl(c,'img',{src:t.img_dir + i.src,title:i.title,alt:i.alt})
         .onload=function(){
           c.className+=' loaded';
-          setTimeout(function(){ 
-            t.scrl(period,scrl_inc); 
-          },timeout);
+          setTimeout(function(){
+            t.scrl_lock=false;
+            t.scrl();
+            if (def(callback)){
+              callback();
+            }
+          },1000);
         };
     }
+  },
+  playSound : function(key){
+    this.soundbank.play(key);
+  },
+  /* Getter and setters */
+  get_line:function(){
+    return this.input.value.replace(/\s+/," ");
+  },
+  set_line:function(val){
+    this.input.value = val;
+  },
+  /* UI part */
+  // Scroll the window to the last element (bottom of page)
+  scrl : function(timeout){
+    var t=this;
+    if (!t.scrl_lock){
+      if (!def(timeout)){
+        var c=t.container;
+        window.scrollBy(0, window.innerHeight);
+        return true;
+      }
+    }
+    timeout=d(timeout,100);
+    setTimeout(function(){
+      t.scrl();
+    },timeout);
   },
   disable_input:function(){
     var t=this;
@@ -72,7 +109,6 @@ VTerm.prototype={
     t.btn_tab.setAttribute('disabled','');
     t.cmdline.removeChild(t.input);
     t.suggestions.setAttribute('style','display:none');
-    
   },
   enable_input:function(){
     var t=this;
@@ -83,184 +119,27 @@ VTerm.prototype={
     t.suggestions.removeAttribute('style');
     t.input.focus();
   },
-  _begin_choose: function(){//TODO
-    var t = this;
-    t.set_line('');
-    t.choose_input = addEl(t.cmdline,'fieldset');
-//    t.choose_input.focus();
-//    t.choose_input.onkeyup=function(e){
-//      var k=e.which;
-//      if (k === 13) { // ENTER
-//        t.enterKey();
-//        e.preventDefault();
-//        t.scrl();
-//      }
-//    };
-    t.disable_input();
-  },
-  _end_choose: function(){
-    var t = this;
-    t.show_previous_prompt(t.choose_input.value);
-    t.cmdline.removeChild(t.choose_input);
-    t.choose_input = undefined;t.enable_input();
-  },
-  _ask_choose:function(question,choices,callback){//TODO
-    var t=this;
-    var choices_btn=[];
-    var curidx=0;
-    t.show_msg(question);
-    var click=function(e){
-      var i=e.target.getAttribute('idx');
-      addAttrs(choices_btn[curidx],{checked:''});
-      addAttrs(choices_btn[i],{checked:'checked'});
-      curidx=i;
-      return t.enterKey();
-    };
-    t.enterKey=function(e){
-      t.choose_input.value=choices[curidx];
-      t._end_choose();
-      t.show_msg(callback(i));
-    };
-    t._choose_key=function(k,e){
-      if (k==38||k==39||(!e.shiftKey && k==9)){
-        if (curidx<choices_btn.length){
-          addAttrs(choices_btn[curidx],{checked:''});
-          addAttrs(choices_btn[++curidx],{checked:'checked'});
-        }
-      }else if (k==37||k==40||(e.shiftKey && k==9)){
-        if (curidx>0){
-          addAttrs(choices_btn[curidx],{checked:''});
-          addAttrs(choices_btn[--curidx],{checked:'checked'});
-        }
-      } else if (k==13) {
-        t.enterKey();
-      }
-      e.preventDefault(); 
-    };
-
-    for (var i=0;i<choices.length;i++){
-      choices_btn.push(
-        addEl(t.choose_input,'input',{
-          type:'radio',
-          name:'choose',
-          idx:i,id:'radio'+i
-        })
-      )
-      choices_btn[i].onclick=click;
-      addEl(t.choose_input,'label',{
-        for:'radio'+i
-      }).innerText=choices[i];
-    };
-    addAttrs(choices_btn[0],{checked:'checked'});
-    t.scrl();
-  }, 
-  ask_choose: function(question,choices,callback){
-    this._begin_choose();
-    this._ask_choose(question,choices,callback);
-  },
-  _begin_answer: function(){
-    var t = this;
-    t.set_line('');
-    t.answer_input =addEl(t.cmdline,'input',{size:80});
-    t.answer_input.focus();
-    t.answer_input.onkeyup=function(e){
-      var k=e.which;
-      if (k === 13) { // ENTER
-        t.enterKey();
-        e.preventDefault();
-        t.scrl();
-      }
-    };
-    t.disable_input();
-  },
-  _end_answer: function(){
-    var t = this;
-    t.show_previous_prompt(t.answer_input.value);
-    t.cmdline.removeChild(t.answer_input);
-    t.answer_input = undefined;t.enable_input();
-  },
-  _answer_key:function(k,e){
-  //nothing
-  },
-  _ask_answer:function(question,callback){
-    var t=this;
-    t.show_msg(question);
-    t.enterKey=function(){
-      var ret = t.answer_input.value;
-      t._end_answer();
-      t.show_msg(callback(ret));
-    }
-  }, 
-  ask: function(question,callback){
-    this._begin_answer();
-    this._ask_answer(question,callback);
-  },
-  _begin_password: function(){
-    var t = this;
-    t.set_line('');
-    t.password_input =addEl(t.cmdline,'input',{size:20,type:'password'});
-    t.password_input.focus();
-    t.password_input.onkeyup=function(e){
-      var k=e.which;
-      if (k === 13) { // ENTER
-        t.enterKey();
-        e.preventDefault();
-        t.scrl();
-      }
-    };
-    t.disable_input();
-  },
-  _end_password: function(){
-    var t = this;
-    t.show_previous_prompt(shuffleStr(t.password_input.value,0.5));
-    t.cmdline.removeChild(t.password_input);
-    t.password_input = undefined;t.enable_input();
-  },
-  _password_key:function(k,e){
-  //nothing
-  },
-  _ask_password_rec:function(cmdpass,callback){
-    var t=this;
-    if (cmdpass.length > 0){
-      var p=cmdpass.shift();
-      var question=d(p.question,_('ask_password'));
-      t.show_msg(question);
-      t.enterKey=function(){
-        var ret = t.password_input.value;
-        t.password_input.value="";
-        if (p.password === ret){
-          t.ask_password_rec(cmdpass,callback); 
-        } else {
-          t.show_msg(callback(false,cmdpass));
-          t._end_password();
-        }
-      };
-      t.scrl();
-    } else {
-      t.show_msg(callback(true,cmdpass));
-      t._end_password();
-    }
-  }, 
-  ask_password: function(cmdpass,callback){
-    this._begin_password();
-    this._ask_password_rec(cmdpass,callback);
-  },
   show_img: function(){
     var t=this;
+    var im;
     if (t.imgs.length>0) {
       if (t.img_element){
-        var i=t.imgs.pop();
-        if (i.hasOwnProperty('src')){
-          addAttrs(t.img_element, {src: t.img_dir + i.src, alt:i.alt, title:i.title});
+        im=t.imgs.pop();
+        if (im.hasOwnProperty('src')){
+          addAttrs(t.img_element, {src: t.img_dir + im.src, alt:im.alt, title:im.title});
         }
       } else {
+        var onload=function(){
+          console.log('load');
+          t.scrl(1000);
+        };
         var c = addEl(t.monitor,'div', "img-container");
         for (var i in t.imgs) {
           if (t.imgs.hasOwnProperty(i)){
-            var im=t.imgs[i];
+            im=t.imgs[i];
             if (im && im.alt.length > 0){
               addEl(c,'img',{src:t.img_dir + im.src,title:im.title,alt:im.alt})
-                .onload=function(){t.scrl()};
+                .onload=onload;
             }
           }
         }
@@ -271,22 +150,76 @@ VTerm.prototype={
   show_previous_prompt: function (txt){
     addEl(this.monitor,'p','input').innerText = txt;
   },
-
-  get_line:function(){
-    return this.input.value.replace(/\s+/," ");
-  },
-  set_line:function(val){
-    this.input.value = val;
+  _show_chars: function (msgidx,msg,txttab){
+    l=txttab.shift();
+    var t=this;
+    if (def(l)){
+      var timeout;
+       if (l == "<" ){
+        var tag="<";
+         while (def(l) && (l != ">")){
+            l=txttab.shift();
+            tag+=l;
+         }
+         msg.innerHTML += tag ;
+         t.playSound('tag');
+         timeout=10;
+        t.scrl();
+       } else if (l == "\n" ){
+        msg.innerHTML += '<br>' ;
+        t.playSound('ret');
+        timeout = 10;
+        t.scrl();
+      } else if (l == '.') {
+        msg.innerHTML += l;
+        t.playSound('dot');
+        timeout = 8;
+        t.scrl();
+      } else if (l == ',') {
+        msg.innerHTML += l;
+        t.playSound('virg');
+        timeout = 5;
+        t.scrl();
+      } else if (l == '!') {
+        msg.innerHTML += l;
+        t.playSound('exclm');
+        timeout = 10;
+        t.scrl();
+      } else if (l == '?') {
+        msg.innerHTML += l;
+        t.playSound('question');
+        timeout = 10;
+        t.scrl();
+      } else if (l == ' ') {
+        msg.innerHTML += l;
+        t.playSound('space');
+        timeout = 2;
+      } else {
+        msg.innerHTML += l;
+        t.playSound('char');
+        timeout = 1;
+      }
+       if (t.msg_idx==msgidx){
+         setTimeout(function(){
+           t._show_chars(msgidx,msg,txttab);
+         },timeout*t.charduration);
+       } 
+    } else {
+      t.playSound('endoftext');
+    }
   },
   show_msg: function (txt){
     if (def(txt)){
-//      txttab=txt.split(/\r?\n/).map(function(i){return '<p>'+i+'</p>';}).join('');
-      txttab=txt.split(/\r?\n/).join('<br>');
-
-      addEl(this.monitor,'p','msg').innerHTML = txttab;
-      this.scrl();
+      var t=this;
+      txttab=txt.split('');
+      var msg=addEl(t.monitor,'p','msg');
+      t.msg_idx++;
+      msg.focus();
+      t._show_chars(t.msg_idx,msg,txttab);
+//msg.innerHTML=txt;
     }
   },
+  /* Suggestion part */
   make_suggestions: function (autocomplete){
     var t=this;    
     var ac=d(autocomplete,true);
@@ -308,9 +241,8 @@ VTerm.prototype={
         } else {
           tocomplete=args.pop();
           var cmds=t.context.getCommands();
-          console.log(cmds);
           for(var i = 0; i<cmds.length; i++){
-            if(cmds.match("^"+tocomplete)){
+            if(cmds[i].match("^"+tocomplete)){
                 match.push(cmds[i]);
             }
           }
@@ -375,12 +307,14 @@ VTerm.prototype={
   hide_suggestions: function (){
     this.suggestions.innerHTML = '';
   },
+  /* */
   argsValid: function(args){
     return this.context._validArgs(args.shift(),args);
   },
   enter : function(){
     // Enter -> exec command
     var t=this;
+    t.playSound('choiceselect');
     var l=t.get_line().replace(/\s+$/,"");
     if (l.length>0){
       var pr=t.input;
@@ -402,11 +336,9 @@ VTerm.prototype={
     }
   },
   enterKey : this.enter,
-  scrl : function(period,increment){
-    var t=this;
-    var c=this.container;
-    window.scroll( {top:c.offsetTop + c.offsetHeight,behavior:'smooth'});
-  }, 
+/*****************/
+/** Prompt behavior part **/
+/*****************/
   behave: function (){
     // behavior 
     var args;
@@ -477,6 +409,7 @@ VTerm.prototype={
         if (k === 67) { // CTRL+C - clear
           overide=true;
           t.show_previous_prompt(t.get_line() + '^C');
+          t.msg_idx++;
           t.set_line('');
         } else if (k === 85) { // CTRL+U - clear line
           overide=true;
@@ -530,7 +463,169 @@ VTerm.prototype={
         return false;
       }
     };
-  }
+  },
+/** Choice prompt **/
+  _begin_choose: function(){//TODO
+    var t = this;
+    t.set_line('');
+    t.choose_input = addEl(t.cmdline,'fieldset');
+    t.disable_input();
+  },
+  _end_choose: function(){
+    var t = this;
+    t.show_previous_prompt(t.choose_input.value);
+    t.cmdline.removeChild(t.choose_input);
+    t.choose_input = undefined;t.enable_input();
+  },
+  _ask_choose:function(question,choices,callback){
+    var t=this;
+    var choices_btn=[];
+    var curidx=0;
+    t.show_msg(question);
+    var click=function(e){
+      var i=e.target.getAttribute('idx');
+      addAttrs(choices_btn[curidx],{checked:''});
+      addAttrs(choices_btn[i],{checked:'checked'});
+      curidx=i;
+      return t.enterKey();
+    };
+    t.enterKey=function(e){
+      t.playSound('choiceselect');
+      t.choose_input.value=choices[curidx];
+      t._end_choose();
+      t.show_msg(callback(i));
+    };
+    t._choose_key=function(k,e){
+      if (k==38||k==39||(!e.shiftKey && k==9)){
+        if (curidx<choices_btn.length){
+          t.playSound('choicemove');
+          addAttrs(choices_btn[curidx],{checked:''});
+          addAttrs(choices_btn[++curidx],{checked:'checked'});
+        }
+      }else if (k==37||k==40||(e.shiftKey && k==9)){
+        if (curidx>0){
+          t.playSound('choicemove');
+          addAttrs(choices_btn[curidx],{checked:''});
+          addAttrs(choices_btn[--curidx],{checked:'checked'});
+        }
+      } else if (k==13) {
+        t.enterKey();
+      }
+      e.preventDefault(); 
+    };
+
+    for (var i=0;i<choices.length;i++){
+      choices_btn.push(
+        addEl(t.choose_input,'input',{
+          type:'radio',
+          name:'choose',
+          idx:i,id:'radio'+i
+        })
+      );
+      choices_btn[i].onclick=click;
+      addEl(t.choose_input,'label',{
+        for:'radio'+i
+      }).innerText=choices[i];
+    }
+    addAttrs(choices_btn[0],{checked:'checked'});
+    t.scrl();
+  }, 
+  ask_choose: function(question,choices,callback){
+    this._begin_choose();
+    this._ask_choose(question,choices,callback);
+  },
+
+/** Question prompt **/
+  _begin_answer: function(){
+    var t = this;
+    t.set_line('');
+    t.answer_input =addEl(t.cmdline,'input',{size:80});
+    t.answer_input.focus();
+    t.answer_input.onkeyup=function(e){
+      var k=e.which;
+      if (k === 13) { // ENTER
+        t.enterKey();
+        e.preventDefault();
+        t.scrl();
+      }
+    };
+    t.disable_input();
+  },
+  _end_answer: function(){
+    var t = this;
+    t.show_previous_prompt(t.answer_input.value);
+    t.cmdline.removeChild(t.answer_input);
+    t.answer_input = undefined;t.enable_input();
+  },
+  _answer_key:function(k,e){
+  //nothing
+  },
+  _ask_answer:function(question,callback){
+    var t=this;
+    t.show_msg(question);
+    t.enterKey=function(){
+      t.playSound('choiceselect');
+      var ret = t.answer_input.value;
+      t._end_answer();
+      t.show_msg(callback(ret));
+    };
+  }, 
+  ask: function(question,callback){
+    this._begin_answer();
+    this._ask_answer(question,callback);
+  },
+/** Password prompt **/
+  _begin_password: function(){
+    var t = this;
+    t.set_line('');
+    t.password_input =addEl(t.cmdline,'input',{size:20,type:'password'});
+    t.password_input.focus();
+    t.password_input.onkeyup=function(e){
+      var k=e.which;
+      if (k === 13) { // ENTER
+        t.enterKey();
+        e.preventDefault();
+        t.scrl();
+      }
+    };
+    t.disable_input();
+  },
+  _end_password: function(){
+    var t = this;
+    t.show_previous_prompt(shuffleStr(t.password_input.value,0.5));
+    t.cmdline.removeChild(t.password_input);
+    t.password_input = undefined;t.enable_input();
+  },
+  _password_key:function(k,e){
+  //nothing
+  },
+  _ask_password_rec:function(cmdpass,callback){
+    var t=this;
+    if (cmdpass.length > 0){
+      var p=cmdpass.shift();
+      var question=d(p.question,_('ask_password'));
+      t.show_msg(question);
+      t.enterKey=function(){
+        t.playSound('choiceselect');
+        var ret = t.password_input.value;
+        t.password_input.value="";
+        if (p.password === ret){
+          t._ask_password_rec(cmdpass,callback); 
+        } else {
+          t.show_msg(callback(false,cmdpass));
+          t._end_password();
+        }
+      };
+      t.scrl();
+    } else {
+      t.show_msg(callback(true,cmdpass));
+      t._end_password();
+    }
+  }, 
+  ask_password: function(cmdpass,callback){
+    this._begin_password();
+    this._ask_password_rec(cmdpass,callback);
+  },
 };
 
 

@@ -1,41 +1,77 @@
 /**
  * This is the game script and represent map too
  */
+var ldr=1;// variable indicating there's things to load, by default at on to indicate map construction
+// to ensure at the end of this file : ldr--; app_loaded();
+function app_loaded(){
+  if (ldr==0 && snd.isloaded()){
+    start_game();// make views and interact
+  }
+}
+var snd=new SoundBank(app_loaded);
+var music=new Music(snd);
+/// sound set
+snd.set('char','./snd/sfx_movement_ladder5a.',['wav']);
+snd.set('choicemove','./snd/sfx_movement_ladder5a.',['wav']);
+snd.set('choiceselect','./snd/sfx_movement_ladder2a.',['wav']);
+snd.set('tag','./snd/sfx_movement_ladder2a.',['wav']);
+snd.set('question','./snd/sfx_movement_ladder6b.',['wav']);
+snd.set('exclm','./snd/sfx_movement_ladder3b.',['wav']);
+snd.set('endoftext','./snd/sfx_movement_ladder1a.',['wav']);
+snd.set('learned','./snd/sfx_sounds_powerup4.',['wav']);
+// music set
+music.set('intro','./music/trialformer.',['wav']);
+music.set('peace','./music/5.',['wav']);
+music.set('cave','./music/cave-AbandonedHopes.',['wav']);
+
 // global_commands are player commands allowed, this is the base knowledge
 // that will be improved with events
 // it aims to force the player to explore the world to learn the commands
-var global_commands=["cd", "ls", "less", "man", "help", "exit", "pwd"];
+//
+var global_commands=["cd", "ls", "less", "pwd"];
 //$home - required
 newRoom('home', "loc_farm.gif") ;
 $home.newItem('welcome_letter');
+
 
 // Initiate Game state - required to be called 'state'
 var state = new GameState($home); // GameState to initialize in game script
 var vt;
 function start_game(){
   vt=new VTerm('term','./img/');
+  vt.soundbank=snd; 
+  vt.charduration=10; 
   var mon=vt.monitor;
   vt.monitor = addEl(mon,'div','start screen');
-  vt.epic_img_enter(new Pic('titlescreen.gif'),'epicfromright',2000,100,1);
+  vt.epic_img_enter(new Pic('titlescreen.gif'),'epicfromright',2000);
   var game_start=function(use_cookies){
     var loaded=false;
-    if(use_cookies==0){
-      // delay in minutes;the cookie expire in a week
-      loaded=state.loadCookie('terminuscookie',7*24*60);
-    }
-    if (loaded){
-      vt.show_msg(_("game_loaded"));
-      console.log("Game loaded");
-      vt.show_msg(vt.context.getStarterMsg());
-    } else {
-      vt.show_msg(_('gamestart_text'));
-      console.log("Game Started");
-    }
-    vt.monitor=mon;
-    vt.start(state.getCurrentRoom());
     gettext_check();
+    
+    setTimeout(function(){
+    music.play('intro',{loop:true,fadein:[.2,.3,1000]});
+    },6000);
+    setTimeout(function(){
+    music.fadeTo(.9,2000);
+    },10000);
+      if(use_cookies==0){
+        // delay in minutes;the cookie expire in a week
+        loaded=state.loadCookie('terminuscookie',7*24*60);
+      }
+      if (loaded){
+        vt.show_msg(_("game_loaded"));
+        console.log("Game loaded");
+        vt.show_msg(vt.context.getStarterMsg());
+      } else {
+        vt.show_msg(_('gamestart_text'));
+        console.log("Game Started");
+      }
+      vt.monitor=mon;
+      vt.setContext(state.getCurrentRoom());
   }
-  vt.ask_choose('Do you want to use cookies ?', ['yes','no'],game_start);
+  setTimeout(function(){
+    vt.ask_choose(_('cookie'), [_('yes'),_('no')],game_start);
+  },2000);
 }
 
 //WESTERN FOREST
@@ -64,8 +100,18 @@ newRoom('meadow', "loc_meadow.gif")
 
 //EASTERN MOUNTAINS
 newRoom('mountain', "loc_mountains.gif")
-  .newPeople('man_sage', "item_mysteryman.gif");
-$mountain.newItem('man', "item_manuscript.gif");
+  .newPeople('man_sage', "item_mysteryman.gif")
+  .addCmdEvent('less','manLeave')
+  .addStates({
+    manLeave: function(re){
+      global_commands.push('exit');
+      global_commands.push('man');
+      global_commands.push('help');
+      vt.playSound('learned');
+      $mountain.newItem('man', "item_manuscript.gif");
+    }
+  })
+;
 
 //LESSONS
 newRoom('lessons',"loc_classroom.gif")
@@ -134,11 +180,11 @@ $market.newItem("backpack","item_backpack.gif")
   });
 
 $market.newItem("rm_spell","item_manuscript.gif").addCmdEvent('less','rm').addStates({
-  rm:function(re){global_commands.push('rm');}
+  rm:function(re){global_commands.push('rm');vt.playSound('learned');}
 });
 
 $market.newItem("mkdir_spell","item_manuscript.gif").addCmdEvent('less','mkdir').addStates({
-  mkdir:function(re){global_commands.push('mkdir');}
+  mkdir:function(re){global_commands.push('mkdir');vt.playSound('learned');}
 });
 
 //LIBRARY
@@ -171,6 +217,7 @@ $backroom.newPeople("grep", "grep.gif")
   .addStates({
     grep:function(re){
       global_commands.push('grep');
+     vt.playSound('learned');
     }
   })
   ;
@@ -245,6 +292,7 @@ var Artisan=$artisanshop.newPeople("artisan", "item_artisan.gif")
   .addStates({
     'touch': function(re){
       global_commands.push('touch');
+      vt.playSound('learned');
       Artisan.removeCmdEvent('less');
     }
   })
@@ -347,6 +395,7 @@ $kernel.newItem("instructions")
   .addStates({
     sudo : function(re){
       global_commands.push('sudo');
+      vt.playSound('learned');
     }
   });
 
@@ -426,7 +475,6 @@ newRoom('cluster',  "loc_cluster.gif",
   .removeCommand("ls").addCmdText("ls",_('room_cluster_ls'))
   .setCommandOptions("cd",{question:_('room_cluster_cd'),password:'terminus'})
   .addListener("addMagicLocker", add_locker_func)
-  .addCommand("tellme")
   .addCommand("add")
   .newItem('workstation', "item_workstation.gif");
 
@@ -441,12 +489,21 @@ newRoom("mit" , "loc_MIT.gif")
   .newItem("mitletter", "item_manuscript.gif");
 
 //StataCenter
-newRoom('stata', "loc_stata.gif")
-  .addCommand("tellme")
-  .addCommand("add")
-  .addListener("addMagicLocker", add_locker_func); 
-$stata.newPeople('gradstudent', "item_grad.gif");
-$stata.newPeople('assistant', "item_TA.gif");
+newRoom('stata', "loc_stata.gif") 
+    .addCommand('tellme')
+    .addCommand('add')
+    .addListener("addMagicLocker", add_locker_func);
+
+$stata.newPeople('gradstudent', "item_grad.gif")
+  .addCmdEvent('less','MagicLockerCmd')
+  .addStates({'MagicLockerCmd':function(re){
+    global_commands.push('add');vt.playSound('learned');
+  }});
+$stata.newPeople('assistant', "item_TA.gif")
+  .addCmdEvent('less','TellMeCluster')
+  .addStates({'TellMeCluster':function(re){
+    global_commands.push('tellme');vt.playSound('learned');
+  }});
 
 //Magic locker
 newRoom('magiclocker', "item_locker.gif")
@@ -501,10 +558,10 @@ link_rooms($kernel, $morekernel);
 link_rooms($home, $mit);
 link_rooms($mit, $stata);
 link_rooms($mit, $cluster);
+
 console.log("Game objects : init");
-start_game();// make views and interact
-
-
+ldr--;
+app_loaded();
 
 /**
  * ROOMS
