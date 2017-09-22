@@ -153,9 +153,6 @@ msgstr ""
 "Peoples:\n"
 "%s"
 
-msgid "lock_added"
-msgstr "You just added the %s locker"
-
 msgid "room_empty"
 msgstr "The room is empty."
 
@@ -1250,106 +1247,6 @@ msgstr ""
 "the cave, and \n"
 "runs up the ominous path towards home."
 
-msgid "room_cluster"
-msgstr "AthenaCluster"
-
-msgid "room_cluster_text"
-msgstr ""
-"None shall pass without the combination."
-
-msgid "room_cluster_ls"
-msgstr "You must enter the Athena cluster combo first."
-
-msgid "room_cluster_cd"
-msgstr ""
-"None shall pass without the combination. You\n"
-"have one chance to enter the combination. Enter password:"
-
-msgid "item_workstation"
-msgstr "Workstation"
-
-msgid "item_workstation_text"
-msgstr ""
-"The Workstation has resources you can use to access files in a joint Athena "
-"locker. It adds new rooms (when they're in your Home we \n"
-"call them lockers) to your Home, and you can add them to your collection of "
-"lockers if you have permission.\n"
-"If you know what you want to add to your Home (the name of the locker you "
-"want, of course), just 'add LOCKERNAME'.\n"
-"It gives you extra spells (if you learn them), and gives you more Rooms to "
-"explore."
-
-msgid "room_mit"
-msgstr "MIT"
-
-msgid "room_mit_text"
-msgstr "You have arrived by magic carpet to MIT!"
-
-msgid "room_mit_terminus"
-msgstr ""
-"You have correctly entered the cluster combo. Entering the AthenaCluster."
-
-msgid "item_mitletter"
-msgstr "AdmissionLetter"
-
-msgid "item_mitletter_text"
-msgstr ""
-"Congratulations on entering MIT! \n"
-"Here you will learn special spells that you can only use at MIT. Enjoy!"
-
-msgid "room_stata"
-msgstr "StataCenter"
-
-msgid "room_stata_text"
-msgstr ""
-"The center of computer science and artificial intelligence research at MIT. "
-"Lots of magic happens here, including TAs, grad students, etc."
-
-msgid "people_gradstudent"
-msgstr "WaryEyeOfGradStudent"
-
-msgid "people_gradstudent_text"
-msgstr ""
-"If you so desire, you can add \n"
-"a new MagicLocker outside your Home. In this MagicLocker you can find some "
-"tools that \n"
-"will be useful in your time at MIT (and beyond). There you can find portals "
-"to \n"
-"other places, you can write notes, and you can store various items you "
-"collect in \n"
-"your travels in the MagicLocker. But first you need to go to the "
-"AthenaCluster and \n"
-"learn how."
-
-msgid "people_assistant"
-msgstr "HelpfulTA"
-
-msgid "people_assistant_text"
-msgstr ""
-"Ah, welcome to the wonderful land of Stata. \n"
-"There's one room here that you'll need the combination for. All you have to "
-"do is ask:\n"
-"'tellme combo'."
-
-msgid "room_magiclocker"
-msgstr "MagicLocker"
-
-msgid "room_magiclocker_text"
-msgstr ""
-"This contains items and spells that can be used anywhere in the world after "
-"you add the locker. More is coming."
-
-msgid "item_morecoming"
-msgstr "MoreComing"
-
-msgid "item_morecoming_text"
-msgstr ""
-"The MagicLocker contains Items that can be \n"
-"used (and spells that can be used) anywhere else in the game once you add \n"
-"the locker. MIT is making updates to the locker at all times, so check "
-"back \n"
-"frequently."
-
 msgid "man_cd"
 msgstr ""
 "The old man's voice echoes in your head as if from a great distance: \n"
@@ -1442,11 +1339,3 @@ msgstr ""
 "touch OBJECT  \n"
 "Rememberrrrrr..."
 
-msgid "man_tellme"
-msgstr ""
-"The old man's voice echoes in your head as if from a great distance:\n"
-"(tellme combo) tells you the combination for the AthenaCluster rooms at "
-"MIT.\n"
-"Command Input:\n"
-"tellme combo\n"
-"Rememberrrrrr..."

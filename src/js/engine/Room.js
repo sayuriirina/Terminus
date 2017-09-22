@@ -15,11 +15,12 @@ function Room(roomname, introtext, roompic, inside_evts,outside_evts,varname){
   this.commands_lock={};
 	this.commands = ["cd", "ls", "less", "man", "help", "exit", "pwd"];
   this.fire = null;
-	this.room_name = d(roomname, _('room_none'));
+	this.room_name =d(roomname, _('room_none'));
 	this.intro_text = d(introtext, _('room_none_text'));
   this.room_pic = ( def(roompic) ? new Pic(roompic) : img.room_none);
-  this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name]) + "\n" + this.intro_text };
+  this.cmd_text = {"pwd": _('cmd_pwd',[this.room_name]).concat("\n").concat(this.intro_text) };
 	this.starter_msg=null;
+	this.enter_callback=null;
   //for event handling
 	this.ev = new EventTarget();
   this.cmd_inside_spec=d(inside_evts, {});
@@ -43,6 +44,9 @@ function enterRoom(new_room,vt){
   vt.push_img(img.room_none);
   vt.setContext(new_room);
   state.setCurrentRoom(new_room);
+  if (typeof new_room.enter_callback == 'function'){
+     new_room.enter_callback();
+  }
   return [new_room.toString(), new_room.intro_text];
 }
 
@@ -74,6 +78,10 @@ Room.prototype = {
   // text displayed at each change
   setIntroText : function(txt){
     this.intro_text = txt;
+  },
+  // callback when entering in the room
+  setEnterCallback : function(fu){
+    this.enter_callback = fu;
   },
   // a message displayed on game start
   getStarterMsg: function(){
@@ -160,21 +168,24 @@ Room.prototype = {
     idx = this.children.map(objToStr).indexOf(name);
     return ((idx == -1) ? null : this.children[idx]);
   },
-  addChild : function(newchild){
-    if (pushDef(newchild,this.children)){
-      newchild.addParent(this);
+  addPath : function(newchild,wayback){
+    if (pushDef(newchild,this.children) && d(wayback,true)){
+        newchild.parents.push(this);
     }
   },
-  removeChild : function(child){
+  removeParentPath : function(child){
+    index = this.parents.indexOf(child);
+    if (index != -1){
+      this.parents.splice(index, 1);
+    }
+  },
+  removePath : function(child){
     index = this.children.indexOf(child);
     if (index != -1){
+      child.removeParentPath(this);
       this.children.splice(index, 1);
     }
   },
-  addParent : function(parent){
-    this.parents[0] = parent;
-  },
-
   // Events management
   addListener : function(name,fun){
     this.ev.addListener(name,fun);
@@ -341,17 +352,17 @@ Room.prototype = {
   },
 
   printLS : function(){
-    var ret="";
+    var ret='';
     if (this.children.length > 0){
-      ret+=_('directions', [" " + (this.children.toString()).replaceAll(",", "\n ")])+ "\n" ;
+      ret+= _('directions', [" " + this.children.map(objToStr).join("\n ")]) + " \n";
     }
-    var itemset=this.items.filter(function(o){return !o.hasOwnProperty('people');});
-    var peopleset=this.items.filter(function(o){return o.hasOwnProperty('people');});
-    if (itemset.length > 0){
-      ret+=_('items', [" " + (itemset.toString()).replaceAll(",", "\n ")])+ "\n" ;
+    var items=this.items.filter(function(o){return !o.hasOwnProperty('people');});
+    var peoples=this.items.filter(function(o){return o.hasOwnProperty('people');});
+    if (items.length > 0){
+      ret+= _('items', [" " + items.map(objToStr).join("\n ")]) + " \n";
     }
-    if (peopleset.length > 0){
-      ret+=_('peoples', [" " + (peopleset.toString()).replaceAll(",", "\n ")])+ "\n" ;
+    if (peoples.length > 0){
+      ret+=_('peoples', [" " + peoples.map(objToStr).join("\n ")]) + " \n";
     }
     return ret;
   },
@@ -471,7 +482,7 @@ Room.prototype = {
             }
             dest[0].addItem(itemtoadd);
             if (dest[2]){
-              itemtoadd.itemname=dest[2];
+              itemtoadd.name=dest[2];
             }
             src[0].fire_event(vt,'mv',args,0);
             src[0].removeItemByIdx(item_idx);
@@ -583,7 +594,7 @@ Room.prototype = {
       var nro=dest[0];
       if (item){
         if (nit){
-          return _('tgt_already_exists',[nit.itemname]);
+          return _('tgt_already_exists',[nit.name]);
         } else if (nro) {
           var nut = new Item(dest[2]);
           nut.picture = item.picture;
@@ -783,8 +794,8 @@ Room.prototype = {
           //Compare to this room's items
           if(cmd == "cp" || cmd == "mv" || cmd == "less" || cmd == "grep" || cmd == "touch" || cmd == "rm" || cmd == "sudo") {
             for(item_num = 0; item_num<search_room.items.length; item_num++){
-              if(search_room.items[item_num].itemname.match("^"+path_rooms[room_num])){
-                substring_matches.push(search_room.items[item_num].itemname);
+              if(search_room.items[item_num].name.match("^"+path_rooms[room_num])){
+                substring_matches.push(search_room.items[item_num].name);
               }
             }
           }

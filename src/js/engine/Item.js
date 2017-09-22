@@ -1,5 +1,5 @@
 function Item(name, intro, picname){
-  this.itemname = name;
+  this.name = name;
   this.picture = picname ? new Pic(picname) : img.item_none;
   this.cmd_text = {less: intro ? intro : _('item_none_text')};
   this.cmd_event = {};
@@ -50,13 +50,16 @@ Item.prototype = {
     this.valid_cmds.push(cmd);
     return this;
   },
+  disappear : function(){
+    this.room.removeItemByName(this.name);
+  },
   moveTo : function(room){
-    this.room.removeItemByName(this.itemname);
+    this.room.removeItemByName(this.name);
     room.addItem(this);
     return this;
   },
   toString : function(){
-    return this.itemname;
+    return this.name;
   },
   changePic : function(newpicname){
     this.picture = new Pic(newpicname);
@@ -66,7 +69,7 @@ Item.prototype = {
 // Useless : just used for making distinction between living being and non-living things
 // Does people are items ?
 function People(name, intro, picname){
-  this.itemname = name;
+  this.name = name;
   this.picture = picname ? new Pic(picname) : img.people_none;
   this.cmd_text = {less: intro ? intro : _('people_none_text')};
   this.valid_cmds = ["less"];
@@ -82,6 +85,7 @@ People.prototype.addListener = Item.prototype.addListener;
 People.prototype.addStates = Item.prototype.addStates;
 People.prototype.addValidCmd = Item.prototype.addValidCmd;
 People.prototype.moveTo = Item.prototype.moveTo;
+People.prototype.disappear = Item.prototype.disappear;
 People.prototype.toString = Item.prototype.toString;
 People.prototype.changePic = Item.prototype.changePic;
 People.prototype.fire_event = Item.prototype.fire_event;

@@ -31,7 +31,8 @@ SoundBank.prototype={
     
     
 //    t.dict[ref]=prEl(document.body,'audio',{autoplay:'autoplay',preload:'auto',id:'snd'+ref});
-    t.dict[ref]=prEl(document.body,'audio',{autoplay:true,preload:'auto',id:'snd'+ref});
+    t.dict[ref]=prEl(document.body,'audio',{preload:'auto',id:'snd'+ref});
+//    t.dict[ref]=prEl(document.body,'audio',{autoplay:true,preload:'auto',id:'snd'+ref});
       this.dict[ref].volume=0;
 //    if (required){
       t.ldr++;

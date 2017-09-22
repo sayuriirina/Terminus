@@ -1,9 +1,7 @@
 /**
  * This is the game script and represent map too
  */
-var ldr=1;// variable indicating there's things to load, by default at on to indicate map construction
-// to ensure at the end of this file : ldr--; app_loaded();
-function app_loaded(){
+var ldr=1; function app_loaded(){
   if (ldr==0 && snd.isloaded()){
     start_game();// make views and interact
   }
@@ -11,18 +9,13 @@ function app_loaded(){
 var snd=new SoundBank(app_loaded);
 var music=new Music(snd);
 /// sound set
-snd.set('char','./snd/sfx_movement_ladder5a.',['wav']);
+// The sounds in vterm are : choicemove choicemove question exclm endoftext dot learned space ret tag virg char
 snd.set('choicemove','./snd/sfx_movement_ladder5a.',['wav']);
 snd.set('choiceselect','./snd/sfx_movement_ladder2a.',['wav']);
 snd.set('tag','./snd/sfx_movement_ladder2a.',['wav']);
-snd.set('question','./snd/sfx_movement_ladder6b.',['wav']);
-snd.set('exclm','./snd/sfx_movement_ladder3b.',['wav']);
-snd.set('endoftext','./snd/sfx_movement_ladder1a.',['wav']);
 snd.set('learned','./snd/sfx_sounds_powerup4.',['wav']);
 // music set
-music.set('intro','./music/trialformer.',['wav']);
-music.set('peace','./music/5.',['wav']);
-music.set('cave','./music/cave-AbandonedHopes.',['wav']);
+//music.set('yourduty','./music/enterTheHero.',['mp3']);
 
 // global_commands are player commands allowed, this is the base knowledge
 // that will be improved with events
@@ -33,7 +26,6 @@ var global_commands=["cd", "ls", "less", "pwd"];
 newRoom('home', "loc_farm.gif") ;
 $home.newItem('welcome_letter');
 
-
 // Initiate Game state - required to be called 'state'
 var state = new GameState($home); // GameState to initialize in game script
 var vt;
@@ -41,33 +33,23 @@ function start_game(){
   vt=new VTerm('term','./img/');
   vt.soundbank=snd; 
   vt.charduration=10; 
-  var mon=vt.monitor;
-  vt.monitor = addEl(mon,'div','start screen');
+  vt.disable_input();
   vt.epic_img_enter(new Pic('titlescreen.gif'),'epicfromright',2000);
   var game_start=function(use_cookies){
     var loaded=false;
     gettext_check();
-    
-    setTimeout(function(){
-    music.play('intro',{loop:true,fadein:[.2,.3,1000]});
-    },6000);
-    setTimeout(function(){
-    music.fadeTo(.9,2000);
-    },10000);
-      if(use_cookies==0){
-        // delay in minutes;the cookie expire in a week
-        loaded=state.loadCookie('terminuscookie',7*24*60);
-      }
-      if (loaded){
-        vt.show_msg(_("game_loaded"));
-        console.log("Game loaded");
-        vt.show_msg(vt.context.getStarterMsg());
-      } else {
-        vt.show_msg(_('gamestart_text'));
-        console.log("Game Started");
-      }
-      vt.monitor=mon;
-      vt.setContext(state.getCurrentRoom());
+    if(use_cookies==0){
+      loaded=state.loadCookie('terminuscookie',7*24*60);// delay in minutes;the cookie expire in a week
+    }
+    vt.monitor.innerHTML="";//clear screen
+    vt.setContext(state.getCurrentRoom());
+    if (loaded){
+      vt.show_msg(_("game_loaded") + "\n\n" + vt.context.getStarterMsg());
+      vt.enable_input();
+    } else {
+      vt.show_msg(_('gamestart_text'));
+      setTimeout(function(){vt.enable_input();},6000);
+    }
   }
   setTimeout(function(){
     vt.ask_choose(_('cookie'), [_('yes'),_('no')],game_start);
@@ -99,16 +81,23 @@ newRoom('meadow', "loc_meadow.gif")
   .newPeople("poney", "item_fatpony.gif");
 
 //EASTERN MOUNTAINS
-newRoom('mountain', "loc_mountains.gif")
-  .newPeople('man_sage', "item_mysteryman.gif")
-  .addCmdEvent('less','manLeave')
+man_sage=newRoom('mountain', "loc_mountains.gif")
+  .newPeople('man_sage', "item_mysteryman.gif");
+man_sage.addCmdEvent('less','manLeave')
   .addStates({
     manLeave: function(re){
       global_commands.push('exit');
       global_commands.push('man');
       global_commands.push('help');
       vt.playSound('learned');
-      $mountain.newItem('man', "item_manuscript.gif");
+      man_sage.disappear();
+      $mountain.newItem('man', "item_manuscript.gif")
+      .addCmdEvent('less','trueStart')
+      .addStates({
+        trueStart:function (re){
+          music.play('yourduty',{loop:true});
+        }
+      });
     }
   })
 ;
@@ -133,7 +122,7 @@ newRoom('dank',"loc_darkroom.gif").addCommand("mv")
   .addCmdEvent('mv','mvBoulder')
   .addStates({
     mvBoulder: function(re){
-      link_rooms($dank, $tunnel);
+      $dank.addPath($tunnel);
       if (re) {
         $dank.getItem('boulder').moveTo($small_hole);
       }
@@ -146,8 +135,14 @@ newRoom('small_hole')
   .addCmdText("cd", _('room_small_hole_cd'));
 
 //TUNNEL
-newRoom('tunnel',"loc_tunnel.gif")
-  .newPeople('rat',"item_rat.gif");
+var rat=newRoom('tunnel',"loc_tunnel.gif")
+  .newPeople('rat',"item_rat.gif")
+  .addCmdEvent('less','idRat')
+  .addStates({
+    idRat: function(re){
+      rat.name=_('people_rat_identified');
+    }
+  });
 
 //STONE CHAMBER
 newRoom('stone_chamber',"loc_portalroom.gif");
@@ -160,6 +155,10 @@ newRoom('portal',"item_portal.gif");
 //---------------LEVEL 2---------------------
 //TOWN SQUARE
 newRoom("townsquare", "loc_square.gif");
+$townsquare.setEnterCallback(function(){
+  music.play('chapter2',{loop:true});
+
+});
 $townsquare.newPeople('citizen1',"item_citizen1.gif");
 $townsquare.newPeople('citizen2',"item_citizen2.gif");
 $townsquare.newPeople('citizen3',"item_lady.gif");
@@ -194,16 +193,19 @@ $library.newItem('radspellbook',"item_radspellbook.gif");
 $library.newItem('romancebook',"item_romancenovel.gif");
 $library.newItem('historybook',"item_historybook.gif");
 $library.newItem('nostalgicbook',"item_historybook.gif");
-$library.newItem('vimbook',"item_historybook.gif")
+vimbook=$library.newItem('vimbook',"item_historybook.gif")
   .addCmdEvent('less','openVim')
   .addListener("openVim", function(){
-    $library.removeItem('vimbook');
+    vt.flash(1600,1000);
+    vt.rmCurrentImg(2650);
+    vimbook.disappear();
   });
-$library.newItem("lever", "item_lever.gif")
+lever=$library.newItem("lever", "item_lever.gif")
   .addCmdEvent('less','pullLever')
   .addStates({
     pullLever:function(re){
-      link_rooms($library, $backroom);
+      $library.addPath($backroom);
+      lever.disappear();
     }
   })
   ;
@@ -237,7 +239,7 @@ newRoom("rockypath", "loc_rockypath.gif",
   })
   .addCommand("rm");
 state.add("rmLargeBoulder",function(re){
-  link_rooms($rockypath, $farm);
+  $rockypath.addPath($farm);
   if (re) $rockypath.removeItem('largeboulder');
 });
 
@@ -328,7 +330,7 @@ newRoom("clearing", "loc_clearing.gif", {
   .addCommand("mkdir")
   .addStates({
     HouseMade: function(re){
-      if (re) { $clearing.addChild(newRoom('house')); }
+      if (re) { $clearing.leadsTo(newRoom('house')); }
       $clearing.getChildFromName(_('room_house'))
         .addCmdText("cd", _('room_house_cd') )
         .addCmdText("ls", _('room_house_ls') );
@@ -371,7 +373,7 @@ newRoom("ominouspath", "loc_path.gif", {
   .addCmdText("rm", _('item_brambles_rm'))
   .addValidCmd("rm");
 state.add("rmBrambles",function(re){
-  link_rooms($ominouspath, $trollcave) ;
+  $ominouspath.addPath($trollcave) ;
   if (re) $ominouspath.removeItem('brambles');
 });
 //SLIDE
@@ -386,7 +388,7 @@ newRoom("kernel")
   .addCmdText("sudo", _('room_kernel_sudo'))
   .addStates({
     sudoComplete : function(re){
-      link_rooms($kernel, $paradise);
+      $kernel.addPath($paradise);
     }
   });
 $kernel.newItem('certificate');
@@ -459,105 +461,38 @@ var Kid=$cage.newPeople('kidnapped', "item_cagedboy.gif")
 var add_locker_func = function(){
   state.apply("addMagicLocker");
 };
-state.add("addMagicLocker",function(re){
-  link_rooms($home, $magiclocker);
-});
-state.add("AthenaComboEntered",function(re){
-  $cluster.addCommand("ls").removeCmdText("ls");
-  $cluster.removeCommandOptions("cd");
-  $cluster.removeOutsideEvt("cd");
-});
-
-newRoom('cluster',  "loc_cluster.gif",
-  inside_evts = { cd: "AthenaClusterExited" },
-  outside_evts = { cd: "AthenaComboEntered" }
-  )
-  .removeCommand("ls").addCmdText("ls",_('room_cluster_ls'))
-  .setCommandOptions("cd",{question:_('room_cluster_cd'),password:'terminus'})
-  .addListener("addMagicLocker", add_locker_func)
-  .addCommand("add")
-  .newItem('workstation', "item_workstation.gif");
-
-//MIT
-newRoom("mit" , "loc_MIT.gif")
-  .addListener("AthenaComboEntered", function(){
-    state.apply("AthenaComboEntered");
-  })
-  .addCommand("tellme")
-  .addCommand("add")
-  .addListener("addMagicLocker", add_locker_func)
-  .newItem("mitletter", "item_manuscript.gif");
-
-//StataCenter
-newRoom('stata', "loc_stata.gif") 
-    .addCommand('tellme')
-    .addCommand('add')
-    .addListener("addMagicLocker", add_locker_func);
-
-$stata.newPeople('gradstudent', "item_grad.gif")
-  .addCmdEvent('less','MagicLockerCmd')
-  .addStates({'MagicLockerCmd':function(re){
-    global_commands.push('add');vt.playSound('learned');
-  }});
-$stata.newPeople('assistant', "item_TA.gif")
-  .addCmdEvent('less','TellMeCluster')
-  .addStates({'TellMeCluster':function(re){
-    global_commands.push('tellme');vt.playSound('learned');
-  }});
-
-//Magic locker
-newRoom('magiclocker', "item_locker.gif")
-  .newItem( 'morecoming', "item_comingsoon.gif");
-
-/**
- * LINKS BETWEEN ROOMS
- * Fulfill parent/child relationships between rooms
- *
- * API: link(parentRoom, childRoom) 
- */
-function link_rooms(parentRoom, childRoom){
-  if (!(childRoom in parentRoom.children)){parentRoom.addChild(childRoom);}
-  if (!(parentRoom in childRoom.parents)){childRoom.addParent(parentRoom);}
-}
-
-
 // LEVEL 1 LINKS
-link_rooms($home, $western_forest);
-link_rooms($western_forest, $spell_casting_academy);
-link_rooms($spell_casting_academy, $academy_practice );
-link_rooms($academy_practice, $box);
+$home                  . addPath($western_forest);
+$western_forest        . addPath($spell_casting_academy);
+$spell_casting_academy . addPath($academy_practice );
+$academy_practice      . addPath($box);
 
-link_rooms($home, $meadow);
-link_rooms($meadow, $mountain);
-link_rooms($spell_casting_academy, $lessons);
-link_rooms($mountain, $cave);
-link_rooms($cave, $dark_corridor);
-link_rooms($cave, $staircase);
-link_rooms($dark_corridor, $dank);
-link_rooms($dank, $small_hole);
-link_rooms($tunnel, $stone_chamber);
-link_rooms($stone_chamber, $portal);
+$home                  . addPath($meadow);
+$meadow                . addPath($mountain);
+$spell_casting_academy . addPath($lessons);
+$mountain              . addPath($cave);
+$cave                  . addPath($dark_corridor);
+$cave                  . addPath($staircase);
+$dark_corridor         . addPath($dank);
+$dank                  . addPath($small_hole);
+$tunnel                . addPath($stone_chamber);
+$stone_chamber         . addPath($portal);
 
 //level 1 -> level 2
-link_rooms($portal, $townsquare);
+$portal                . addPath($townsquare);
 
 //LEVEL 2 LINKS
-link_rooms($townsquare, $market);
-link_rooms($townsquare, $library);
-link_rooms($townsquare, $rockypath);
-link_rooms($townsquare, $artisanshop);
-link_rooms($townsquare, $brokenbridge);
-link_rooms($brokenbridge, $clearing);
-link_rooms($clearing, $ominouspath);
-link_rooms($trollcave, $cage);
-link_rooms($slide, $kernel);
-link_rooms($trollcave, $slide);
-link_rooms($kernel, $morekernel);
-
-//MIT level links
-link_rooms($home, $mit);
-link_rooms($mit, $stata);
-link_rooms($mit, $cluster);
+$townsquare            . addPath($market);
+$townsquare            . addPath($library);
+$townsquare            . addPath($rockypath);
+$townsquare            . addPath($artisanshop);
+$townsquare            . addPath($brokenbridge);
+$brokenbridge          . addPath($clearing);
+$clearing              . addPath($ominouspath);
+$trollcave             . addPath($cage);
+$slide                 . addPath($kernel);
+$trollcave             . addPath($slide);
+$kernel                . addPath($morekernel);
 
 console.log("Game objects : init");
 ldr--;
@@ -587,6 +522,10 @@ app_loaded();
  *    Return the <Room> object
  *
  *    Note : $home is required , in order to define path '~/', and command 'cd'.
+ *
+ * CONNECT ROOMS
+ *
+ *    <Room>.addPath(<Room>)
  *
  * ITEM (or PEOPLE) 
  *

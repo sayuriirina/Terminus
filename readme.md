@@ -74,4 +74,12 @@ By learning how work command line, you'll be able to do things on your computer,
 - develop simple scripts for launching a set of applications with one click
 
 
+Deviant part
+============
+If you tested the orginal Terminus game, you may discover that :
 
+- the scenario had been altered
+- the MIT part and the 'add' locker command had been removed, because these things are really specific to MIT
+- there is sounds
+- UI has changed in order to be usable with click only
+- UI cheats on the accessibility...

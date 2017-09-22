@@ -1,15 +1,32 @@
 
-
-body { overflow-x:hidden}
 body {
+  overflow-x:hidden;
   color: #efefef;
   background:#000;
   font-family:sans-serif;
   font-size: 1.4rem;
   font-stretch:condensed;
-/*  transition:all 1s;*/
 }
 
+.hashtag {
+  color:indigo;
+}
+.flash:after{
+  content:'';
+  position:fixed;
+  width:100%;
+  height:100%;
+  top:0;left:0;
+  animation:flash .6s;
+}
+@keyframes flash {
+  from {
+    background:#000;
+  }
+  to {
+    background:#FFF;
+  }
+}
 .msg, button {
   border:none;
   font-size:inherit;
@@ -18,6 +35,46 @@ body {
 .msg pre{
   display:inline;
 }
+.passinput:before {
+  content:'#>';
+}
+.choicebox {
+border: 10px solid #efefef;
+padding: 1.4rem;
+position: relative;
+z-index: 10;
+box-sizing: border-box;
+}
+.choicebox:after,
+.choicebox:before {
+  content:'';
+  display:block;
+  position:absolute;
+  z-index:-1;
+  border:4px solid #22b14c;
+box-sizing: border-box;
+}
+.choicebox:before {
+  width:calc(100% + 8px);
+  height:calc(100% - 8px);
+  left:-4px;
+  top:4px;
+}
+.choicebox:after {
+  height:calc(100% + 8px);
+  width:calc(100% - 8px);
+  top:-4px;
+  left:4px;
+}
+
+.ghost-monitor,
+.visually-hidden{
+  position:absolute;
+  left:-1000vw; top:0;
+}
+/*.visually-hidden {*/
+/**/
+/*}*/
 .img-container {
 }
 .epicfromright {
@@ -28,7 +85,7 @@ body {
   position:relative;
   left:100%;
 }
-  .epicfromright.loaded img {
+.epicfromright.loaded img {
    animation:a 1s ease-out forwards;
 }
 .msg img {
@@ -54,7 +111,6 @@ body {
   background:#000;
   box-sizing:border-box;
 }
-
 #term{
   padding:1rem;
    position:relative;
@@ -66,10 +122,15 @@ img {
 display:block;
 /*  max-width:12ch;*/
 }
-:not(.msg) > img {
-  max-width:100%;
+
+.screen:not(:last-of-type) :not(.msg) > img{
+
   animation:fromfull 2s 1s forwards;
+
 }
+/*:not(.msg) > img {*/
+/*  max-width:100%;*/
+/*}*/
 .msg > img {
 max-width:12ch;
 }
@@ -107,14 +168,15 @@ max-width:12ch;
   padding:1rem;
   margin:0;
    position:fixed;
-   left:100%;
+   right:-20ch;
    top:2em;
    background:#000;
-   width:100%;
+    border: 1px dashed pink;
+   width:20ch;
    transition:all .6s ease-in;
 }
 .contribute:hover {
-   left:0;
+   right:0;
 }
 
 
@@ -202,6 +264,49 @@ button:hover  {
 text-align:center;
 }
 
+#term .choice input {
+display:none;
+}
+
+.choice input:checked + .selectpointer
+{
+  background:#22b14c;
+} 
+.choice input:checked ~ label
+{
+  color:#22b14c;
+} 
+.selectpointer
+{
+  position:relative;
+  background:#494949;
+  display:inline-block;
+  height: .3ch;
+width: .3ch;
+top: -.4ch;
+margin-right: .6ch;
+} 
+.selectpointer:before,.selectpointer:after
+{
+  content:'';
+  display:block;
+  position:absolute;
+  background:inherit;
+} 
+.selectpointer:before
+{
+  top:-100%;
+  left:-100%;
+  height:300%;
+  width:100%;
+} 
+.selectpointer:after
+{
+  top:-200%;
+  left:-200%;
+  height:500%;
+  width:100%;
+} 
 .branch {
   display:flex;
   justify-content:center;

@@ -54,7 +54,7 @@ Music.prototype = {
     if (this.current!==ref){
       c=this.soundbank.get(this.current);
       if (c){
-        c.stop();
+        c.pause();
         c.currentTime = 0;
       }
       n=this.soundbank.get(ref);
@@ -62,9 +62,9 @@ Music.prototype = {
         this.current=ref;
         setAudioLoop(n,d(attrs.loop,false));
         setAudioFade(n,d(attrs.fadein,[1,1,0]));
-        n.currenttime=0;
+        n.currenttime=d(attrs.currenttime,0);
+        console.log('Play ' +ref,n);
         n.play();
-
       }
     }
   },
