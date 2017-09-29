@@ -7,7 +7,7 @@ function EventTarget(){
 }
 EventTarget.prototype = {
 
-    constructor: EventTarget,
+//    constructor: EventTarget,
 
     addListener: function(type, listener){
         hdef(this._listeners,type,listener);

@@ -7,6 +7,47 @@ body {
   font-size: 1.4rem;
   font-stretch:condensed;
 }
+.notifications{
+  position:fixed;
+  z-index:0;
+  right:0;
+  top:0;
+}
+.badge {
+  position:relative;
+}
+.badge img {
+  width:8ch;
+}
+.badge-desc{
+  opacity:1;
+  animation:1s disappear 2s forwards;
+}
+.notification {
+  padding:1rem;
+}
+.disappear {
+  opacity:1;
+  animation:disappear 1s forwards;
+}
+@keyframes disappear {
+  to {
+    opacity:0;
+  }
+}
+
+.badge-desc{
+  position:absolute;
+  top:100%;
+  left:0;
+}
+.badge-title{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  color:black;
+}
 
 .hashtag {
   color:indigo;
@@ -120,6 +161,7 @@ margin-top:10rem;
 fieldset{border:none;}
 img {
 display:block;
+max-width:100%;
 /*  max-width:12ch;*/
 }
 

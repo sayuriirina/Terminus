@@ -1,10 +1,20 @@
-//dialog shall be defined
-String.prototype.toString=function(){
-  if (def(this.orig)){
-  console.log(this.orig);
-  }
-  return this;
+if (!dialog){
+  console.log('Before this script, you have to load the script defining the dialog table.');
 }
+var POPREFIX_CMD='cmd_';
+var POPREFIX_ROOM='room_';
+var POPREFIX_ITEM='item_';
+var POPREFIX_PEOPLE='people_';
+var POSUFFIX_DESC='_text';
+var PO_NONE='none';
+var PO_NONE_DESC=PO_NONE+POSUFFIX_DESC;
+var PO_DEFAULT_ROOM=POPREFIX_ROOM+PO_NONE;
+var PO_DEFAULT_ITEM=POPREFIX_ITEM+PO_NONE;
+var PO_DEFAULT_PEOPLE=POPREFIX_PEOPLE+PO_NONE;
+var PO_DEFAULT_ROOM_DESC=POPREFIX_ROOM+PO_NONE_DESC;
+var PO_DEFAULT_ITEM_DESC=POPREFIX_ITEM+PO_NONE_DESC;
+var PO_DEFAULT_PEOPLE_DESC=POPREFIX_PEOPLE+PO_NONE_DESC;
+
 
 String.prototype.printf=function (vars){
   var i = -1;
@@ -17,15 +27,17 @@ String.prototype.printf=function (vars){
 function objToMsg(o){
   return o.toMsg();
 }
+
+
 var poe=(typeof pogen == 'function' );
 var var_regexp=/\{\{\w+\}\}/g;
 var var_resolve=function(a){return _(a.substring(2,a.length-2));}
-function _(str,vars,or) {
-  if (!def(str)) return new strComposite('','',[]);
+function _(str,vars,args) {
+  if (!def(str)) return '';
   if (typeof vars !== 'object' || vars.length === 0 ){
     vars=['','','',''];
   } 
-  or = d(or, '');
+  args = d(args, {});
   var ret;
   if (str in dialog) {
     ret=dialog[str];
@@ -33,9 +45,9 @@ function _(str,vars,or) {
     if (poe){
       pogen(str);
     }
-    if (or && or in dialog) {
+    if (args.or && or in dialog) {
       str=ret;
-      ret=dialog[or];
+      ret=dialog[args.or];
     } else {
       ret=str;
       if (vars.length > 0) ret+=' ' + vars.join(' ');
@@ -46,12 +58,8 @@ function _(str,vars,or) {
     ret=ret.replace(var_regexp, var_resolve );
   }
   ret=ret.printf(vars);
-  
-  if (poe){
-     return ret + "#" + str +"#" ;
-  }
+//  if (poe){
+//     return ret + "#" + str +"#" ;
+//  }
   return ret;
-}
-function gettext_check(){
-  if (poe){pogen_deliver();}
 }

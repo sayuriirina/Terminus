@@ -22,38 +22,36 @@ function pogen_content(){
   ret+='"X-Poedit-SourceCharset: UTF-8\\n"\n';
 
 
-for (var i in dialog){
-ret+='msgid "'+i+"\"\n";
-ret+='msgstr "'+dialog[i].replace(/\\n/g,'\\n').replace(/\n/g,'\\n').replace(/"/g,'\\"')+"\"\n\n";
-}
-return ret;
+  for (var i in dialog){
+    ret+='msgid "'+i+"\"\n";
+    ret+='msgstr "'+dialog[i].replace(/\\n/g,'\\n').replace(/\n/g,'\\n').replace(/"/g,'\\"')+"\"\n\n";
+  }
+  return ret;
 }
 
 //https://stackoverflow.com/questions/21012580/is-it-possible-to-write-data-to-file-using-only-javascript
 
-var textFile = null,
-  makeTextFile = function (text) {
-    var data = new Blob([text], {type: 'text/plain'});
+function makeTextFile(text) {
+  var textFile = null;
+  var data = new Blob([text], {type: 'text/plain'});
 
-    // If we are replacing a previously generated file we need to
-    // manually revoke the object URL to avoid memory leaks.
-    if (textFile !== null) {
-      window.URL.revokeObjectURL(textFile);
-    }
+  // If we are replacing a previously generated file we need to
+  // manually revoke the object URL to avoid memory leaks.
+  if (textFile !== null) {
+    window.URL.revokeObjectURL(textFile);
+  }
 
-    textFile = window.URL.createObjectURL(data);
+  textFile = window.URL.createObjectURL(data);
 
-    // returns a URL you can use as a href
-    return textFile;
-  };
+  // returns a URL you can use as a href
+  return textFile;
+}
 
-function pogen_deliver(){
-if (pogencnt>0){
-  console.log(pogencnt+' translations are missing for '+LANG+". Please download the missing translations file.");
-  var dl = addEl(addEl(document.body,'div','contribute'),'a');
+function pogen_deliver_link(){
+  var dl=document.createElement('a');
   dl.setAttribute('download', APP_NAME+'.'+LANG+'.po');
   dl.href = makeTextFile(pogen_content());
-  dl.innerText = "Contribute to the translation : Download .po file ("+pogencnt+" missing translations) for you lang, fill it. And enter 'make' in a terminal.";
-}
+  dl.innerText=dl.href;
+  return dl;
 }
 console.log('pogen loaded');

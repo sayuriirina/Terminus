@@ -1,13 +1,68 @@
 function Item(name, intro, picname){
   this.name = name;
-  this.picture = picname ? new Pic(picname) : img.item_none;
-  this.cmd_text = {less: intro ? intro : _('item_none_text')};
+  this.picture = picname;
+  this.cmd_text = {less: intro ? intro : _(PO_DEFAULT_ITEM)};
   this.cmd_event = {};
   this.valid_cmds = ["less"];
   this.room=null;
   this.ev = new EventTarget();
+  this.poprefix=POPREFIX_ITEM;
+}
+// Useless : just used for making distinction between living being and non-living things
+// Does people are items ?
+function People(name, intro, picname){
+  this.name = name;
+  this.picture = picname;
+  this.cmd_text = {less: intro ? intro : _(PO_DEFAULT_PEOPLE)};
+  this.valid_cmds = ["less"];
+  this.room=null;
+  this.people=true;
+  this.cmd_event = {};
+  this.ev = new EventTarget();
+  this.poprefix=POPREFIX_PEOPLE;
 }
 Item.prototype = {
+  getPic : function(newpicname){
+    this.picture = newpicname;
+  },
+  copy:function(name){
+    var nut = new Item(name);
+    nut.picture = clone(this.picture);
+    nut.cmd_text = clone(this.cmd_text);
+    nut.valid_cmds = clone(this.valid_cmds);
+    nut.cmd_event = clone(this.cmd_event);
+    nut.room = clone(this.room);
+    nut.people = this.people;
+    nut.ev = clone(this.ev);
+    nut.poprefix = this.poprefix;
+    return nut;
+  },
+  setPic : function(newpicname){
+    this.picture = newpicname;
+    return this;
+  },
+  getName:function(){
+    return this.name;
+  },
+  setName:function(name){
+    this.name=name;
+    return this;
+  },
+  setPo:function(name,vars){
+    this.name=_(this.poprefix+name,vars);
+    this.cmd_text.less=_(this.poprefix+name+POSUFFIX_DESC,vars);
+    this.poid=name;
+    this.povars=vars;
+    return this;
+  },
+  setPoDelta:function(delta){
+    if (typeof delta == 'string'){
+      this.setPo(this.poid+delta,this.povars);
+    } else {
+      this.setPo(this.poid,delta);
+    }
+    return this;
+  },
   fire_event:function(vt,cmd,args,idx){
     var ev_trigger=null;
     var context={term:vt,room:this.room, item:this, arg:args[idx], args:args, i:idx};
@@ -61,23 +116,15 @@ Item.prototype = {
   toString : function(){
     return this.name;
   },
-  changePic : function(newpicname){
-    this.picture = new Pic(newpicname);
-  }
 };
 
-// Useless : just used for making distinction between living being and non-living things
-// Does people are items ?
-function People(name, intro, picname){
-  this.name = name;
-  this.picture = picname ? new Pic(picname) : img.people_none;
-  this.cmd_text = {less: intro ? intro : _('people_none_text')};
-  this.valid_cmds = ["less"];
-  this.room=null;
-  this.people=true;
-  this.cmd_event = {};
-  this.ev = new EventTarget();
-}
+People.prototype.copy = Item.prototype.copy;
+People.prototype.getPic = Item.prototype.getPic;
+People.prototype.setPic = Item.prototype.setPic;
+People.prototype.getName = Item.prototype.getName;
+People.prototype.setName = Item.prototype.setName;
+People.prototype.setPo = Item.prototype.setPo;
+People.prototype.setPoDelta = Item.prototype.setPoDelta;
 People.prototype.addCmdText = Item.prototype.addCmdText;
 People.prototype.addCmdEvent = Item.prototype.addCmdEvent;
 People.prototype.removeCmdEvent = Item.prototype.removeCmdEvent;

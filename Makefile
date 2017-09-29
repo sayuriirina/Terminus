@@ -1,8 +1,8 @@
 # Use `gulp` after installing gulp-concat gulp-cli gulp-autoprefixer gulp-html-replace.
-all: prepare
+all: .npm 
 	./node_modules/.bin/gulp
 
-prepare:
-	npm install
+.npm:
+	npm install && touch .npm
 
 

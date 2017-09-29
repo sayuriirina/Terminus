@@ -1,5 +1,5 @@
-function GameState(first_room){
-	this.params = {'':first_room.name};
+function GameState(){
+	this.params = {};
   this.actions = {};
   this.cookie=null;
   this.Event=function(e){state.apply(e.type);};

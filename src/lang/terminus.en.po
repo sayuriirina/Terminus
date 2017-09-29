@@ -13,6 +13,9 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
+msgid "pogen_alert"
+msgstr "%s translations are missing, type 'pogen' to download the translation file."
+
 msgid "gamestart_text"
 msgstr ""
 "Welcome! If you are new to the game, here are some tips: \n"
@@ -44,6 +47,9 @@ msgstr "You have moved to %s. %s"
 
 msgid "cmd_cd_failed"
 msgstr "There is no room called %s."
+
+msgid "cmd_cd_no_args"
+msgstr "'cd ~' to come back on start point.\n 'pwd' to know where you are."
 
 msgid "cmd_cd_flood"
 msgstr "You can't move to multiple locations."

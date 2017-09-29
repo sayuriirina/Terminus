@@ -8,9 +8,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
+"Language: en\n"
 "X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+msgid "pogen_alert"
+msgstr "%s traductions manquent, tape 'pogen' pour télécharger le fichier de traduction avec les nouvelles entrées."
+
+msgid "you_learn"
+msgstr "Tu as appris à utiliser %s !"
 
 msgid "cookie"
 msgstr "Afin de conserver ton avancement dans le jeu, il faut manger un cookie.\nVeux tu activer les cookies ?"
@@ -41,184 +46,180 @@ msgstr "Ce sort ne peut pas être utilisé-e ici."
 
 msgid "cmd_exit"
 msgstr "Au revoir !"
- 
+
 msgid "gamestart_text"
-msgstr "Dans un pays lointain,\nla force physique autant que les pouvoirs magiques ont été surpassés par un mystérieux pouvoir...\n"
-"Cependant les personnes sachant utiliser ce pouvoir sont rares.\n"
-"Par manque d'éducation ou grâce à un abrutissement de masse, ce pouvoir a permis aux élites d'imposer leur règles.\n"
-"Depuis quelques mois, de nombreuses disparitions ont été constatées, mais personne ne semble savoir pourquoi."
-"\n\n\n\n\n\n\n<img src='img/intruder.png' alt='' role='decoration'/>\nLe réveil est difficile.\n"
-"Il semble que tu aies perdu la mémoire.\n"
-"Qu'est-ce que cette ridicule ceinture que tu portes sur toi ? On peut y apercevoir un écran.\n"
-"Il y a une lettre de bienvenue par terre.\n (Tu peux la lire en tapant \"less LettreDeBienvenue\".)"
- 
+msgstr "Dans un pays lointain,\nla force physique autant que les pouvoirs magiques ont été surpassés par un mystérieux pouvoir...\nCependant les personnes sachant utiliser ce pouvoir sont rares.\nPar manque d'éducation ou grâce à un abrutissement de masse, ce pouvoir a permis aux élites d'imposer leur règles.\nDepuis quelques mois, de nombreuses disparitions ont été constatées, mais personne ne semble savoir pourquoi.\n\n\n\n\n\n\n<img src='img/intruder.png' alt='' role='decoration'/>\nLe réveil est difficile.\nIl semble que tu aies perdu la mémoire.\nQu'est-ce que cette ridicule ceinture que tu portes sur toi ? On peut y apercevoir un écran.\nIl y a une lettre de bienvenue par terre.\n (Tu peux la lire en tapant \"less LettreDeBienvenue\".)"
+
 msgid "cmd_exit_html"
 msgstr "<p>Terminus a été arrêté.</p><p>Au revoir !</p>"
- 
+
 msgid "cmd_cd"
-msgstr "Tu es entré-e dans %s. %s" 
- 
+msgstr "Tu es entré-e dans %s. %s"
+
 msgid "cmd_cd_failed"
 msgstr "Il n'existe aucun lieu appelé %s. Retourne te coucher."
- 
+
+msgid "cmd_cd_no_args"
+msgstr "'cd ~' pour retourner au point de départ.\n 'pwd' pour savoir où tu es."
+
 msgid "cmd_cd_flood"
 msgstr "À moins de te dédoubler, tu ne peux pas aller dans plusieurs endroits en même temps."
- 
+
 msgid "cmd_cd_home"
 msgstr "Tu es de retour à la maison !"
- 
+
 msgid "cmd_cd_no_parent"
 msgstr "Tu ne peux plus rebrousser chemin."
- 
+
 msgid "cmd_cd_parent"
-msgstr "Tu es entré-e dans %s. %s" 
- 
+msgstr "Tu es entré-e dans %s. %s"
+
 msgid "cmd_cp_copied"
 msgstr "%s vient d'être copier dans %s."
- 
+
 msgid "cmd_cp_unknown"
 msgstr "Je ne vois aucun objet qui pourrait porter ce nom."
- 
+
 msgid "tgt_already_exists"
-msgstr "'%s' existe déjà."  
- 
+msgstr "'%s' existe déjà."
+
 msgid "item_not_exists"
 msgstr "L'objet '%s' n'existe pas."
- 
+
 msgid "cmd_help_begin"
 msgstr "Tu peux utiliser les sorts suivants :"
- 
+
 msgid "cmd_less_invalid"
 msgstr "Choisissez un autre objet à décrire..."
- 
+
 msgid "cmd_less_missing"
-msgstr "%s n'a pas été(e) trouvé."   
- 
+msgstr "%s n'a pas été(e) trouvé."
+
 msgid "cmd_man_no_query"
 msgstr "Il faut poser une question pour obtenir une réponse. C'est ce que dit le grand manuscrit."
- 
+
 msgid "cmd_man_not_found"
 msgstr "Il n'y a rien d'écrit dans le grand manuscrit."
- 
+
 msgid "cmd_not_found"
 msgstr "Il n'est pas possible de faire '%s' dans '%s'."
- 
+
 msgid "cmd_mv_done"
 msgstr "%s a été déplacé(e) vers %s."
- 
+
 msgid "cmd_mv_flood"
 msgstr "Il est possible de déplacer un objet A dans un emplacement (ou lieu)  B.  \nPour cela, utilise 'mv [objetA] [emplacementB]'."
- 
+
 msgid "cmd_mv_invalid"
 msgstr "Il faut un objet et un emplacement de destination pour réaliser un déplacement."
- 
+
 msgid "cmd_mv_fixed"
-msgstr "Ceci ne peut être déplacé."  
- 
+msgstr "Ceci ne peut être déplacé."
+
 msgid "cmd_pwd"
-msgstr "Tu te trouve dans %s."
- 
+msgstr "Tu te trouves dans %s."
+
 msgid "cmd_rm_done"
 msgstr "Tu viens de supprimer %s. Ses données disparaissent devant tes yeux."
- 
+
 msgid "cmd_rm_failed"
 msgstr "Voilà quelque chose que tu ne peux pas détruire."
- 
+
 msgid "cmd_rm_invalid"
 msgstr "Tu ne peux supprimer qu'un objet existant sans grande importance pour autrui."
- 
+
 msgid "cmd_rm_miss"
 msgstr "Si il s'agit d'une chose particulière que tu cherches à supprimer. Cela ne suffira pas."
- 
+
 msgid "cmd_touch_created"
-msgstr "Tu viens de créer : %s !" 
- 
+msgstr "Tu viens de créer : %s !"
+
 msgid "cmd_touch_none"
 msgstr "Tu as tenté de créer quelque chose. Mais personne ne sait de quoi il s'agit. Vérifie ta syntaxe."
- 
+
 msgid "cmd_touch_nothing"
 msgstr "Tu dois indiquer ce que tu cherche à créer pour que cela marche."
- 
+
 msgid "cmd_unknown"
 msgstr "Tu n'as pas encore appris ce sort."
- 
+
 msgid "combo"
 msgstr "La combinaison est  'terminus' (sans les guillemets)."
- 
+
 msgid "directions"
 msgstr "Lieux:\n%s "
- 
+
 msgid "incorrect_syntax"
 msgstr "Cela ne marche pas. Tu devrais voir dans le Manuscrit si tu as bien utiliser ce sortilège."
- 
+
 msgid "invalid_locker"
 msgstr "Je ne connais pas ce nom de verrou."
- 
+
 msgid "invalid_spell"
 msgstr "Ce sort n'existe pas"
- 
+
 msgid "items"
 msgstr "Objets:\n%s"
- 
+
 msgid "peoples"
 msgstr "Individus:\n%s"
- 
+
 msgid "lock_added"
 msgstr "Tu viens d'ajouter le vérrou %s"
- 
+
 msgid "room_empty"
 msgstr "Cette pièce est vide. Il n'y a rien."
- 
+
 msgid "room_new_created"
 msgstr "Tu viens de créer un nouveau lieu : %s"
- 
+
 msgid "room_wrong_password"
 msgstr "Le mot de passe est erroné. As tu oublié ton mot de passe ? Non, je blague. Déguerpissez !"
- 
+
 msgid "room_wrong_syntax"
 msgstr "La syntaxe n'est pas valide. Relisez les instructions."
- 
+
 msgid "room_none"
 msgstr "LieuBanal"
- 
+
 msgid "room_none_text"
 msgstr "C'est un endroit très banal."
- 
+
 msgid "room_home"
 msgstr "DossierPersonnel"
- 
+
 msgid "room_home_text"
 msgstr "De retour au point de départ... "
- 
+
 msgid "room_western_forest"
 msgstr "BoisDesLutins"
- 
+
 msgid "room_western_forest_text"
 msgstr "Tu es entré-e dans la foret des Lutins . Le chemin semble mener à une école.\nUn panneau indique \"Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur. \""
- 
+
 msgid "room_spell_casting_academy"
-msgstr "AcadémieDesBots" 
- 
+msgstr "AcadémieDesBots"
+
 msgid "room_spell_casting_academy_text"
 msgstr "Le hall d'entrée est bondée. \nL'académie a un plafond très haut ce que rend l'entrée très impressionnante."
- 
+
 msgid "item_western_forest_academy_direction"
 msgstr "Panneau"
- 
+
 msgid "item_western_forest_academy_direction_text"
 msgstr "Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur.\nÀ ne pas manquez aujourd'hui : Leçon d'initiation aux sortilèges !"
- 
+
 msgid "item_western_forest_back_direction"
 msgstr "RentreChezToi"
- 
+
 msgid "item_western_forest_back_direction_text"
 msgstr "À tous moment, si tu veux revenir dans le dossier personnel, \nécris juste la commande 'cd ~' ou 'cd'  et tu seras de retour chez toi.\nC'est plus simple que demander son chemin."
- 
+
 msgid "item_welcome_letter"
 msgstr "LettreDeBienvenue"
 
 msgid "item_welcome_letter_text"
-msgstr "Bienvenue à toi ! \nPour réussir ta quête, tu devra écrire des sorts avec ton clavier.\n\nObserve l'endroit où tu te trouves et les chemins à proximité avec \"ls\". \nDéplace toi avec \"cd \" suivi du chemin qui mène à ta destination.\nTu peux revenir sur tes pas avec la commande \"cd ..\". \nTu peux utiliser des objets avec la commande \"less OBJET\" .\nSi tu es perdu(e), écris \"pwd\" .\nSouvent tu n'auras pas besoin d'écrire les mots en entier, appuis sur la touche Tab ↹ et ta ceinture-outil le devinera pour toi.\n\nMaintenant explore et va de l'avant."
+msgstr "Bienvenue à toi ! \nPour réussir ta quête, il te faudra écrire des sorts avec ton clavier.\n\nObserve l'endroit où tu te trouves et les chemins à proximité avec \"ls\". \nDéplace toi avec \"cd \" suivi du chemin qui mène à ta destination.\nTu peux revenir sur tes pas avec la commande \"cd ..\". \nTu peux utiliser des objets avec la commande \"less OBJET\" .\nSi tu es perdu(e), écris \"pwd\" .\nSouvent tu n'auras pas besoin d'écrire les mots en entier, appuis sur la touche Tab ↹ et le mot sera deviné.\n\nMaintenant explore et va de l'avant."
 
 msgid "item_practice_dummy"
 msgstr "ObjetTest%d"
@@ -344,7 +345,7 @@ msgid "room_tunnel"
 msgstr "Tunnel"
 
 msgid "room_tunnel_text"
-msgstr "Le taux d'humidité ici est très élevé.\n Vous reçevez des gouttes d'eau sur la figure.\nTu as remarqué une touffe de poil se déplaçant à ta droite.\n Au bout de tunnel,  il y a une porte ouverte."
+msgstr "Le taux d'humidité ici est très élevé.\nTu reçois des gouttes d'eau sur la figure.\nTu as remarqué une touffe de poil se déplaçant à ta droite.\nAu bout de tunnel, il y a une porte ouverte."
 
 msgid "people_rat"
 msgstr "TouffeDePoils"
@@ -401,22 +402,49 @@ msgid "people_vendor"
 msgstr "Vendeur"
 
 msgid "people_vendor_text"
-msgstr "\" Bonjour toi !\" le vendeur te souris de manière déplaisante ,\nrévellant un bouche pleine de dents en or. \" Que cherches-tu ?\""
+msgstr "\" Bonjour toi !\" le vendeur te souris de manière déplaisante ,\nrévellant un bouche pleine de dents en or. \" Que veux-tu acheter ?\""
+
+msgid "people_vendor_sell_nothing"
+msgstr "(passer son chemin)"
+
+msgid "people_vendor_sell_rm"
+msgstr "le sort 'rm' qui coûte {{item_rm_cost}}"
+
+msgid "people_vendor_sell_mkdir"
+msgstr "le sort 'mkdir' qui coûte {{item_mkdir_cost}}"
+
+msgid "you_buy"
+msgstr "Tu as acheté %s"
+
+msgid "need_money"
+msgstr "Tu n'as pas de quoi acheter ce sort."
+
+msgid "unzipped"
+msgstr "Dans %s, tu as trouvé ces choses : %s"
+
+msgid "item_mkdir_cost"
+msgstr "5000"
+
+msgid "item_rm_cost"
+msgstr "10000"
 
 msgid "people_vendor_rm"
-msgstr "\"Ha! Ce sort ne marche pas sur tout, tu sais.\nJ'aurai dû le mentionner avant de te le vendre...\""
+msgstr "\"Hey! Ce sort ne marche pas sur tout, tu sais.\nJ'aurai dû le mentionner avant de te le vendre...\""
+
+msgid "item_cmd_unknown"
+msgstr "Cela ne marche pas."
 
 msgid "item_rm_spell"
 msgstr "rm"
 
 msgid "item_rm_spell_text"
-msgstr "\"Ah, oui, le sort rm,\" le vendeur songe. \n\"Dis juste \"rm\" suivi du nom de l'objet ou de la personne, \net cela causera sa disparition... pour toujours. \nAs tu les trippes pour l'utiliser ?\""
+msgstr "\"Ah, oui, le sort 'rm',\" le vendeur songe. \n\"Dis juste 'rm' suivi du nom de l'objet ou de la personne, \net cela causera sa disparition... pour toujours. \nAs tu les trippes pour l'utiliser ?\""
 
 msgid "item_backpack"
-msgstr "SacÀDos"
+msgstr "SacÀDos%s"
 
 msgid "item_backpack_text"
-msgstr "Il y a un sac à dos super classe sur la table sans prix dessus. Sa toile est un peu éffiloché mais il semble robuste.\nTu jetes un coups d'oeil sur le vendeur mais son attention est ailleurs."
+msgstr "Il y a un sac à dos avec ouverture zippée super classe sur la table sans prix dessus. Sa toile est un peu éffiloché mais il semble robuste.\nTu jetes un coups d'oeil sur le vendeur mais son attention est ailleurs.\nUne incription apparaît près de la languette du sac : 'unzip'. "
 
 msgid "item_backpack_stolen"
 msgstr "Tu viens de voler le sac à dos. \nÉtant donné que tu es fauché, et que tu ne travailles pas une odieuse multinationnale, \nRichard Stallman devrait être fier de toi."
@@ -425,7 +453,7 @@ msgid "item_mkdir_spell"
 msgstr "mkdir"
 
 msgid "item_mkdir_spell_text"
-msgstr "\"\"mkdir\" transforme les rêves en réalité. Invoque ce sort suivi du nom qui te convient crééra un nouveau lieu.\n Il faut être un peu méticulleux pour l'utiliser...\" le vendeur marmonne."
+msgstr "\"'mkdir' transforme les rêves en réalité. Invoque ce sort suivi du nom qui te convient crééra un nouveau lieu.\""
 
 msgid "room_library"
 msgstr "Bibliothèque"
@@ -509,16 +537,16 @@ msgid "item_largeboulder_rm"
 msgstr "The boulder disappears with a pop."
 
 msgid "room_artisanshop"
-msgstr "ArtisanShop"
+msgstr "BoutiqueArtisanale"
 
 msgid "room_artisanshop_text"
-msgstr "The walls of the shop are covered in clocks, all slightly out of sync.\nAt the workbench, a woman in an enormous pair of goggles \nis wielding a blowtorch with frightening enthusiasm."
+msgstr "Les murs de la boutique sont couverts d'horloge dont les tics tacs sont légèrement désynchronisés.\nAu plan de travail, une femme avec un grosse paire de lunettes brandit un chalumeau avec un enthousiasme inquiétant. "
 
 msgid "item_strangetrinket"
-msgstr "StrangeTrinket"
+msgstr "BabiolleÉtrange"
 
 msgid "item_strangetrinket_text"
-msgstr "It looks like a crystal of some sort. It's very beautiful."
+msgstr "Ça ressemble à une roche de cristal."
 
 msgid "item_strangetrinket_rm"
 msgstr "Didn't your mother ever teach you that it's rude to rease other people's \nthings from their plane of existence?"
@@ -527,10 +555,10 @@ msgid "item_strangetrinket_mv"
 msgstr "You can't take that, it's not yours!"
 
 msgid "item_dragon"
-msgstr "ClockworkDragon"
+msgstr "Dragon"
 
 msgid "item_dragon_text"
-msgstr "A dragon the size of a small dog is frolicking about the room. \nYou'd think it was real if it weren't for the wind-up key sticking out of its back."
+msgstr "Un dragon de la taille de 2 mètres de long parcours la pièce.\nTu aurai cru qu'il s'agit d'un vrai dragon si il n'avait pas un clef servant à remonté le mécanisme sur le dos."
 
 msgid "item_dragon_rm"
 msgstr "Didn't your mother ever teach you that it's rude to erase other people's \nthings from their plane of existence?"
@@ -542,7 +570,7 @@ msgid "people_artisan"
 msgstr "Artisan"
 
 msgid "people_artisan_text"
-msgstr "The Artisan lifts up her goggles and peers at you in surprise. \n\"Are you the new assistant? You're late! ...  \nYou say you aren't my assistant? \nWell, that doesn't mean you can't make yourself useful.\nI need some gears, quickly! \n... \nYou don't even know how to make things? Hmph. Some assistant you are.\nJust say \"touch ITEM\" alright?\nWhere ITEM is the name of the thing you want to create. Now make me a {{item_gear}}! Then come back.\""
+msgstr "L'Artisan lève ses lunettes et te regarde avec surprise.\n\"Êtes-vous le nouvel assistant? Vous êtes en retard!\" ...\n\"Vous dites que vous n'êtes pas mon assistant? \nEh bien, cela ne signifie pas que vous ne pouvez pas vous rendre utile.\nJ'ai besoin de quelques engins rapidement! ...\nVous ne savez même pas comment faire des choses?\nHmph. Et vous vous prétendrez être un assistant.\nDites simplement \"touch \" suivi du nom de la chose que vous voulez créer. Maintenant, faites-moi un {{item_gear}}! Revenez me parler ensuite.\""
 
 msgid "item_gear"
 msgstr "rouage%s"
@@ -1230,4 +1258,16 @@ msgstr "Partie restaurée"
 
 msgid "room_kernel_sudo"
 msgstr "room_kernel_sudo"
+
+msgid "Suggestions"
+msgstr "Suggestions"
+
+msgid "cmd_poe_revealed"
+msgstr "cmd_poe_revealed"
+
+msgid "po_symbol_edit"
+msgstr "(édition - taper Ctrl + Entrée pour valider) "
+
+msgid "po_symbol_unknown"
+msgstr "po_symbol_unknown"
 
