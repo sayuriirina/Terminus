@@ -13,17 +13,22 @@ var music=new Music(snd);
 snd.set('choicemove','./snd/sfx_movement_ladder5a.',['wav']);
 snd.set('choiceselect','./snd/sfx_movement_ladder2a.',['wav']);
 snd.set('tag','./snd/sfx_movement_ladder2a.',['wav']);
+snd.set('char','./snd/sfx_movement_ladder2a.',['wav']);
+snd.set('grl','./snd/sfx_menu_move4.',['wav']);
 snd.set('portal','./snd/sfx_movement_portal6.',['wav']);
 snd.set('learned','./snd/sfx_sounds_fanfare3.',['wav']);
+snd.set('unlocked','./snd/sfx_sounds_fanfare3.',['wav']);
 music.set('chapter2','./music/slowdrum-cave.',['wav']);
 // music set
-//music.set('yourduty','./music/enterTheHero.',['mp3']);
+music.set('yourduty','./music/enterTheHero.',['mp3']);
+music.set('trl','./music/trolls-beatdown-05l.',['wav']);
 
+music.play('trl',{loop:true});
 SAFE_BROKEN_TEXT=true;
 
 // global_commands are the commands the player is allowed to use
 //var global_commands=["cd", "ls", "less", "pwd"];
-var global_commands=["cd", "ls", "less", "pwd"];
+var global_commands=[];
 function learn(vt, cmds,re){
   if (typeof cmds == 'string'){
     cmds=[cmds];
@@ -39,24 +44,23 @@ function learn(vt, cmds,re){
     vt.playSound('learned'); 
   }
 }
+function unlock(vt, unlocked,re){
+  if (!re) {
+    vt.playSound('unlocked'); 
+  }
+
+}
 
 // Initiate Game state - required to be called 'state'
 var state = new GameState(); // GameState to initialize in game script
 var vt;
 //$home - required
 newRoom('home', "loc_farm.gif") ;
-$home.newItem('welcome_letter');
-$home.addCmdEvent('poe_cmd_not_found','poe_mode')
-  .addStates({
-    poe_mode: function(re){
-      vt.show_msg(_('cmd_poe_revealed'),undefined,false);
-      learn(vt,['poe','pogen'],re);
-    }
-  });
 function start_game(){
   vt=new VTerm('term','./img/');
   vt.soundbank=snd; 
-  vt.charduration=10; 
+  vt.charduration=20; 
+  vt.charfactor[' ']=25;//on each nbsp , it will take 1/2 second
   vt.disable_input();
   vt.epic_img_enter('titlescreen.gif','epicfromright',2000);
   //default room
@@ -84,29 +88,90 @@ function start_game(){
     vt.ask_choose(_('cookie'), [_('yes'),_('no')],game_start);
   },2000);
 }
+// home
+shelly=$home.newPeople('shell')
+  .setTextIdx(0)
+  .addCmdEvent('less_done','add_ls')
+  .addStates({
+    add_ls:function(re){
+      shelly.removeCmdEvent('less_done');
+      learn(vt,['ls','cd'],re);
+      shelly.setTextIdx('');
+      state.saveCookie();
+    }
+  })
+  ;
+$home.addCmdEvent('poe_cmd_not_found','poe_mode')
+//  .addCmdEvent('cmd_not_found','first_interraction')
+  .addCmdEvent('cmd_not_found_done','add_cat')
+  .addCmdEvent('destination_invalid','destination_invalid')
+  .addStates({
+    poe_mode: function(re){
+      vt.show_msg(_('cmd_poe_revealed'),undefined,false);
+      learn(vt,['poe','pogen'],re);
+    },
+//    first_interraction:function(re){
+//      $home.removeCmdEvent('cmd_not_found');
+//    },
+    add_cat:function(re){
+      if (re){
+          learn(vt,['cat'],re);
+      } else {
+      setTimeout(function(){
+      vt.push_img('intruder.png'); // Display image of room
+      vt.show_msg(_('cmd_cat_revealed'));
+      
+      $home.removeCmdEvent('cmd_not_found_done');
+        setTimeout(function(){ 
+          vt.show_img();
+          learn(vt,['cat'],re);
+          state.saveCookie();
+        },1300);
+      },1000);
+      }
+    },
+    destination_invalid:function(re){
+      if (!re){
+      setTimeout(function(){
+        vt.show_msg(_('cmd_cat_first_try'));
+      },1000);
+      }
+    }
+  });
 //WESTERN FOREST
 newRoom('western_forest', "loc_forest.gif");
 $western_forest.newItem('western_forest_academy_direction',"loc_forest.gif");
 $western_forest.newItem('western_forest_back_direction',"loc_forest.gif");
 
+
 //SPELL CASTING ACADEMY
-newRoom('spell_casting_academy', "loc_academy.gif")
-  .newPeople('academy_student', "item_student.gif");
+newRoom('spell_casting_academy', "loc_academy.gif");
+//  .newPeople('academy_student', "item_student.gif");
 
 //PRACTICE ROOM
 newRoom('academy_practice', "loc_practiceroom.gif")
-  .addCommand("mv")
-  .newItem('academy_practice', "item_manuscript.gif");
-$academy_practice.newItemBatch('practice_dummy',[1,2,3,4,5], "item_dummy.gif");
+  .addCommand("mv");
+//  .newItem('academy_practice', "item_manuscript.gif")
+$academy_practice.newItemBatch('practice_dummy',[1,2,3], "item_dummy.gif")
+  .map(function(i){
+    i.addValidCmd('mv');
+  }
+  );
 
 //BOX
 newRoom('box', "item_box.gif")
   .removeCommand("cd")
-  .addCmdText("cd",_('room_box_cd'));
+  .setCmdText("cd",_('room_box_cd'));
 
 //NORTHERN MEADOW
 newRoom('meadow', "loc_meadow.gif")
-  .newPeople("poney", "item_fatpony.gif");
+  .newPeople("poney", "item_fatpony.gif")
+  .addCmdEvent('less_done','add_mountain')
+  .addState('add_mountain',function(re){
+    
+    $meadow                . addPath($mountain);
+    unlock($mountain.room_name);
+  });
 
 //EASTERN MOUNTAINS
 man_sage=newRoom('mountain', "loc_mountains.gif")
@@ -131,7 +196,11 @@ man_sage.addCmdEvent('less_done','manLeave')
 
 //LESSONS
 newRoom('lessons',"loc_classroom.gif")
-  .newPeople('professor', "item_professor.gif");
+  .newPeople('professor', "item_professor.gif")
+  .addCmdEvent('less_done','learn_mv')
+  .addState('learn_mv',function(re){
+      learn(vt,'mv',re);
+  });
 
 //CAVE
 newRoom('cave', "loc_cave.gif");
@@ -159,7 +228,7 @@ newRoom('dank',"loc_darkroom.gif").addCommand("mv")
 
 //SMALL HOLE
 newRoom('small_hole')
-  .addCmdText("cd", _('room_small_hole_cd'));
+  .setCmdText("cd", _('room_small_hole_cd'));
 
 //TUNNEL
 var rat=newRoom('tunnel',"loc_tunnel.gif")
@@ -220,7 +289,7 @@ function buy_to_vendor(vt, choice){
   }
 }
 vendor=$market.newPeople("vendor", "item_merchant.gif")
-  .addCmdText("less","")
+  .setCmdText("less","")
   .addCmdEvent("less",function(){
     vt.show_img();
     vt.ask_choose(_('people_vendor_text'), [_('people_vendor_sell_mkdir'),_('people_vendor_sell_rm'),_('people_vendor_sell_nothing')],buy_to_vendor, disabled_sell_choices);
@@ -243,9 +312,6 @@ $market.addStates({
     learn(vt, 'unzip', re);
     backpack.removeCmdEvent("less");
     backpack.setPoDelta(['.zip']);
-    if (!re) {
-      vt.playSound('learned');
-    }
     backpack.addCmdEvent('unzip',function(ct){
       unzipped=[];
       unzipped.push(ct.room.newItem('rm_cost'));
@@ -259,21 +325,18 @@ $market.addStates({
     learn(vt,'rm',re);
     $market.removeItem('rm_spell');
     disabled_sell_choices.push(1);
-    vendor.addCmdText("rm", _('people_vendor_rm'));
-    if (!re) vt.playSound('learned');
+    vendor.setCmdText("rm", _('people_vendor_rm'));
   },
   mkdirSold:function(re){
     disabled_sell_choices.push(0);
     $market.removeItem('mkdir_spell');
     learn(vt,'mkdir',re);
-    if (!re) vt.playSound('learned');
   }
 })
 ;
 //function(ct){
 //    backpack.addValidCmd('unzip');
 //    global_commands.push('unzip');
-//    vt.playSound('learned');
 //    backpack.removeCmdEvent("less");
 //    backpack.setPoDelta(['.zip']);
 //    backpack.addCmdEvent('unzip','unzip');
@@ -314,18 +377,16 @@ $backroom.newPeople("grep", "grep.gif")
   .addStates({
     grep:function(re){
       learn(vt,'grep',re);
-     vt.playSound('learned');
     }
   })
   ;
 
-$backroom.newItem("practicebook");
 $backroom.newPeople("librarian", "item_librarian.gif");
 
 //ROCKY PATH
 newRoom("rockypath", "loc_rockypath.gif")
   .newItem("largeboulder", "item_boulder.gif")
-  .addCmdText("rm", _('item_largeboulder_rm'))
+  .setCmdText("rm", _('item_largeboulder_rm'))
   .addValidCmd("rm")
   .addStates({
     rmLargeBoulder: function(re){
@@ -359,13 +420,14 @@ newRoom("artisanshop", "loc_artisanshop.gif")
   },true)
   .addStates({
     'touchGear': function (re){
-      Artisan.addCmdText("less", _('item_gear_touch'));
+      Artisan.setCmdText("less", _('item_gear_touch'));
       $artisanshop.addCommand("cp");
+      learn(vt,'cp',re);
       if (re) $artisanshop.newItem('gear',"item_gear.gif");
       else $artisanshop.getItem('gear').setPic("item_gear.gif");
     },
     "FiveGearsCopied": function(re){
-      Artisan.addCmdText("less", _('item_gear_artisans_ok'));
+      Artisan.setCmdText("less", _('item_gear_artisans_ok'));
       if (re){
         $artisanshop.newItemBatch("gear",['1','2','3','4','5']);
       }
@@ -374,17 +436,16 @@ newRoom("artisanshop", "loc_artisanshop.gif")
 ;
 
 $artisanshop.newItem("strangetrinket", "item_trinket.gif")
-  .addCmdText("rm", _('item_strangetrinket_rm'))
-  .addCmdText("mv", _('item_strangetrinket_mv'));
+  .setCmdText("rm", _('item_strangetrinket_rm'))
+  .setCmdText("mv", _('item_strangetrinket_mv'));
 $artisanshop.newItem("dragon", "item_clockdragon.gif")
-  .addCmdText("rm", _('item_dragon_rm'))  
-  .addCmdText("mv", _('item_dragon_mv')); 
+  .setCmdText("rm", _('item_dragon_rm'))  
+  .setCmdText("mv", _('item_dragon_mv')); 
 var Artisan=$artisanshop.newPeople("artisan", "item_artisan.gif")
   .addCmdEvent('less_done', 'touch' )
   .addStates({
     'touch': function(re){
       learn(vt,'touch',re);
-      vt.playSound('learned');
       Artisan.removeCmdEvent('less_done');
     }
   })
@@ -394,11 +455,11 @@ var Artisan=$artisanshop.newPeople("artisan", "item_artisan.gif")
 newRoom("farm", "loc_farm.gif")
   .addCommand("cp")
   .newItem("earofcorn", "item_corn.gif")
-  .addCmdText("rm",_('item_earofcorn_rm'))
+  .setCmdText("rm",_('item_earofcorn_rm'))
   .addCmdEvent('cp','CornCopied')
   .addStates({
     CornCopied:function(re){
-      Farmer.addCmdText("less", _('corn_farmer_ok'));
+      Farmer.setCmdText("less", _('corn_farmer_ok'));
       if (re) $farm.newItem('another_earofcorn');
     }
   });
@@ -411,17 +472,17 @@ newRoom("clearing", "loc_clearing.gif")
     return (ct.arg == _('room_house') ? 'HouseMade':'');
   })
   .removeCommand("cd")
-  .addCmdText("cd", _('room_clearing_cd'))
+  .setCmdText("cd", _('room_clearing_cd'))
   .addCommand("mkdir")
   .addStates({
     HouseMade: function(re){
       if (re) { $clearing.leadsTo(newRoom('house')); }
       $clearing.getChildFromName(_('room_house'))
-        .addCmdText("cd", _('room_house_cd') )
-        .addCmdText("ls", _('room_house_ls') );
-      $clearing.removeCmdText("cd");
+        .setCmdText("cd", _('room_house_cd') )
+        .setCmdText("ls", _('room_house_ls') );
+      $clearing.unsetCmdText("cd");
       $clearing.setIntroText(_('room_clearing_text2'));
-      CryingMan.addCmdText("less", _('room_clearing_less2'));
+      CryingMan.setCmdText("less", _('room_clearing_less2'));
     }
   })
 ;
@@ -434,8 +495,8 @@ newRoom("brokenbridge", "loc_bridge.gif")
   .addStates({
     touchPlank: function(re){
       $clearing.addCommand("cd");
-      $clearing.removeCmdText("cd");
-      $brokenbridge.removeCmdText("cd");
+      $clearing.unsetCmdText("cd");
+      $brokenbridge.unsetCmdText("cd");
       $brokenbridge.setIntroText(_('room_brokenbridge_text2'));
       if (re) $brokenbridge.newItem('plank',"item_plank.gif");
       else $brokenbridge.getItem('plank').setPic("item_plank.gif");
@@ -452,8 +513,8 @@ newRoom("ominouspath", "loc_path.gif")
     state.apply("rmBrambles");
   })
   .newItem("brambles", "item_brambles.gif")
-  .addCmdText("mv", _('item_brambles_mv'))
-  .addCmdText("rm", _('item_brambles_rm'))
+  .setCmdText("mv", _('item_brambles_mv'))
+  .setCmdText("rm", _('item_brambles_rm'))
   .addValidCmd("rm");
 state.add("rmBrambles",function(re){
   $ominouspath.addPath($trollcave) ;
@@ -462,13 +523,13 @@ state.add("rmBrambles",function(re){
 //SLIDE
 newRoom("slide")
   .removeCommand("cd")
-  .addCmdText("cd", _('room_slide_cd'));
+  .setCmdText("cd", _('room_slide_cd'));
 
 //KERNEL FILES
 newRoom("kernel")
   .addCommand("sudo",{question:undefined,password:"IHTFP"})
   .addCommand("grep")
-  .addCmdText("sudo", _('room_kernel_sudo'))
+  .setCmdText("sudo", _('room_kernel_sudo'))
   .addStates({
     sudoComplete : function(re){
       $kernel.addPath($paradise);
@@ -490,7 +551,7 @@ newRoom("morekernel")
 
 //PARADISE (end game screen)
 newRoom("paradise", "loc_theend.gif")
-  .addCmdText("ls", _('room_paradise_ls'));
+  .setCmdText("ls", _('room_paradise_ls'));
 
 //CAVE
 var troll_evt=function(ct){
@@ -508,23 +569,23 @@ newRoom("trollcave", "loc_cave.gif")
 
 state.add("openSlide",function(re){
   $slide.addCommand("cd");
-  $slide.addCmdText("cd", _('room_slide_cd2'));
+  $slide.setCmdText("cd", _('room_slide_cd2'));
   if (re) $trollcave.removePeople('troll1');
 });
 $trollcave.newPeople('troll1', "item_troll1.gif")
   .addValidCmd("rm")
-  .addCmdText("rm", _('people_troll11_rm'))
+  .setCmdText("rm", _('people_troll11_rm'))
   .addValidCmd("mv")
-  .addCmdText("mv", _('people_troll11_mv'))
+  .setCmdText("mv", _('people_troll11_mv'))
   .addValidCmd("cp")
-  .addCmdText("cp",_('people_troll11_cp'));
+  .setCmdText("cp",_('people_troll11_cp'));
 $trollcave.newPeople('troll2', "item_troll2.gif")
   .addValidCmd("rm")
-  .addCmdText("rm",_('people_troll11_rm'));
+  .setCmdText("rm",_('people_troll11_rm'));
 
 $trollcave.newPeople('supertroll', "item_supertroll.gif")
-  .addCmdText("rm", _('people_supertroll_rm'))
-  .addCmdText("mv", _('people_supertroll_mv'));
+  .setCmdText("rm", _('people_supertroll_rm'))
+  .setCmdText("mv", _('people_supertroll_mv'));
 
 //CAGE
 state.add("freeKid",function(re){
@@ -532,10 +593,10 @@ state.add("freeKid",function(re){
 });
 newRoom('cage', "item_cage.gif")
   .removeCommand("cd")
-  .addCmdText("cd", _('room_cage_cd'));
+  .setCmdText("cd", _('room_cage_cd'));
 var Kid=$cage.newPeople('kidnapped', "item_cagedboy.gif")
   .addValidCmd("mv")
-  .addCmdText("mv", _('people_kidnapped_mv'))
+  .setCmdText("mv", _('people_kidnapped_mv'))
   .addCmdEvent("mv",function(ct){ return 'freekid'; })
   .addListener("freekid",function(){
     state.apply('freeKid');
@@ -552,7 +613,7 @@ $spell_casting_academy . addPath($academy_practice );
 $academy_practice      . addPath($box);
 
 $home                  . addPath($meadow);
-$meadow                . addPath($mountain);
+//$meadow                . addPath($mountain);
 $spell_casting_academy . addPath($lessons);
 $mountain              . addPath($cave);
 $cave                  . addPath($dark_corridor);
@@ -643,7 +704,7 @@ app_loaded();
  *    <Item>.addValidCmd(<cmd_name>)
  *
  *    // alter result of the command
- *    <Room>.addCmdText(<cmd_name>,<cmd_result>)
- *    <Item>.addCmdText(<cmd_name>,<cmd_result>)
+ *    <Room>.setCmdText(<cmd_name>,<cmd_result>)
+ *    <Item>.setCmdText(<cmd_name>,<cmd_result>)
  *
  */

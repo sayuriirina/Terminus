@@ -11,6 +11,7 @@ msgstr ""
 "Language: en\n"
 "X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+
 msgid "pogen_alert"
 msgstr "%s traductions manquent, tape 'pogen' pour télécharger le fichier de traduction avec les nouvelles entrées."
 
@@ -48,7 +49,32 @@ msgid "cmd_exit"
 msgstr "Au revoir !"
 
 msgid "gamestart_text"
-msgstr "Dans un pays lointain,\nla force physique autant que les pouvoirs magiques ont été surpassés par un mystérieux pouvoir...\nCependant les personnes sachant utiliser ce pouvoir sont rares.\nPar manque d'éducation ou grâce à un abrutissement de masse, ce pouvoir a permis aux élites d'imposer leur règles.\nDepuis quelques mois, de nombreuses disparitions ont été constatées, mais personne ne semble savoir pourquoi.\n\n\n\n\n\n\n<img src='img/intruder.png' alt='' role='decoration'/>\nLe réveil est difficile.\nIl semble que tu aies perdu la mémoire.\nQu'est-ce que cette ridicule ceinture que tu portes sur toi ? On peut y apercevoir un écran.\nIl y a une lettre de bienvenue par terre.\n (Tu peux la lire en tapant \"less LettreDeBienvenue\".)"
+msgstr "Dans un pays lointain,\nla force physique autant que les pouvoirs magiques ont été surpassés par un mystérieux pouvoir...\nCependant les personnes sachant utiliser ce pouvoir sont rares.\nPar manque d'éducation ou grâce à un abrutissement de masse, ce pouvoir a permis aux élites d'imposer leur règles.\nDepuis quelques mois, de nombreuses disparitions ont été constatées, mais personne ne semble savoir pourquoi.\n\n\n\n\n\nLe réveil est difficile.\nIl semble que tu aies perdu la mémoire."
+
+msgid "cmd_cat_revealed"
+msgstr "Ro ro .\n Ro ro.\n Ro ro.\n\n.\n\n"
+"Tu m'as l'air de ne pas y voir grand chose dans ce brouillard.\n"
+"Où habites tu ? \n\n Tu ne sais pas ?\n C'est peut-être ici ta maison.\n"
+"Bon je vais t'accompagner, ça sera plus simple pour toi.\n Et puis, j'aime bien les aventures.\n"
+"Mon nom ?  c'est Cat. \nSi tu veux que je te serve d'interprète écris 'cat' suivi du nom d'une personne ou d'un objet.\n"
+"\n\n"
+
+
+msgid "people_shell"
+msgstr "Palourde"
+
+msgid "people_shell_text"
+msgstr "<voice grl/>Pour ce qui est de se déplacer écris 'cd' suivi d'un lieu et pour voir au alentour écris 'ls'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin.\nIl te faudra surement écrire 'ls' partout où tu passe."
+
+msgid "people_shell_text0"
+msgstr "<voice char/>cat : \"Salut ! oh blanche palourde ! \nLa chose, là, qui me sert de compagnon a oublié comment se repérer dans l'espace.\n
+Vu que toi, qui n'a ni yeux ni jambes, et que tu es arrivée jusqu'ici.\nOn se demandait comment tu faisais\"\n \n"
+"<voice grl/>palourde : \"Non, mais oh, pour qui tu te prends pour me parler avec ces manières.\n Et pour qui tu te prends de parler de cette personne ainsi !\" . . . \n"
+"\"Enfin bon, désolé de m'emporter.\n Pour ce qui est de se déplacer écris 'cd' suivi d'un lieu et pour voir au alentour écris 'ls'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin. Au début, il te faudra surement écrire 'ls' partout où tu passe.\""
+
+msgid "cmd_cat_first_try"
+msgstr "Tiens, regardes là ! il y a une {{people_shell}}, on pourrait lui demander comment elle a fait pour venir jusqu'ici.\n"
+"Vous vous connaissez peut-être.\n Tu n'as qu'à écrire 'cat {{people_shell}}' pour engager cette passionante discussion."
 
 msgid "cmd_exit_html"
 msgstr "<p>Terminus a été arrêté.</p><p>Au revoir !</p>"
@@ -378,13 +404,13 @@ msgid "people_citizen1"
 msgstr "VillageoisAigri"
 
 msgid "people_citizen1_text"
-msgstr "Tu t'adresse a ce villageois aigri : \"Excusez-moi,\". Il se retourne, surpris. \n\"Eh, bonjour ! Bienvenue à Terminus. Il faut me pardonner, mais on est tous à bout ces derniers temps.\nC'est à cause du TéléMagicien qui répend la corruption tout le long de côte. Tu devrais faire attention !\""
+msgstr "Tu t'adresse a ce villageois aigri : \"Excusez-moi,\". Il se retourne, surpris. \n\"Eh, bonjour ! Bienvenue à Terminus. Il faut me pardonner, mais on est tous à bout ces derniers temps.\nC'est à cause du {{people_darkwizard}} qui répend la corruption tout le long de côte. Tu devrais faire attention !\""
 
 msgid "people_citizen2"
 msgstr "AutreVillageois"
 
 msgid "people_citizen2_text"
-msgstr "Ce villageois lit le journal quand il remarque que tu le regarde. \n\"As tu lu ça ?\" s'eclaffe t'il, secouant la dernière édition du \"Le Dernier Mot\" devant ton visage.\n\"Ça dit que le TéléMagicien a répandu la corruption \nas Oseton jusqu'au sud, et Konsole est déjà atteint !\n Ces temps sont dangereux,\" il marmone, secouant sa tête et retournant à sa lecture."
+msgstr "Ce villageois lit le journal quand il remarque que tu le regarde. \n\"As tu lu ça ?\" s'eclaffe t'il, secouant la dernière édition du \"Le Dernier Mot\" devant ton visage.\n\"Ça dit que le {{people_darkwizard}} a répandu la corruption \nas Oseton jusqu'au sud, et Konsole est déjà atteint !\n Ces temps sont dangereux,\" il marmone, secouant sa tête et retournant à sa lecture."
 
 msgid "people_citizen3"
 msgstr "VillageoiseEnPleurs"
@@ -477,7 +503,7 @@ msgid "item_historybook"
 msgstr "HistoireDeTerminus"
 
 msgid "item_historybook_text"
-msgstr "Ce livre semble intéressant, mais il y a trop de pages et l'écriture est vraiment petite. Voici un extrait:\n \nTéléMagicien ... un vielle légend parle d'un magicien qui divisera le pays...\n...seul une personne batisseuse de ce monde peut stopper le virus répandu par le TéléMagicien...\n...le pouvoir du  \"sudo\" pourrait être la seule faiblesse du TéléMagicien..."
+msgstr "Ce livre semble intéressant, mais il y a trop de pages et l'écriture est vraiment petite. Voici un extrait:\n \n{{people_darkwizard}} ... un vielle légend parle d'un magicien qui divisera le pays...\n...seul une personne batisseuse de ce monde peut stopper le virus répandu par le {{people_darkwizard}}...\n...le pouvoir du  \"sudo\" pourrait être la seule faiblesse du {{people_darkwizard}}..."
 
 msgid "item_nostalgicbook"
 msgstr "NostalgieDuPays"
@@ -492,34 +518,37 @@ msgid "item_vimbook_text"
 msgstr "Tu ouvres ce livre, et découvre un écriture étrange. La seconde suivante, tu es aveuglée par un lumière et tu le livre disparaît."
 
 msgid "item_lever"
-msgstr "InconspicuousLever"
+msgstr "IntrigantPanneau"
 
 msgid "item_lever_text"
-msgstr "You spot an inconspicuous lever behind the shelves.\nCurious, you pull it, and a panel slides open to reveal a secret back room."
+msgstr "Un panneau derrière l'étagère semble recouvrir une source de lumière.\n Par curiosité, tu le pousse, revelant une pièce secrète."
 
 msgid "room_backroom"
-msgstr "BackRoom"
+msgstr "PièceSecrete"
 
 msgid "room_backroom_text"
-msgstr "You find a mysterious back room.\nYou find a librarian alone with a small elf.\nYou hope you're not interrupting."
+msgstr "Derrière le panneau, tu trouve un bibliothéquaire seule avec un petit elfe.\n Tu espères ne pas les déranger."
 
 msgid "people_grep"
 msgstr "Grep"
 
 msgid "people_grep_text"
-msgstr "The exceptionally ugly elf turns to you with a sour expression. \n\"Greeeeeep,\" he says sullenly."
-
-msgid "item_practicebook"
-msgstr "PracticeBook"
-
-msgid "item_practicebook_text"
-msgstr "Sally picked a peck\nOf seashelled peppers.\nA seashore of pickled pickles\ndid Peter and Sally pick."
+msgstr "L'elfe se tourne vers toi avec un regard aigri. \n\"Greeeeeep,\" dit-il solannelement."
 
 msgid "people_librarian"
-msgstr "Librarian"
+msgstr "Bibliothéquaire"
+
+msgid "people_darkwizard"
+msgstr "Magus"
+
+msgid "people_darkwizard_pre"
+msgstr "le mage funeste"
+
+msgid "people_darkwizard_text"
+msgstr "MageFuneste"
 
 msgid "people_librarian_text"
-msgstr "\"Hm? Oh, hello. I apologize for the mess,\nbut I'm very busy doing research on the dark wizard.\nWould you do me a favor? Go look up all references to DarkWizard in \nthe History of Terminus. My assistant Grep can help you.\" \nGrep eyes you balefully. \"Greeepp.\"\n\"To search the contents of the book, just type \"grep PHRASE ITEM\",\nwhere PHRASE is the phrase you want to search for, \nand ITEM is the name of the book you want to search.\nTry it with the PracticeBook here \n  - see if you can find the line with the word 'peppers' in it.\""
+msgstr "\"? Oh, bonjour. Désolé pour le désordre,\n mais je suis très occupé dans mes recherches sur {{people_darkwizard_pre}} {{people_darkwizard}}.\nPeux tu me faire une faveur ? Peurrais tu me dire toutes les références à {{people_darkwizard}} dans le livre relatant \"{{item_historybook}}\". Mon assistant Grep peux t'aider.\" \nGrep te regardes avec un air mécontent. \"Greeepp.\"\n\"Pour chercher les occurences d'un terme dans un livre, écris simplement \"grep\" suivi du terme et de l'objet en question\n. Va trouver le livre et tape \"grep {{people_darkwizard}} {{item_historybook}}\"."
 
 msgid "room_rockypath"
 msgstr "RockyPath"
@@ -582,7 +611,7 @@ msgid "item_gear_text"
 msgstr "Ceci est un {{item_gear}}"
 
 msgid "item_gear_touch"
-msgstr "Euh... à quoi tu t'attends avec seulement un {{item_gear}} ?\nTu devrait être capable de la copier pourtant...\n*pfffff* T'as vraiment besoin d'entrainement.\n Écris seulement “cp [ITEM] [CLONE_DE_ITEM]”.\n[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvelle copie.\nCompris ? Alors prouve le moi ! Voici un {{item_gear}}. Il m'en faut 5 autres.\nAppeles les  {{item_gear}}1, {{item_gear}}2, {{item_gear}}3, {{item_gear}}4, et {{item_gear}}5, stp."
+msgstr "Euh... à quoi tu t'attends avec seulement un {{item_gear}} ?\nTu devrait être capable de la copier pourtant...\n*pfffff* T'as vraiment besoin d'entrainement.\n Écris seulement “cp [ITEM] [CLONE_DE_ITEM]”.\n[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvelle copie.\nCompris ? Alors prouve le moi ! Voici un {{item_gear}}. Il m'en faut 5 autres.\nAppeles les  {{item_gear,[1]}}, {{item_gear,[2]}}, {{item_gear,[3]}}, {{item_gear,[4]}}, et {{item_gear,[5]}}, stp."
 
 msgid "room_farm"
 msgstr "Farm"

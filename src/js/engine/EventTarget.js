@@ -28,6 +28,7 @@ EventTarget.prototype = {
 
         if (this._listeners[event.type] instanceof Array){
             var listeners = this._listeners[event.type];
+          console.log(listeners);
             for (var i=0, len=listeners.length; i < len; i++){
                 listeners[i].call(this, event);
             }

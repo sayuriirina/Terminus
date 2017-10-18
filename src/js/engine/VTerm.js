@@ -18,6 +18,8 @@ function VTerm(container_id, img_dir,  img_id, context){
   t.context = context;
   t.img_dir=(img_dir ? img_dir : './img/'); // shall contains last slash './img/'
   t.charduration=10;
+  t.charfactor={' ':8,' ':2,'!':10,'?':10,',':5,'.':8,"\t":2, "\n":10,'tag':10};
+  t.charhtml={' ':'&nbsp;',"\n":'<br>',"\t":'&nbsp;&nbsp;'};
   t.imgs=[];
   t.history=[];
   t.disabled={};
@@ -187,7 +189,7 @@ VTerm.prototype={
   show_previous_prompt: function (txt){
     addEl(this.monitor,'p','input').innerText = txt;
   },
-  _show_chars: function (msgidx,msg,txttab,dependant,safe,cb,txt){
+  _show_chars: function (msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,cnt){
     l=txttab.shift();
     var t=this;
     if (def(l)){
@@ -202,7 +204,10 @@ VTerm.prototype={
          if (tagtype == 'img') {
            msg.innerHTML += tag ;
            t.playSound('tag');
-           timeout=10;
+           timeout = t.charfactor[l];
+         } else if (tagtype == 'voice' ) {
+           curvoice=tag.replace(/<([^ ]*)[ ]*([^ ]*)\/>/,'$2');
+           console.log('change voice to'+curvoice);
          } else { 
            var tagend="";
            l=txttab.shift();
@@ -213,43 +218,21 @@ VTerm.prototype={
            msg.innerHTML += tag+tagend ;
          }
         t.scrl();
-       } else if (l == "\n" ){
-        msg.innerHTML += '<br>' ;
-        t.playSound('ret');
-        timeout = 10;
+       } else if (t.charfactor.hasOwnProperty(l)){
+        msg.innerHTML += (t.charhtml[l]?t.charhtml[l]:l);
+        t.playSound(l);
+        timeout = t.charfactor[l];
         t.scrl();
-      } else if (l == '.') {
-        msg.innerHTML += l;
-        t.playSound('dot');
-        timeout = 8;
-        t.scrl();
-      } else if (l == ',') {
-        msg.innerHTML += l;
-        t.playSound('virg');
-        timeout = 5;
-        t.scrl();
-      } else if (l == '!') {
-        msg.innerHTML += l;
-        t.playSound('exclm');
-        timeout = 10;
-        t.scrl();
-      } else if (l == '?') {
-        msg.innerHTML += l;
-        t.playSound('question');
-        timeout = 10;
-        t.scrl();
-      } else if (l == ' ') {
-        msg.innerHTML += l;
-        t.playSound('space');
-        timeout = 2;
       } else {
         msg.innerHTML += l;
-        t.playSound('char');
+        if (cnt%3 == 1){
+        t.playSound(curvoice);
+        }
         timeout = 1;
       }
        if (!dependant || t.msg_idx==msgidx){
          setTimeout(function(){
-           t._show_chars(msgidx,msg,txttab,dependant,safe,cb,txt);
+           t._show_chars(msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,++cnt);
          },timeout*t.charduration);
        } else {
          if (SAFE_BROKEN_TEXT||safe) {
@@ -257,11 +240,11 @@ VTerm.prototype={
            t.scrl();
          }
          t.playSound('brokentext');
-         if (cb) {cb()};
+         if (cb) {cb();}
        } 
     } else {
       t.playSound('endoftext');
-      if (cb) {cb()};
+      if (cb) {cb();}
     }
   },
   rmCurrentImg: function(timeout){
@@ -297,13 +280,13 @@ VTerm.prototype={
         txt=txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>');
         txttab=txt.split('');
         t.msg_idx++;
-        txt=txt.replace(/\n/g,"<br>").replace(/ /g,"<&nbsp;>");
+        txt=txt.replace(/\t/g,"&nbsp;&nbsp;").replace(/\n/g,"<br>").replace(/ /g,"&nbsp;");
         t.ghostel.innerHTML=txt.replace(/(<br>)/g,"<&nbsp;><br>").replace(/[«»]/g,'"').replace(/(\.\.\.)/g,'<br>');
         if (direct){
           t.current_msg.innerHTML=txt;
           if (cb) {cb();}
         } else { // progressive 
-          t._show_chars(t.msg_idx,t.current_msg,txttab,dependant,safe,cb,txt);
+          t._show_chars(t.msg_idx,t.current_msg,txttab,dependant,safe,cb,txt,'char',1);
         }  
       }
     }
@@ -731,9 +714,6 @@ VTerm.prototype={
       }
     };
     t.disable_input();
-    var t=this;
-    /// 
-    //
    
     var end_answer= function(){
       t.answer_input.setAttribute('disabled',true);

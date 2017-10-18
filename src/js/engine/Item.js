@@ -51,8 +51,15 @@ Item.prototype = {
   setPo:function(name,vars){
     this.name=_(this.poprefix+name,vars);
     this.cmd_text.less=_(this.poprefix+name+POSUFFIX_DESC,vars);
-    this.poid=name;
+    this.poid=this.poprefix+name;
     this.povars=vars;
+    return this;
+  },
+  checkTextIdx : function(textidx) {
+    return dialog.hasOwnProperty(this.poid+POSUFFIX_DESC+textidx);
+  },
+  setTextIdx : function(textidx,vars) {
+    this.cmd_text.less = _(this.poid+POSUFFIX_DESC+textidx,vars,{or:this.poid+POSUFFIX_DESC});
     return this;
   },
   setPoDelta:function(delta){
@@ -80,6 +87,11 @@ Item.prototype = {
     this.ev.addListener(name,fun);
     return this;
   },
+  addState : function(name,fun){
+    this.ev.addListener(name,state.Event);
+    state.add(name,fun);
+    return this;
+  },
   addStates : function(h){
     for (var i in h) {
       if (h.hasOwnProperty(i)){
@@ -97,8 +109,12 @@ Item.prototype = {
     this.cmd_event[cmd] = fun;
     return this;
   },
-  addCmdText : function(cmd, text) {
+  setCmdText : function(cmd, text) {
     this.cmd_text[cmd] = text;
+    return this;
+  },
+  unsetCmdText : function(cmd){
+    delete this.cmd_text[cmd];
     return this;
   },
   addValidCmd : function(cmd){
@@ -125,11 +141,15 @@ People.prototype.getName = Item.prototype.getName;
 People.prototype.setName = Item.prototype.setName;
 People.prototype.setPo = Item.prototype.setPo;
 People.prototype.setPoDelta = Item.prototype.setPoDelta;
-People.prototype.addCmdText = Item.prototype.addCmdText;
+People.prototype.checkTextIdx = Item.prototype.checkTextIdx;
+People.prototype.setTextIdx = Item.prototype.setTextIdx;
+People.prototype.setCmdText = Item.prototype.setCmdText;
+People.prototype.unsetCmdText = Item.prototype.unsetCmdText;
 People.prototype.addCmdEvent = Item.prototype.addCmdEvent;
 People.prototype.removeCmdEvent = Item.prototype.removeCmdEvent;
 People.prototype.addListener = Item.prototype.addListener;
 People.prototype.addStates = Item.prototype.addStates;
+People.prototype.addState = Item.prototype.addState;
 People.prototype.addValidCmd = Item.prototype.addValidCmd;
 People.prototype.moveTo = Item.prototype.moveTo;
 People.prototype.disappear = Item.prototype.disappear;

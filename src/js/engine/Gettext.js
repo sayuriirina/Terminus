@@ -29,9 +29,33 @@ function objToMsg(o){
 }
 
 
+var type_decorations={
+  people:'<span class="color-people">%s</span>',
+  item:'<span class="color-item">%s</span>',
+  room:'<span class="color-room">%s</span>',
+  cmd:'<span class="color-cmd">%s</span>'
+};
+function guess_gettext_mod(txt){
+  typ=txt.split('_')[0];
+  console.log(txt,typ);
+  return {
+    decorate:type_decorations[typ]
+  };
+}
+
 var poe=(typeof pogen == 'function' );
-var var_regexp=/\{\{\w+\}\}/g;
-var var_resolve=function(a){return _(a.substring(2,a.length-2));}
+var var_regexp=/\{\{\w+(,\[([^,]*(,)?)\])?\}\}/g;
+var var_vars_regexp=/\[([^,]*(,)?)\]/g;
+function var_resolve(a){
+  a=a.substring(2,a.length-2);
+  if (var_vars_regexp.test(a)){
+    vars=JSON.parse(a.match(var_vars_regexp));
+    a=a.split(',')[0];
+  } else {
+    vars=[];
+  }
+  return _(a,vars,guess_gettext_mod(a));
+}
 function _(str,vars,args) {
   if (!def(str)) return '';
   if (typeof vars !== 'object' || vars.length === 0 ){
@@ -45,7 +69,7 @@ function _(str,vars,args) {
     if (poe){
       pogen(str);
     }
-    if (args.or && or in dialog) {
+    if (args.or && args.or in dialog) {
       str=ret;
       ret=dialog[args.or];
     } else {
@@ -61,5 +85,9 @@ function _(str,vars,args) {
 //  if (poe){
 //     return ret + "#" + str +"#" ;
 //  }
+  if (args.decorate){
+    console.log('decorate',args.decorate);
+    ret=args.decorate.printf([ret]);
+  }
   return ret;
 }

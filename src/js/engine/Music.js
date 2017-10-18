@@ -2,27 +2,10 @@
 function Music(soundbank){
   this.current=0;
   this.soundbank=soundbank;
-  this.loop=false;
 }
 
-function listenerAudioLoop() {
-  this.currentTime = 0;
-  this.play();
-}
 function setAudioLoop(audio,bool){
-  audio.setAttribute('loop','true');
-  if (typeof audio.loop == 'boolean')
-  {
-    audio.loop = bool;
-  }
-  else
-  {
-    if (bool){
-      audio.addEventListener('ended',listenerAudioLoop, false);
-    } else {
-      audio.removeEventListener('ended',listenerAudioLoop, false);
-    }
-  }
+  audio._loop = bool;
 }
 function setAudioFade(audio,fade){
   steps=fade[3]/100;
@@ -31,14 +14,7 @@ function setAudioFade(audio,fade){
 //  console.log(fade);
   for (var i=steps;i>0;i--){
     setTimeout(function(){
-//      audio.volume=1/i+0.01
-//      console.log(
-//        parseFloat(((fade[1]-fade[3])*(i/steps))+fade[3]).toPrecision(4),
-//        fade[1],fade[3],i,steps,(i/steps)
-//
-//    );
       audio.volume=parseFloat(((fade[1]-fade[3])*(i/steps))+fade[3]).toPrecision(4);
-//  ; 
     },i*100);
   } 
   setTimeout(function(){
@@ -47,7 +23,7 @@ function setAudioFade(audio,fade){
 }
 Music.prototype = {
   set:function(ref,file,exts){
-    this.soundbank.set(ref,file,exts,false);
+    this.soundbank.set(ref,file,exts,{required:false});
   },
   play:function(ref,attrs){
     attrs=d(attrs,{});

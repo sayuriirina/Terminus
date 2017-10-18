@@ -8,12 +8,15 @@ GameState.prototype = {
   getCurrentRoom : function() {
     return window[this.params['']];
   },
-  setCurrentRoom : function(newRoom){
-    this.params['']=newRoom.name;
+  saveCookie: function(){
     //when you call this function, set the cookie in the browser
     if (this.cookie) {
       this.cookie.write(this.params);
     }
+  },
+  setCurrentRoom : function(newRoom){
+    this.params['']=newRoom.name;
+    this.saveCookie();
   },
   add : function(param_name, fun){
     this.actions[param_name]=fun;

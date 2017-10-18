@@ -13,12 +13,12 @@ function Room(roomname, introtext, roompic,varname){
 	this.children = [];
 	this.items = [];
   this.commands_lock={};
-	this.commands = ["poe","pogen","cd", "ls", "less", "man", "help", "exit", "pwd","tar","unzip"];
+	this.commands = ["poe","pogen","cd", "ls", "cat", "more","less", "man", "help", "exit", "pwd","tar","unzip"];
   this.fire = null;
 	this.room_name =d(roomname, _(PO_DEFAULT_ROOM,[]));
 	this.intro_text = d(introtext, _(PO_DEFAULT_ROOM_DESC));
   this.room_pic = roompic ;
-  this.cmd_text = {"pwd": _(POPREFIX_CMD+'pwd',[this.room_name]).concat("\n").concat(this.intro_text) };
+  this.cmd_text = {};
 	this.starter_msg=null;
 	this.enter_callback=null;
   //for event handling
@@ -29,7 +29,7 @@ function Room(roomname, introtext, roompic,varname){
 function newRoom(id, roompic){
   //this function automatically set the variable $id to ease game saving
   var varname= '$'+id;
-  var poid='room_'+id;
+  var poid=POPREFIX_ROOM+id;
   var n= new Room(
     _(poid,[],{or:PO_DEFAULT_ROOM}),
     _(poid+POSUFFIX_DESC,[],{or:PO_DEFAULT_ROOM_DESC}),
@@ -77,6 +77,13 @@ Room.prototype = {
   setIntroText : function(txt){
     this.intro_text = txt;
   },
+  checkTextIdx : function(textidx) {
+    return dialog.hasOwnProperty(this.poid+POSUFFIX_DESC+textidx);
+  },
+  setTextIdx : function(textidx,vars) {
+    this.intro_text = _(this.poid+POSUFFIX_DESC+textidx,vars,{or:this.poprefix+name+POSUFFIX_DESC});
+    return this;
+  },
   // callback when entering in the room
   setEnterCallback : function(fu){
     this.enter_callback = fu;
@@ -86,7 +93,7 @@ Room.prototype = {
     if (this.starter_msg){
       return this.starter_msg;
     } else {
-      return this.cmd_text.pwd;
+      return _(POPREFIX_CMD+'pwd',[this.room_name]).concat("\n").concat(this.intro_text)
     }
   },
   setStarterMsg: function(txt){
@@ -193,12 +200,11 @@ Room.prototype = {
     this.ev.addListener(name,fun);
     return this;
   },
-  addState : function(name,fun){
-    this.ev.addListener(name,state.Event);
-    state.add(name,fun);
+  removeListener : function(name,fun){
+    this.ev.removeListener(name,fun);
     return this;
   },
-  removeState : function(name,fun){
+  addState : function(name,fun){
     this.ev.addListener(name,state.Event);
     state.add(name,fun);
     return this;
@@ -280,12 +286,12 @@ Room.prototype = {
     return this;
   },
 
-  addCmdText : function(cmd, text) {
+  setCmdText : function(cmd, text) {
     this.cmd_text[cmd] = text;
     return this;
   },
 
-  removeCmdText : function(cmd){
+  unsetCmdText : function(cmd){
     delete this.cmd_text[cmd];
     return this;
   },
@@ -379,15 +385,15 @@ Room.prototype = {
   printLS : function(){
     var ret='';
     if (this.children.length > 0){
-      ret+= _('directions', [" " + this.children.map(objToStr).join("\n ")]) + " \n";
+      ret+= _('directions', ["\t" + this.children.map(objToStr).join("\n\t")]) + "\t\n";
     }
     var items=this.items.filter(function(o){return !o.people;});
     var peoples=this.items.filter(function(o){return o.people;});
     if (items.length > 0){
-      ret+= _('items', [" " + items.map(objToStr).join("\n ")]) + " \n";
+      ret+= _('items', ["\t" + items.map(objToStr).join("\n\t")]) + "\t\n";
     }
     if (peoples.length > 0){
-      ret+=_('peoples', [" " + peoples.map(objToStr).join("\n ")]) + " \n";
+      ret+=_('peoples', ["\t" + peoples.map(objToStr).join("\n\t")]) + "\t\n";
     }
     return ret;
   },
@@ -442,9 +448,9 @@ Room.prototype = {
     };
     return [ret,cb];
   },
-
   less : function(args,vt){// event arg -> object
     if (args.length < 1){
+      this.fire_event(vt,'destination_invalid',args,0);
       return _('cmd_less_invalid');
     } else {
       var traversee=this.traversee(args[0]);
@@ -461,8 +467,10 @@ Room.prototype = {
           return _("item_not_exists",args);
         }
       } else {
+        this.fire_event(vt,'destination_unreachable',args,0);
         return _("room_unreachable");
       }
+      this.fire_event(vt,'destination_invalid',args,0);
       return _('cmd_less_invalid',args);
     }
   },
@@ -499,7 +507,7 @@ Room.prototype = {
 
   pwd : function(args,vt){
     vt.push_img(this.room_pic);
-    return "";
+    return _(POPREFIX_CMD+'pwd',[this.room_name]).concat("\n").concat(this.intro_text);
   },
 
   mv : function(args,vt){// event arg -> object (source)
@@ -694,9 +702,9 @@ Room.prototype = {
       if (sym){
         if (dialog[sym]){
           var cb=function(value){
-          dialog[sym]=value;
-        }
-          vt.ask(_("po_symbol_edit"),cb,{multiline:true,value:dialog[sym]})
+            dialog[sym]=value;
+          };
+          vt.ask(_("po_symbol_edit"),cb,{multiline:true,value:dialog[sym]});
           return '';
         } else {
           return _("po_symbol_unknown");
@@ -717,17 +725,31 @@ Room.prototype = {
     var r=this;
     arrs.push(arrs.pop().replace(/\/$/,""));
     var args=arrs.slice(1);
-    // test command eligibility when no existant args
-    if((args.length === 0 || cmd == 'mkdir' || cmd == 'touch' ) && !r.hasCommand(cmd) ){ 
+    // test command eligibility when no existant cmd 
+    if ( !r.hasCommand(cmd) ) {
       if (cmd in r.cmd_text){
         r.fire_event(vt,cmd+'_cmd_text',args,0);
         ret=r.cmd_text[cmd];
       } else {
+        r.fire_event(vt,'cmd_not_found',args,0);
         r.fire_event(vt,cmd+'_cmd_not_found',args,0);
-        ret=_('cmd_not_found',[cmd,r.room_name]);
+        ret=this.cmd_done(vt,[[r,0]], _('cmd_not_found',[cmd,r.room_name]),'cmd_not_found',args);
       }
       return ret;
     } 
+    // test command eligibility when no existant args 
+//    if((args.length === 0 || cmd == 'mkdir' || cmd == 'touch' ) && !r.hasCommand(cmd) ){ 
+//    if((args.length === 0 || cmd == 'mkdir' || cmd == 'touch' )  ){ 
+//      if (cmd in r.cmd_text){
+//        r.fire_event(vt,cmd+'_cmd_text',args,0);
+//        ret=r.cmd_text[cmd];
+//      } else {
+//        r.fire_event(vt,'cmd_not_found',args,0);
+//        r.fire_event(vt,cmd+'_cmd_not_found',args,0);
+//        ret=this.cmd_done(vt,[[r,0]], _('cmd_not_found',[cmd,r.room_name]),'cmd_not_found',args);
+//      }
+//      return ret;
+//    } 
     // asume there is a collection of password to unlock
     // if the collection is empty then the command is executed
     var passwordcallback=function(passok,cmdpass){
@@ -807,6 +829,7 @@ Room.prototype = {
     var new_room;
     var incomplete_room;
     var substring_matches = [];
+    cmd=((cmd=='cat'|| cmd=='more')?'less':cmd);
     if (cmd=='poe') {
       return Object.keys(dialog).filter(function(i){
         return i.match("^"+prefix);
@@ -859,3 +882,5 @@ Room.prototype = {
 
 
 };
+Room.prototype.cat=Room.prototype.less;
+Room.prototype.more=Room.prototype.less;
