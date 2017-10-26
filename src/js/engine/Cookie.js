@@ -29,6 +29,17 @@ Cookie.prototype={
     }
     return ret;
   },
+  check: function(){
+    var ca = dom.cookie.split(';');
+    for (var j=0; j < ca.length; j++) {
+      var c = ca[j];
+      while (c.charAt(0)==' ') c = c.substring(1,c.length);
+      if (c.indexOf(this.name) === 0) {
+        return true;
+      }  
+    }
+    return false;
+  },
   stringify : function (params){
     var content = "";
     for (var key in params){

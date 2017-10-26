@@ -1,18 +1,22 @@
-function Item(name, intro, picname){
+function Item(name, intro, picname, prop){
   this.name = name;
-  this.picture = picname;
+  this.picture = new Pic(picname, prop);
   this.cmd_text = {less: intro ? intro : _(PO_DEFAULT_ITEM)};
   this.cmd_event = {};
   this.valid_cmds = ["less"];
   this.room=null;
   this.ev = new EventTarget();
   this.poprefix=POPREFIX_ITEM;
+  prop=d(prop,{});
+  if (prop.poid){
+    this.setPo(prop.poid,prop.povars);
+  }
 }
 // Useless : just used for making distinction between living being and non-living things
 // Does people are items ?
-function People(name, intro, picname){
+function People(name, intro, picname, prop){
   this.name = name;
-  this.picture = picname;
+  this.picture = new Pic(picname, prop);
   this.cmd_text = {less: intro ? intro : _(PO_DEFAULT_PEOPLE)};
   this.valid_cmds = ["less"];
   this.room=null;
@@ -20,25 +24,39 @@ function People(name, intro, picname){
   this.cmd_event = {};
   this.ev = new EventTarget();
   this.poprefix=POPREFIX_PEOPLE;
+  prop=d(prop,{});
+  if (prop.poid){ 
+    this.setPo(prop.poid,prop.povars);
+  }
 }
 Item.prototype = {
   getPic : function(newpicname){
     this.picture = newpicname;
   },
+  addPicMod : function (id,picname,prop){
+    var newpic=new Pic(picname,prop);
+    this.picture.setChild(id,newpic);
+    return this;
+  },
+  rmPicMod : function (id,picname){
+    this.picture.unsetChild(id,newpic);
+    return this;
+  },
   copy:function(name){
     var nut = new Item(name);
-    nut.picture = clone(this.picture);
+    nut.picture = this.picture.copy();
     nut.cmd_text = clone(this.cmd_text);
     nut.valid_cmds = clone(this.valid_cmds);
     nut.cmd_event = clone(this.cmd_event);
-    nut.room = clone(this.room);
+//    nut.room = clone(this.room);
+    nut.room = this.room;
     nut.people = this.people;
     nut.ev = clone(this.ev);
     nut.poprefix = this.poprefix;
     return nut;
   },
   setPic : function(newpicname){
-    this.picture = newpicname;
+    this.picture.set(newpicname);
     return this;
   },
   getName:function(){
@@ -49,10 +67,10 @@ Item.prototype = {
     return this;
   },
   setPo:function(name,vars){
-    this.name=_(this.poprefix+name,vars);
-    this.cmd_text.less=_(this.poprefix+name+POSUFFIX_DESC,vars);
     this.poid=this.poprefix+name;
     this.povars=vars;
+    this.name=_(this.poid,vars);
+    this.cmd_text.less=_(this.poid+POSUFFIX_DESC,vars);
     return this;
   },
   checkTextIdx : function(textidx) {
@@ -64,10 +82,12 @@ Item.prototype = {
   },
   setPoDelta:function(delta){
     if (typeof delta == 'string'){
-      this.setPo(this.poid+delta,this.povars);
+      this.poid+=delta;
     } else {
-      this.setPo(this.poid,delta);
+      this.povars=delta;
     }
+    this.name=_(this.poid,vars);
+    this.cmd_text.less=_(this.poid+POSUFFIX_DESC,this.povars);
     return this;
   },
   fire_event:function(vt,cmd,args,idx){
@@ -101,11 +121,11 @@ Item.prototype = {
     }
     return this;
   },
-  removeCmdEvent : function(cmd) {
+  unsetCmdEvent : function(cmd) {
     delete this.cmd_event[cmd];
     return this;
   },
-  addCmdEvent : function(cmd, fun) {
+  setCmdEvent : function(cmd, fun) {
     this.cmd_event[cmd] = fun;
     return this;
   },
@@ -145,8 +165,8 @@ People.prototype.checkTextIdx = Item.prototype.checkTextIdx;
 People.prototype.setTextIdx = Item.prototype.setTextIdx;
 People.prototype.setCmdText = Item.prototype.setCmdText;
 People.prototype.unsetCmdText = Item.prototype.unsetCmdText;
-People.prototype.addCmdEvent = Item.prototype.addCmdEvent;
-People.prototype.removeCmdEvent = Item.prototype.removeCmdEvent;
+People.prototype.setCmdEvent = Item.prototype.setCmdEvent;
+People.prototype.unsetCmdEvent = Item.prototype.unsetCmdEvent;
 People.prototype.addListener = Item.prototype.addListener;
 People.prototype.addStates = Item.prototype.addStates;
 People.prototype.addState = Item.prototype.addState;
@@ -156,3 +176,5 @@ People.prototype.disappear = Item.prototype.disappear;
 People.prototype.toString = Item.prototype.toString;
 People.prototype.changePic = Item.prototype.changePic;
 People.prototype.fire_event = Item.prototype.fire_event;
+People.prototype.addPicMod = Item.prototype.addPicMod;
+People.prototype.rmPicMod = Item.prototype.rmPicMod;

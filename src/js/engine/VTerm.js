@@ -1,5 +1,6 @@
-/* Terminal interface which solve completion problem */
 
+/* Terminal interface which solve completion problem */
+var SAFE_BROKEN_TEXT=true;
 function commonprefix(array) {
   //https://stackoverflow.com/questions/1916218/find-the-longest-common-starting-substring-in-a-set-of-strings/1917041#1917041
   var A= array.concat().sort(), 
@@ -12,20 +13,21 @@ function overide(e){
   e.preventDefault();
   e.stopPropagation();
 }
-function VTerm(container_id, img_dir,  img_id, context){
+function VTerm(container_id, context){
   var t=this;
   /* non dom properties */
   t.context = context;
-  t.img_dir=(img_dir ? img_dir : './img/'); // shall contains last slash './img/'
   t.charduration=10;
   t.charfactor={' ':8,' ':2,'!':10,'?':10,',':5,'.':8,"\t":2, "\n":10,'tag':10};
   t.charhtml={' ':'&nbsp;',"\n":'<br>',"\t":'&nbsp;&nbsp;'};
   t.imgs=[];
+  t.statkey={};
   t.history=[];
   t.disabled={};
   t.histchecking=false;
   t.histindex=0;
   t.scrl_lock=false;
+  t.cmdoutput=true;
   /* dom properties (view) */
   t.container = dom.Id(container_id);
   t.monitor = addEl(t.container,'div','monitor');
@@ -36,7 +38,7 @@ function VTerm(container_id, img_dir,  img_id, context){
   addAttrs(t.ghost_monitor,{
     'role':'log',
     'aria-live':'polite',
-//    'aria-relevant':'additions removals'
+    //    'aria-relevant':'additions removals'
   });
   t.inputdiv = addEl(addEl(t.container,'div','input-container'),'div','input-div');
   t.cmdline = addEl(t.inputdiv,'p','input');
@@ -60,8 +62,9 @@ function VTerm(container_id, img_dir,  img_id, context){
   t.btn_enter=addBtn(k,'key','↵','Enter',function(e){t.enterKey();});
   t.msg_idx=0;
   t.soundbank={};
-  t.behave();
+  t.badge_pic=new Pic('badge.png');
   t.timeout={badge:3000,scrl:100,notification:4000};
+  t.behave();
 }
 VTerm.prototype={
   /* API part */
@@ -78,6 +81,7 @@ VTerm.prototype={
     },timeout);
   },
   push_img: function(img){
+//    console.log('push',img);
     if (img) {
       this.imgs.push(img);
     }
@@ -87,23 +91,37 @@ VTerm.prototype={
     var t=this;
     t.scrl_lock=true;
     var c = addEl(t.monitor,'div', "img-container "+clss);
-    addEl(c,'img',{src:t.img_dir + i,'aria-hidden':'true'})
-      .onload=function(){
-        c.className+=' loaded';
-        setTimeout(function(){
-          t.scrl_lock=false;
-          t.scrl();
-          if (def(callback)){
-            callback();
-          }
-        },1000);
-      };
+    pic=new Pic(i);
+    pic.render(c,function(){
+      c.className+=' loaded';
+      setTimeout(function(){
+        t.scrl_lock=false;
+        t.scrl();
+        if (def(callback)){
+          callback();
+        }
+      },1000);
+    });
   },
   clear:function(){
     this.monitor.innerHTML="";//clear screen
   },
+  muteSound: function(){
+    this.mute=true;
+  },
+  unmuteSound: function(){
+    this.mute=false;
+  },
+  muteCommandResult: function(){
+    this.cmdoutput=false;
+  },
+  unmuteCommandResult: function(){
+    this.cmdoutput=true;
+  },
   playSound : function(key){
-    this.soundbank.play(key);
+    if (!this.mute){
+      this.soundbank.play(key);
+    }
   },
   /* Getter and setters */
   get_line:function(){
@@ -162,7 +180,7 @@ VTerm.prototype={
   unset_img: function(){
     var t=this;
     if (t.imgs.length>0) {
-        t.imgs.pop();
+      t.imgs.pop();
     }
   },
   show_img: function(){
@@ -170,7 +188,7 @@ VTerm.prototype={
     var im;
     if (t.imgs.length>0) {
       var onload=function(){
-//        console.log('load');
+        //        console.log('load');
         t.scrl(1000);
       };
       var c = addEl(t.monitor,'div', "img-container");
@@ -178,8 +196,7 @@ VTerm.prototype={
         if (t.imgs.hasOwnProperty(i)){
           im=t.imgs[i];
           if (im){
-            addEl(c,'img',{src:t.img_dir + im, 'aria-hidden':'true'})
-              .onload=onload;
+            im.render(c,onload);
           }
         }
       }
@@ -194,31 +211,31 @@ VTerm.prototype={
     var t=this;
     if (def(l)){
       var timeout;
-       if (l == "<" ){
+      if (l == "<" ){
         var tag="<";
-         while (def(l) && (l != ">")){
+        while (def(l) && (l != ">")){
+          l=txttab.shift();
+          tag+=l;
+        }
+        var tagtype=tag.replace(/<([^ ]*).*>/,'$1');
+        if (tagtype == 'img') {
+          msg.innerHTML += tag ;
+          t.playSound('tag');
+          timeout = t.charfactor[l];
+        } else if (tagtype == 'voice' ) {
+          curvoice=tag.replace(/<([^ ]*)[ ]*([^ ]*)\/>/,'$2');
+//          console.log('change voice to '+curvoice);
+        } else { 
+          var tagend="";
+          l=txttab.shift();
+          while (def(l) && (l != ">")){
+            tagend+=l;
             l=txttab.shift();
-            tag+=l;
-         }
-         var tagtype=tag.replace(/<([^ ]*).*>/,'$1');
-         if (tagtype == 'img') {
-           msg.innerHTML += tag ;
-           t.playSound('tag');
-           timeout = t.charfactor[l];
-         } else if (tagtype == 'voice' ) {
-           curvoice=tag.replace(/<([^ ]*)[ ]*([^ ]*)\/>/,'$2');
-           console.log('change voice to'+curvoice);
-         } else { 
-           var tagend="";
-           l=txttab.shift();
-           while (def(l) && (l != ">")){
-             tagend+=l;
-             l=txttab.shift();
-           }
-           msg.innerHTML += tag+tagend ;
-         }
+          }
+          msg.innerHTML += tag+tagend ;
+        }
         t.scrl();
-       } else if (t.charfactor.hasOwnProperty(l)){
+      } else if (t.charfactor.hasOwnProperty(l)){
         msg.innerHTML += (t.charhtml[l]?t.charhtml[l]:l);
         t.playSound(l);
         timeout = t.charfactor[l];
@@ -226,16 +243,16 @@ VTerm.prototype={
       } else {
         msg.innerHTML += l;
         if (cnt%3 == 1){
-        t.playSound(curvoice);
+          t.playSound(curvoice);
         }
         timeout = 1;
       }
-       if (!dependant || t.msg_idx==msgidx){
-         setTimeout(function(){
-           t._show_chars(msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,++cnt);
-         },timeout*t.charduration);
-       } else {
-         if (SAFE_BROKEN_TEXT||safe) {
+      if (!dependant || t.msg_idx==msgidx){
+        setTimeout(function(){
+          t._show_chars(msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,++cnt);
+        },timeout*t.charduration);
+      } else {
+        if (SAFE_BROKEN_TEXT||safe) {
            msg.innerHTML=txt;
            t.scrl();
          }
@@ -404,7 +421,7 @@ VTerm.prototype={
       var echo=t.context.exec(t, args);
       if (def(echo)){
       t.show_img();
-      t.show_msg(echo);
+      if (t.cmdoutput) {t.show_msg(echo);}
       t.set_line('');
       t.hide_suggestions();
       t.show_suggestions(this.context.getCommands().map(addspace));
@@ -474,6 +491,7 @@ VTerm.prototype={
     };
     pr.onkeyup = function (e) {
       var k=e.key;
+      vt.statkey[k]=(vt.statkey[k]||0)+1;
       var echo="";
       t.hide_suggestions();
       if (k === 'Enter') {
@@ -553,10 +571,7 @@ VTerm.prototype={
       badge.className+=' disappear';
     },disappeartimeout);
     setTimeout(function(){
-      addEl(badge,'img',{
-        src:t.img_dir+'badge.png',
-        'aria-hidden':"true"
-      });
+      t.badge_pic.render(badge);
       addEl(badge,'span','badge-title').innerHTML=title;
       addEl(badge,'p','badge-desc').innerText=text;
     },uptimeout);
@@ -585,16 +600,18 @@ VTerm.prototype={
     t.last_notify=now+downtimeout;
   },
 /** Choice prompt **/
-  ask_choose:function(question,choices,callback,disabled_choices){
+  ask_choose:function(question,choices,callback,opts){
     var t=this;
     var choices_btn=[];
     var curidx=0;
-    disabled_choices=d(disabled_choices,[]);
+    opts=d(opts,{});
+    disabled_choices=d(opts.disabled_choices,[]);
+    instant=d(opts.instant,false);
     while (disabled_choices.indexOf(curidx)>-1){
       curidx++;
     } 
     var choicebox = addEl(t.monitor,'div','choicebox');
-    t.show_msg(question,choicebox,false);
+    t.show_msg(question,choicebox,false,instant);
    
     t.set_line('');
     t.choose_input = addEl(choicebox,'fieldset','choices');

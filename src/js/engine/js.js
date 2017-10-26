@@ -45,12 +45,21 @@ function clone(obj) {
     if (null == obj || "object" != typeof obj) return obj;
     var copy = obj.constructor();
     for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+        if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
     }
     return copy;
 }
 function d(v,w){
 	return typeof v === 'undefined' ? w : v ;
+}
+function anyStr(v,w){
+	return typeof v === 'string' ? v : (typeof w == 'string' ? w : null) ;
+}
+function aStrArray(v){
+  return typeof v === 'string' ? [v] : ((v && v.length) ? v : []); 
+}
+function isStr(v){
+	return (typeof v === 'string');
 }
 function def(v){
 	return (typeof v !== 'undefined');
@@ -70,9 +79,16 @@ function hdef(h,k,v){
     h[k] = [];
   }
   h[k].push(v);
-};
+}
+//String.prototype.replaceAll = function(from, to){
+//	ret = this.toString();
+//	while (ret.indexOf(from) > 0){
+//		ret = ret.replace(from, to);
+//	}
+//	return ret;
+//};
 function shuffleStr(src,complexity){
-  var randsArr = ("!@#$)*(%^&").repeat(src.length/10+1).split('').sort(function () { return 0.5 - Math.random()});
+  var randsArr = ("!@#$)*(%^&").repeat(src.length/10+1).split('').sort(function () { return 0.5 - Math.random();});
   var ret='';
   for (var i=0;i<src.length;i++){
     ret+= (Math.random()>complexity ? src[i] : randsArr.shift());

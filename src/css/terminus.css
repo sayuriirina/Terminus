@@ -8,16 +8,16 @@ body {
   font-stretch:condensed;
 }
 .color-cmd {
-color:red;
+color:chartreuse;
 }
 .color-room {
 color:orange;
 }
 .color-people {
-color:blue;
+color:palevioletred;
 }
 .color-item {
-color:green;
+color:magenta;
 }
 .notifications{
   position:fixed;
@@ -25,11 +25,16 @@ color:green;
   right:0;
   top:0;
 }
+
 .badge {
   position:relative;
+  text-align:center;
+}
+.badge-title {
+  font-size:1.4em;
 }
 .badge img {
-  width:8ch;
+  width:16ch;
 }
 .badge-desc{
   opacity:1;
@@ -40,7 +45,7 @@ color:green;
 }
 .disappear {
   opacity:1;
-  animation:disappear 1s forwards;
+  animation:disappear 2s forwards;
 }
 @keyframes disappear {
   to {
@@ -129,16 +134,53 @@ box-sizing: border-box;
 /**/
 /*}*/
 .img-container {
+  position:relative;
+}
+.img-container .layers {
+  position:relative;
+  display:inline-block;
+}
+.img-container .layers .main {
+  position:relative;
+}
+/*.img-container .layers .layer{*/
+/*  position:absolute;*/
+/*  top:50%;*/
+/*  left:50%;*/
+/*  transform:translate(-50%,-50%);*/
+/*  z-index:0;*/
+/*}*/
+.layer.people {
+}
+.layers .covering {
+  z-index:1;
+}
+.layer.item:not(.large) {
+  width:50%; height:50%;
+}
+.img-container .layers .background, .img-container .layers .foreground {
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  display:flex;
+  align-items:end;
+}
+.img-container .layers .background {
+  z-index:-1;
+}
+.img-container .layers .foreground {
+  z-index:1;
 }
 .epicfromright {
   overflow:hidden;
 }
 
-.epicfromright img {
+.epicfromright .layers {
   position:relative;
   left:100%;
 }
-.epicfromright.loaded img {
+.epicfromright.loaded .layers {
    animation:a 1s ease-out forwards;
 }
 .msg img {
@@ -177,7 +219,8 @@ max-width:100%;
 /*  max-width:12ch;*/
 }
 
-.screen:not(:last-of-type) :not(.msg) > img{
+/*.screen:not(:last-of-type) :not(.msg)  img{*/
+.screen:not(:last-of-type)  .layers{
 
   animation:fromfull 2s 1s forwards;
 

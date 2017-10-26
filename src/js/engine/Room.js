@@ -1,12 +1,21 @@
-String.prototype.replaceAll = function(from, to){
-	ret = this.toString();
-	while (ret.indexOf(from) > 0){
-		ret = ret.replace(from, to);
-	}
-	return ret;
-};
+
+// global_commands are the commands the player is allowed to use
+var global_commands=[];
 var global_spec={};
-function Room(roomname, introtext, roompic,varname){
+var global_fireables={done:[]};
+function global_hasCmd(cmd){
+ return (global_commands.indexOf(cmd) > -1);
+}
+function global_fire(categ){
+  if (global_fireables[categ]){
+    while (fun=global_fireables[categ].shift()){
+      fun();
+    }
+  }
+}
+function global_fire_done(){global_fire('done');}
+
+function Room(roomname, introtext, roompic,prop,varname){
   this.name=varname;//currently undefined for user created rooms, see mkdir
   this.parents = [];
   this.previous = this;
@@ -17,7 +26,7 @@ function Room(roomname, introtext, roompic,varname){
   this.fire = null;
 	this.room_name =d(roomname, _(PO_DEFAULT_ROOM,[]));
 	this.intro_text = d(introtext, _(PO_DEFAULT_ROOM_DESC));
-  this.room_pic = roompic ;
+  this.room_pic = new Pic(roompic,prop) ;
   this.cmd_text = {};
 	this.starter_msg=null;
 	this.enter_callback=null;
@@ -26,7 +35,7 @@ function Room(roomname, introtext, roompic,varname){
   this.cmd_event={};
   EventTarget.call(this);
 }
-function newRoom(id, roompic){
+function newRoom(id, roompic,prop){
   //this function automatically set the variable $id to ease game saving
   var varname= '$'+id;
   var poid=POPREFIX_ROOM+id;
@@ -34,6 +43,7 @@ function newRoom(id, roompic){
     _(poid,[],{or:PO_DEFAULT_ROOM}),
     _(poid+POSUFFIX_DESC,[],{or:PO_DEFAULT_ROOM_DESC}),
     roompic,
+    prop,
     varname);
   n.poid=poid;
   window[varname]=n;
@@ -93,7 +103,7 @@ Room.prototype = {
     if (this.starter_msg){
       return this.starter_msg;
     } else {
-      return _(POPREFIX_CMD+'pwd',[this.room_name]).concat("\n").concat(this.intro_text)
+      return _(POPREFIX_CMD+'pwd',[this.room_name]).concat("\n").concat(this.intro_text);
     }
   },
   setStarterMsg: function(txt){
@@ -104,7 +114,7 @@ Room.prototype = {
     return this.room_pic;
   },
   setPic: function(pic){
-    this.room_pic=pic;
+    this.room_pic.set(pic);
   },
   // item & people management
   addItem : function(newitem) {
@@ -112,24 +122,27 @@ Room.prototype = {
     newitem.room=this;
     return this;
   },
-  newItem : function(id,picname,name_vars) {
-    var ret=new Item('', '', picname);
-    ret.setPo(id,name_vars);
+  newItem : function(id,picname,prop) {
+    prop=d(prop,{});
+    prop.poid=d(prop.poid,id);
+    var ret=new Item('', '', picname,prop);
     this.addItem(ret);
     return ret;
   },
-  newPeople : function(id,picname,name_vars) {
-    var ret = new People('','', picname);
-    ret.setPo(id,name_vars);
+  newPeople : function(id,picname,prop) {
+    prop=d(prop,{});
+    prop.poid=d(prop.poid,id);
+    var ret = new People('','', picname,prop);
     this.addItem(ret);
     return ret;
   },
-  newItemBatch: function(id, names, picname) {
+  newItemBatch: function(id, names, picname,prop) {
     var ret=[];
+    prop=d(prop,{});
     for (var i = 0; i < names.length; i++){
-      var name_vars=[names[i]];
-      ret[i]=new Item('', '', picname);
-      ret[i].setPo(id,name_vars);
+      prop.poid=id;
+      prop.povars=[names[i]];
+      ret[i]=new Item('', '', picname,prop);
       this.addItem(ret[i]);
     }
     return ret;
@@ -218,7 +231,7 @@ Room.prototype = {
     }
     return this;
   },
-  addCmdEvent : function(cmd, fun,decl_command) {
+  setCmdEvent : function(cmd, fun,decl_command) {
     this.cmd_event[cmd] = fun;
     if (decl_command) {
      if (this.commands.indexOf(cmd) == -1) {
@@ -227,23 +240,23 @@ Room.prototype = {
     }
     return this;
   },
-  addCmdEvents : function(h,decl_command) {
+  setCmdEvents : function(h,decl_command) {
     for (var i in h) {
       if (h.hasOwnProperty(i)){
-        this.addCmdEvent(i, h[i],decl_command);
+        this.setCmdEvent(i, h[i],decl_command);
       }
     }
     return this;
   },
-  removeCmdEvent : function(cmd) {
+  unsetCmdEvent : function(cmd) {
     delete this.cmd_event[cmd];
     return this;
   },
-  addOutsideEvt: function(name,fun){
+  setOutsideEvt: function(name,fun){
     global_spec[this.room_name][name]=fun;
     return this;
   },
-  removeOutsideEvt: function(name){
+  unsetOutsideEvt: function(name){
     delete global_spec[this.room_name][name];
     return this;
   },
@@ -270,8 +283,9 @@ Room.prototype = {
     return ( (this.commands.indexOf(cmd) > -1) && ( global_commands.indexOf(cmd) > -1 ) );
   },
   addCommand : function(cmd,options){
-//    console.log(this,cmd);
-    this.commands.push(cmd);
+    if (this.commands.indexOf(cmd) == -1) {
+      this.commands.push(cmd);
+    }
     if (def(options)){
       this.setCommandOptions(cmd,options);
     }
@@ -366,36 +380,63 @@ Room.prototype = {
   },
 
   ls : function(args,vt){
+    var pic;
     if (args.length > 0){
       var room=this.traversee(args[0])[0];
       if (room) {
         if (room.children.length === 0 && room.items.length === 0 ){
-          return _("room_empty");
+          prtls={pics:{},txt:_("room_empty")};
+        } else {
+          prtls=room.printLS();
         }
-        return room.printLS();
-      } {
-          return _("room_unreachable");
+        pic=room.room_pic.copy();
+        pic.addChildren(prtls.pics);
+        pic.setOneShotRenderClass('room');
+        vt.push_img(pic); // Display image of room
+        return prtls.txt;
+      } else {
+        return _("room_unreachable");
       }
     } else {
-      vt.push_img(this.room_pic); // Display image of room
-      return this.printLS();
+      prtls=this.printLS();
+      pic=this.room_pic.copy();
+      pic.addChildren(prtls.pics);
+      pic.setOneShotRenderClass('room');
+      vt.push_img(pic); // Display image of room
+      return prtls.txt;
     }
   },
 
-  printLS : function(){
+  printLS : function(render_classes){
     var ret='';
+    var pics={};
+    var i;
+    var rdr_classes={};
+    render_classes=render_classes|| {item:'item',people:'people'};
     if (this.children.length > 0){
       ret+= _('directions', ["\t" + this.children.map(objToStr).join("\n\t")]) + "\t\n";
     }
     var items=this.items.filter(function(o){return !o.people;});
     var peoples=this.items.filter(function(o){return o.people;});
-    if (items.length > 0){
-      ret+= _('items', ["\t" + items.map(objToStr).join("\n\t")]) + "\t\n";
+    for (i=0;i<peoples.length;i++){
+      if (peoples[i].picture && peoples[i].picture.shown_in_ls){
+        peoples[i].picture.setOneShotRenderClass(render_classes.people);
+        pics['peoples-'+i]=peoples[i].picture;
+      }
     }
     if (peoples.length > 0){
       ret+=_('peoples', ["\t" + peoples.map(objToStr).join("\n\t")]) + "\t\n";
     }
-    return ret;
+    for (i=0;i<items.length;i++){
+      if (items[i].picture && items[i].picture.shown_in_ls){
+        items[i].picture.setOneShotRenderClass(render_classes.item);
+        pics['item-'+i]=items[i].picture;
+      }
+    }
+    if (items.length > 0){
+      ret+= _('items', ["\t" + items.map(objToStr).join("\n\t")]) + "\t\n";
+    }
+    return {txt:ret,pics:pics};
   },
 
   cd : function(args,vt){
@@ -405,7 +446,7 @@ Room.prototype = {
       this.previous.previous=this;
       enterRoom(this.previous, vt);
     } else if (args.length === 0){
-      return _('cmd_cd_no_args');
+      return _('cmd_cd_no_args')+(global_hasCmd('pwd')?("\n"+_('cmd_cd_no_args_pwd')):'');
     } else if (args[0] === "~"){
       $home.previous=this;
       enterRoom($home, vt);
@@ -444,6 +485,7 @@ Room.prototype = {
     var cb=function(){
       for (var i = 0; i < fireables.length; i++) {
         fireables[i][0].fire_event(vt,cmd+'_done',args,fireables[i][1]);
+        global_fire_done(); 
       }
     };
     return [ret,cb];

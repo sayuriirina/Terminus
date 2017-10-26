@@ -21,6 +21,9 @@ GameState.prototype = {
   add : function(param_name, fun){
     this.actions[param_name]=fun;
   },
+  applied : function(param_name){
+    return this.actions[param_name];
+  },
   apply : function(param_name, replay){
     console.log('apply '+param_name);
     this.params[param_name] = 1;
@@ -28,10 +31,19 @@ GameState.prototype = {
       this.actions[param_name]((typeof replay === 'undefined') ? false : replay);
     }
   },
-  loadCookie : function(name,minutes){
+  startCookie : function(name){
+    this.cookie=new Cookie(name);
+    return this.cookie.check();
+  },
+  stopCookie : function(name){
+    this.cookie=null;
+  },
+  setCookieDuration : function(minutes){
+    //this function create a new cookie
+    this.cookie.minutes=minutes;
+  },
+  loadCookie : function(){
     //this function reads from a cookie if one exists
-    this.cookie=new Cookie(name,minutes);
-    var newRoomToSet=this.currentRoom;
     var params=this.cookie.read();
     if (params){
       if ("" in params){
@@ -45,6 +57,7 @@ GameState.prototype = {
           this.apply(k, params[k]);
         }
       }
+      this.saveCookie();
       return true;
     }
     return false;

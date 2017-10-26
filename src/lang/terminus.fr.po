@@ -21,6 +21,15 @@ msgstr "Tu as appris à utiliser %s !"
 msgid "cookie"
 msgstr "Afin de conserver ton avancement dans le jeu, il faut manger un cookie.\nVeux tu activer les cookies ?"
 
+msgid "cookie_yes"
+msgstr "oui (nouveau jeu)"
+
+msgid "cookie_yes_load"
+msgstr "oui (reprendre la partie en cours%s)"
+
+msgid "cookie_no"
+msgstr "non (pas de sauvegarde)"
+
 msgid "yes"
 msgstr "oui"
 
@@ -56,25 +65,28 @@ msgstr "Ro ro .\n Ro ro.\n Ro ro.\n\n.\n\n"
 "Tu m'as l'air de ne pas y voir grand chose dans ce brouillard.\n"
 "Où habites tu ? \n\n Tu ne sais pas ?\n C'est peut-être ici ta maison.\n"
 "Bon je vais t'accompagner, ça sera plus simple pour toi.\n Et puis, j'aime bien les aventures.\n"
-"Mon nom ?  c'est Cat. \nSi tu veux que je te serve d'interprète écris 'cat' suivi du nom d'une personne ou d'un objet.\n"
+"Mon nom ?  c'est Cat. \nSi tu veux que je te serve d'interprète écris '{{cmd.cat}}' suivi du nom d'une personne ou d'un objet.\n"
 "\n\n"
 
+
+msgid "cmd"
+msgstr "%s"
 
 msgid "people_shell"
 msgstr "Palourde"
 
 msgid "people_shell_text"
-msgstr "<voice grl/>Pour ce qui est de se déplacer écris 'cd' suivi d'un lieu et pour voir au alentour écris 'ls'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin.\nIl te faudra surement écrire 'ls' partout où tu passe."
+msgstr "<voice grl/>Pour ce qui est de se déplacer écris '{{cmd.cd}}' suivi d'un lieu et pour voir au alentour écris '{{cmd.ls}}'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin.\nIl te faudra surement écrire '{{cmd.ls}}' partout où tu passe."
 
 msgid "people_shell_text0"
 msgstr "<voice char/>cat : \"Salut ! oh blanche palourde ! \nLa chose, là, qui me sert de compagnon a oublié comment se repérer dans l'espace.\n
 Vu que toi, qui n'a ni yeux ni jambes, et que tu es arrivée jusqu'ici.\nOn se demandait comment tu faisais\"\n \n"
 "<voice grl/>palourde : \"Non, mais oh, pour qui tu te prends pour me parler avec ces manières.\n Et pour qui tu te prends de parler de cette personne ainsi !\" . . . \n"
-"\"Enfin bon, désolé de m'emporter.\n Pour ce qui est de se déplacer écris 'cd' suivi d'un lieu et pour voir au alentour écris 'ls'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin. Au début, il te faudra surement écrire 'ls' partout où tu passe.\""
+"\"Enfin bon, désolé de m'emporter.\n Pour ce qui est de se déplacer écris '{{cmd,[\"cd\"]}}' suivi d'un lieu et pour voir au alentour écris '{{cmd,[\"ls\"]}}'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin. Au début, il te faudra surement écrire '{{cmd,[\"ls\"]}}' partout où tu passe.\""
 
 msgid "cmd_cat_first_try"
 msgstr "Tiens, regardes là ! il y a une {{people_shell}}, on pourrait lui demander comment elle a fait pour venir jusqu'ici.\n"
-"Vous vous connaissez peut-être.\n Tu n'as qu'à écrire 'cat {{people_shell}}' pour engager cette passionante discussion."
+"Vous vous connaissez peut-être.\n Tu n'as qu'à écrire '{{cmd,[\"cat\"]}} {{people_shell}}' pour engager cette passionante discussion."
 
 msgid "cmd_exit_html"
 msgstr "<p>Terminus a été arrêté.</p><p>Au revoir !</p>"
@@ -86,7 +98,10 @@ msgid "cmd_cd_failed"
 msgstr "Il n'existe aucun lieu appelé %s. Retourne te coucher."
 
 msgid "cmd_cd_no_args"
-msgstr "'cd ~' pour retourner au point de départ.\n 'pwd' pour savoir où tu es."
+msgstr "'{{cmd.cd}} ~' pour retourner au point de départ."
+
+msgid "cmd_cd_no_args_pwd"
+msgstr "'{{cmd.pwd}}' pour savoir où tu es."
 
 msgid "cmd_cd_flood"
 msgstr "À moins de te dédoubler, tu ne peux pas aller dans plusieurs endroits en même temps."
@@ -239,13 +254,7 @@ msgid "item_western_forest_back_direction"
 msgstr "RentreChezToi"
 
 msgid "item_western_forest_back_direction_text"
-msgstr "À tous moment, si tu veux revenir dans le dossier personnel, \nécris juste la commande 'cd ~' ou 'cd'  et tu seras de retour chez toi.\nC'est plus simple que demander son chemin."
-
-msgid "item_welcome_letter"
-msgstr "LettreDeBienvenue"
-
-msgid "item_welcome_letter_text"
-msgstr "Bienvenue à toi ! \nPour réussir ta quête, il te faudra écrire des sorts avec ton clavier.\n\nObserve l'endroit où tu te trouves et les chemins à proximité avec \"ls\". \nDéplace toi avec \"cd \" suivi du chemin qui mène à ta destination.\nTu peux revenir sur tes pas avec la commande \"cd ..\". \nTu peux utiliser des objets avec la commande \"less OBJET\" .\nSi tu es perdu(e), écris \"pwd\" .\nSouvent tu n'auras pas besoin d'écrire les mots en entier, appuis sur la touche Tab ↹ et le mot sera deviné.\n\nMaintenant explore et va de l'avant."
+msgstr "À tous moment, si tu veux revenir dans le dossier personnel, \nécris juste la commande '{{cmd.cd}} ~' ou '{{cmd.cd}}'  et tu seras de retour chez toi.\nSi tu es perdu(e), écris '{{cmd.pwd}}'."
 
 msgid "item_practice_dummy"
 msgstr "ObjetTest%d"
@@ -278,31 +287,78 @@ msgid "room_meadow"
 msgstr "Prairie"
 
 msgid "room_meadow_text"
-msgstr "C'est une grande et belle prairie verte. Un majestueux poney s'y trouve. Il a l'air triste et solitaire."
+msgstr "C'est une grande et belle prairie verte. Un majestueux {{people_poney}} s'y trouve. Il a l'air triste et solitaire."
 
 msgid "people_poney"
 msgstr "Ponet"
 
 msgid "people_poney_text"
-msgstr "Sans t'approcher.Toi et le ponet avez appris à communiquer en te regardant dans les yeux et avec quelques hochements de tête.Finalement, le poney hocha le tête vers les montagnes à l'est comme s'il te suggérait d'aller dans cette direction."
+msgstr "Pour ne pas lui faire peur, tu restes à distance du ponet.\n"
+"Après quelques instants, vous arrivez à communiquer avec quelques hochements de tête.\n"
+"Finalement, le ponet bascule sa tête vers les {{room_mountain}} à l'est comme s'il te suggérait d'aller dans cette direction."
 
-msgid "people_academy_student"
-msgstr "BotPressé-e"
+msgid "people_poney_text1"
+msgstr ". . ."
 
-msgid "people_academy_student_text"
-msgstr "Tu tentes de parler à une des élèves de l'académie.\nL'étudiante ne te vois pas et vous vous entrechoquez. \nL'élève  se relève vite. \n« Pardon, Pardon, j'étais pressée et je ne t'ai pas vu.\nDis moi. C'est ton premier jour ici ? Ta tête ne me dit rien.»\n(Sourire) « Ne t'inquiètes pas, il y a beaucoup de Noobs aujourd'hui.\nLe bon plan c'est de commencer par le cours d'introduction ?\nJe pourrai t'accompagner mais je suis un peu pressée.\nTraverse le couloirs des cours et trouvera bien quelqu'un pour te guider.» \nL'élève disparait en courant aussi vite que pour se relever.\nVous avez remarqué que sa voix rendrait super bien dans votre groupe de Punk.\nMalheureusement, tu n'as pas eu le temps de lui demander son nom, ni même son adresse mail."
+msgid "people_poney_text2"
+msgstr "Pour ne pas lui faire peur, tu restes à distance du ponet.\n"
+"Tu hoche la tête vers les nuages.\n"
+"Le ponet te réponds par le même signe."
+
+msgid "people_poney_text3"
+msgstr "Tu restes à distance du ponet.\n"
+"Tu hoche la tête vers le sol.\n"
+"Le ponet fronce son gros visage."
+
+msgid "people_poney_text4"
+msgstr "Tu restes à distance du ponet.\n"
+"Tu hoche la tête encore une fois, en dessinant des cercles avec ton nez.\n"
+"Le ponet s'approche."
+
+msgid "people_poney_text5"
+msgstr "Tu hoche encore la tête. Le ponet accourt vers toi.\n"
+"«<voice poney/> Hey ! » <voice char/>dit le ponet."
+"«<voice poney/> C'est très gentil de te soucier de moi, et j'aimerai bien m'amuser avec toi,\n mais je suis persuadé que tu as mieux à faire » ."
+
+msgid "people_poney_textmountain"
+msgstr "Tu hoche encore la tête. Le ponet accourt vers toi.\n"
+"«<voice poney/> Hey ! » <voice char/>dit le ponet."
+"«<voice poney/> As tu déjà visité les {{room_mountain}} ? » ."
+
+msgid "people_poney_texttab"
+msgstr "«<voice poney/> Hey ! Savais tu qu'en appuyant sur la touche 'tab', tu pouvais aller beaucoup plus vite ?»"
+
+msgid "people_poney_textmv"
+msgstr "«<voice poney/> J'ai compris ! Tu es bloqué » <voice char/>dit le ponet."
+"«<voice poney/> As tu essayé de parler à un {{people_professor}} de l'{{room_spell_casting_academy}} ? » ."
+
+msgid "people_poney_texthelp"
+msgstr "«<voice poney/> J'ai compris ! Tu es bloqué » <voice char/>dit le ponet."
+"«<voice poney/> Désolé, je ne suis pas en mesure de t'aider.\n"
+"mais si tu as déjà lu le {{item_man}} tu dois pouvoir utiliser '{{cmd.help}}' » ."
 
 msgid "room_mountain"
 msgstr "Montagnes"
 
 msgid "room_mountain_text"
-msgstr "Tu parcours un sentier de montagne qui mène à une cave.\nÀ droite de l'entrée, de cette cave, il y a un vieil homme assis en tailleurs.\nIl a un Minitel à ses pieds. Et un t-shirt de la marque MAN."
+msgstr "Tu parcours un sentier de montagne qui mène à une cave.\n"
+"Sur ce sentier tu croise un vieil homme."
 
 msgid "people_man_sage"
 msgstr "VieilHomme"
 
 msgid "people_man_sage_text"
-msgstr "Tu parles avec le vieil homme.\nIl te salue chaleureusement comme si vous vous connaissiez déjà. \n«Salut toi ! \nTu as l'air jeune et intrépide.\nSi tu as le cœur assez brave, alors ton destin t'attends dans cette cave.\nTu y trouvera un portail qui te mèneras au chapitre suivant.»\nLe vieil homme devine l'inquiétude qui te passe par la tête,\net te dit en souriant\n«Je suis trop vieux et trop fragile pour t'accompagner,\net puis il faut que j'aille porter ce Minitel à ma grand mère.\nCependant, je peux t'aider avec ceci : 'man'.\nCe manuscrit t'enseignera comment utiliser tes pouvoirs.»\nLe vieil homme pose le manuscrit par terre et s'en va.\n« Au revoir ! au fait si tu ne te sens pas de taille tape 'exit'.»"
+msgstr "Tu parles avec le vieil homme.\n"
+"Il te salue chaleureusement comme si vous vous connaissiez déjà. \n"
+"« Salut toi ! \n"
+"Tu as l'air jeune et intrépide.\n"
+"Si tu as le cœur assez brave, alors ton destin t'attends dans cette cave.\n"
+"Tu y trouvera un portail qui te mèneras au chapitre suivant. »\n"
+"Le vieil homme devine l'inquiétude qui te passe par la tête,\n"
+"et te dit en souriant\n"
+"« Tiens, prends ce manuscrit qui t'enseignera comment utiliser tes pouvoirs.»\n"
+"Le vieil homme pose le {{item_man}} par terre et s'en va.\n"
+"« Au revoir ! au fait si tu ne te sens pas de taille tape '{{cmd.exit}}'. »"
 
 msgid "item_man"
 msgstr "Manuscrit"
@@ -314,19 +370,22 @@ msgid "room_lessons"
 msgstr "Cours"
 
 msgid "room_lessons_text"
-msgstr "Tu entre dans la salle où sont dispensées les cours.\nC'est beaucoup plus calme ici. Il semble que ça ait déjà commencé et que ça parle du \"Sort de déplacement.\""
+msgstr "Tu entres dans la salle où sont dispensées les cours.\nC'est beaucoup plus calme ici. Il semble que ça ait déjà commencé et que ça parle du \"Sort de déplacement.\""
 
 msgid "people_professor"
 msgstr "Professeur"
 
 msgid "people_professor_text"
-msgstr "Le prof dit un tas de choses qui ressemble pour toi à du charabia,\n mais tu as réussi à comprendre 3 choses: \n1. 'mv' sert à déplacer des objets \n2. il faut indiquer le nom de l'objet et de la destination (mv OBJET DESTINATION) \n3. Ce sort ne marche pas sur tous les objets, mais tu n'as pas réussi à suivre lesquels n'étaient pas déplaçables."
+msgstr "Le prof dit un tas de choses qui ressemble pour toi à du charabia,\n mais tu as réussi à comprendre 3 choses: \n"
+"1. '{{cmd.mv}}' sert à déplacer des objets \n"
+"2. il faut indiquer le nom de l'objet et de la destination ({{cmd.mv}} OBJET DESTINATION) \n"
+"3. Ce sort ne marche pas sur tous les objets, mais tu n'as pas réussi à suivre lesquels n'étaient pas déplaçables."
 
 msgid "room_cave"
 msgstr "Cave"
 
 msgid "room_cave_text"
-msgstr "C'est typiquement un cave: sombre et humide."
+msgstr "Cet endroit est typiquement une cave : sombre et humide, avec une légère odeur de moisissure."
 
 msgid "room_dark_corridor"
 msgstr "SombreCorridor"
@@ -350,7 +409,7 @@ msgid "room_dank"
 msgstr "PièceHumide"
 
 msgid "room_dank_text"
-msgstr "Cette pièce est encore plus sombre. Un rocher rond est collé contre le mur à droite."
+msgstr "Cette pièce est encore plus sombre."
 
 msgid "item_boulder"
 msgstr "Rocher"
@@ -381,6 +440,21 @@ msgstr "Rat"
 
 msgid "people_rat_text"
 msgstr "Tu inspecte avec tes mains la touffe de poils et tu détermine qu'il s'agit d'un rat... de la taille d'un petit chien. Il ou elle t'a mordu. \nCette expérience ne t'as faite guère plaisir."
+
+msgid "people_rat_identified_text"
+msgstr "(Oh, pardon, excusez moi de ma maladresse !)"
+
+msgid "people_rat_identified_text1"
+msgstr "(On peut se tutoyer ?)"
+
+msgid "people_rat_identified_text2"
+msgstr "(Oh, pardon, excuse moi de ma maladresse !)"
+
+msgid "people_rat_identified_text3"
+msgstr "(Je n'ai rien à t'apprendre et tu souhaites tout de même me parler ?)"
+
+msgid "people_rat_identified_text4"
+msgstr "(Es tu venu sauver Terminus ?)"
 
 msgid "room_stone_chamber"
 msgstr "ChambreDePierre"
@@ -599,7 +673,7 @@ msgid "people_artisan"
 msgstr "Artisan"
 
 msgid "people_artisan_text"
-msgstr "L'Artisan lève ses lunettes et te regarde avec surprise.\n\"Êtes-vous le nouvel assistant? Vous êtes en retard!\" ...\n\"Vous dites que vous n'êtes pas mon assistant? \nEh bien, cela ne signifie pas que vous ne pouvez pas vous rendre utile.\nJ'ai besoin de quelques engins rapidement! ...\nVous ne savez même pas comment faire des choses?\nHmph. Et vous vous prétendrez être un assistant.\nDites simplement \"touch \" suivi du nom de la chose que vous voulez créer. Maintenant, faites-moi un {{item_gear}}! Revenez me parler ensuite.\""
+msgstr "L'Artisan lève ses lunettes et te regarde avec surprise.\n\"Êtes-vous le nouvel assistant? Vous êtes en retard!\" ...\n\"Vous dites que vous n'êtes pas mon assistant? \nEh bien, cela ne signifie pas que vous ne pouvez pas vous rendre utile.\nJ'ai besoin de quelques rouages rapidement! ...\nVous ne savez même pas comment faire des choses?\nHmph. Et vous vous prétendrez être un assistant.\nDites simplement \"{{cmd.touch}}\" suivi du nom de la chose que vous voulez créer. Maintenant, faites-moi un {{item_gear}}! Revenez me parler ensuite.\""
 
 msgid "item_gear"
 msgstr "rouage%s"
@@ -611,7 +685,7 @@ msgid "item_gear_text"
 msgstr "Ceci est un {{item_gear}}"
 
 msgid "item_gear_touch"
-msgstr "Euh... à quoi tu t'attends avec seulement un {{item_gear}} ?\nTu devrait être capable de la copier pourtant...\n*pfffff* T'as vraiment besoin d'entrainement.\n Écris seulement “cp [ITEM] [CLONE_DE_ITEM]”.\n[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvelle copie.\nCompris ? Alors prouve le moi ! Voici un {{item_gear}}. Il m'en faut 5 autres.\nAppeles les  {{item_gear,[1]}}, {{item_gear,[2]}}, {{item_gear,[3]}}, {{item_gear,[4]}}, et {{item_gear,[5]}}, stp."
+msgstr "Euh... à quoi tu t'attends avec seulement un {{item_gear}} ?\nTu devrait être capable de la copier pourtant...\n*pfffff* T'as vraiment besoin d'entrainement.\n Écris seulement “{{cmd,[\"cp\"]}} [ITEM] [CLONE_DE_ITEM]”.\n[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvelle copie.\nCompris ? Alors prouve le moi ! Voici un {{item_gear}}. Il m'en faut 5 autres.\nAppeles les  {{item_gear,[1]}}, {{item_gear,[2]}}, {{item_gear,[3]}}, {{item_gear,[4]}}, et {{item_gear,[5]}}, stp."
 
 msgid "room_farm"
 msgstr "Farm"
@@ -884,403 +958,28 @@ msgid "help_exit"
 msgstr "Quitter le jeu."
 
 msgid "man cp"
-msgstr "(CoPy)\nUtilise \"cp\" pour cloner un item. \nIl faut écrire :\n  cp ITEM NEWNAME "
+msgstr "(CoPy)\nUtilise \"{{cmd.cp}}\" pour cloner un item. \nIl faut écrire :\n  {{cmd.cp}} ITEM NEWNAME "
 
 msgid "help_cp"
 msgstr "Copier un objet."
 
 msgid "man_pwd"
-msgstr "(Te montre là où tu es) \nIl faut écrire : \n  \"pwd\" "
+msgstr "(Te montre là où tu es) \nIl faut écrire : \n  \"{{cmd.pwd}}\" "
 
 msgid "help_pwd"
 msgstr "Dire où tu es."
 
 msgid "man_grep"
-msgstr "(gReP : Récupère des parties) \nUtilise \"grep\" pour trouver les parties d'un texte qui contiennent le mot magique.\nIl faut écrire : \n  grep MOT_MAGIQUE LÀ_OU_TU_CHERCHE "
+msgstr "(gReP : Récupère des parties) \nUtilise \"{{cmd.grep}}\" pour trouver les parties d'un texte qui contiennent le mot magique.\nIl faut écrire : \n  grep MOT_MAGIQUE LÀ_OU_TU_CHERCHE "
 
 msgid "help_grep"
 msgstr "Chercher quelque chose dans un texte."
 
 msgid "man_touch"
-msgstr "(Touche) En touchant un objet (même imaginaire), tu le fait (re)naître comme neuf.\nUtilise \"touch\"  pour créer de nouveaux objets.\nIl faut écrire :\n  touch OBJET"
+msgstr "(Touche) En touchant un objet (même imaginaire), tu le fait (re)naître comme neuf.\nUtilise \"{{cmd.touch}}\"  pour créer de nouveaux objets.\nIl faut écrire :\n  touch OBJET"
 
 msgid "help_touch"
 msgstr "Toucher un objet."
-
-msgid "titlescreen.gif_alt"
-msgstr "Terminus : un jeu d'exploration en ligne de commande"
-
-msgid "titlescreen.gif_title"
-msgstr "Terminus : un jeu d'exploration en ligne de commande"
-
-msgid "none.gif_alt"
-msgstr ""
-
-msgid "none.gif_title"
-msgstr ""
-
-msgid "loc_farm.gif_alt"
-msgstr "loc_farm.gif_alt"
-
-msgid "loc_farm.gif_title"
-msgstr "loc_farm.gif_title"
-
-msgid "loc_forest.gif_alt"
-msgstr "loc_forest.gif_alt"
-
-msgid "loc_forest.gif_title"
-msgstr "loc_forest.gif_title"
-
-msgid "loc_academy.gif_alt"
-msgstr "loc_academy.gif_alt"
-
-msgid "loc_academy.gif_title"
-msgstr "loc_academy.gif_title"
-
-msgid "item_student.gif_alt"
-msgstr "item_student.gif_alt"
-
-msgid "item_student.gif_title"
-msgstr "item_student.gif_title"
-
-msgid "loc_practiceroom.gif_alt"
-msgstr "loc_practiceroom.gif_alt"
-
-msgid "loc_practiceroom.gif_title"
-msgstr "loc_practiceroom.gif_title"
-
-msgid "item_manuscript.gif_alt"
-msgstr "item_manuscript.gif_alt"
-
-msgid "item_manuscript.gif_title"
-msgstr "item_manuscript.gif_title"
-
-msgid "item_dummy.gif_alt"
-msgstr "item_dummy.gif_alt"
-
-msgid "item_dummy.gif_title"
-msgstr "item_dummy.gif_title"
-
-msgid "item_box.gif_alt"
-msgstr "item_box.gif_alt"
-
-msgid "item_box.gif_title"
-msgstr "item_box.gif_title"
-
-msgid "loc_meadow.gif_alt"
-msgstr "loc_meadow.gif_alt"
-
-msgid "loc_meadow.gif_title"
-msgstr "loc_meadow.gif_title"
-
-msgid "item_fatpony.gif_alt"
-msgstr "item_fatpony.gif_alt"
-
-msgid "item_fatpony.gif_title"
-msgstr "item_fatpony.gif_title"
-
-msgid "loc_mountains.gif_alt"
-msgstr "loc_mountains.gif_alt"
-
-msgid "loc_mountains.gif_title"
-msgstr "loc_mountains.gif_title"
-
-msgid "item_mysteryman.gif_alt"
-msgstr "item_mysteryman.gif_alt"
-
-msgid "item_mysteryman.gif_title"
-msgstr "item_mysteryman.gif_title"
-
-msgid "loc_classroom.gif_alt"
-msgstr "loc_classroom.gif_alt"
-
-msgid "loc_classroom.gif_title"
-msgstr "loc_classroom.gif_title"
-
-msgid "item_professor.gif_alt"
-msgstr "item_professor.gif_alt"
-
-msgid "item_professor.gif_title"
-msgstr "item_professor.gif_title"
-
-msgid "loc_cave.gif_alt"
-msgstr "loc_cave.gif_alt"
-
-msgid "loc_cave.gif_title"
-msgstr "loc_cave.gif_title"
-
-msgid "loc_corridor.gif_alt"
-msgstr "loc_corridor.gif_alt"
-
-msgid "loc_corridor.gif_title"
-msgstr "loc_corridor.gif_title"
-
-msgid "loc_stair.gif_alt"
-msgstr "loc_stair.gif_alt"
-
-msgid "loc_stair.gif_title"
-msgstr "loc_stair.gif_title"
-
-msgid "item_sign.gif_alt"
-msgstr "item_sign.gif_alt"
-
-msgid "item_sign.gif_title"
-msgstr "item_sign.gif_title"
-
-msgid "loc_darkroom.gif_alt"
-msgstr "loc_darkroom.gif_alt"
-
-msgid "loc_darkroom.gif_title"
-msgstr "loc_darkroom.gif_title"
-
-msgid "item_boulder.gif_alt"
-msgstr "item_boulder.gif_alt"
-
-msgid "item_boulder.gif_title"
-msgstr "item_boulder.gif_title"
-
-msgid "loc_tunnel.gif_alt"
-msgstr "loc_tunnel.gif_alt"
-
-msgid "loc_tunnel.gif_title"
-msgstr "loc_tunnel.gif_title"
-
-msgid "item_rat.gif_alt"
-msgstr "item_rat.gif_alt"
-
-msgid "item_rat.gif_title"
-msgstr "item_rat.gif_title"
-
-msgid "loc_portalroom.gif_alt"
-msgstr "loc_portalroom.gif_alt"
-
-msgid "loc_portalroom.gif_title"
-msgstr "loc_portalroom.gif_title"
-
-msgid "item_portal.gif_alt"
-msgstr "item_portal.gif_alt"
-
-msgid "item_portal.gif_title"
-msgstr "item_portal.gif_title"
-
-msgid "loc_square.gif_alt"
-msgstr "loc_square.gif_alt"
-
-msgid "loc_square.gif_title"
-msgstr "loc_square.gif_title"
-
-msgid "item_citizen1.gif_alt"
-msgstr "item_citizen1.gif_alt"
-
-msgid "item_citizen1.gif_title"
-msgstr "item_citizen1.gif_title"
-
-msgid "item_citizen2.gif_alt"
-msgstr "item_citizen2.gif_alt"
-
-msgid "item_citizen2.gif_title"
-msgstr "item_citizen2.gif_title"
-
-msgid "item_lady.gif_alt"
-msgstr "item_lady.gif_alt"
-
-msgid "item_lady.gif_title"
-msgstr "item_lady.gif_title"
-
-msgid "loc_market.gif_alt"
-msgstr "loc_market.gif_alt"
-
-msgid "loc_market.gif_title"
-msgstr "loc_market.gif_title"
-
-msgid "item_merchant.gif_alt"
-msgstr "item_merchant.gif_alt"
-
-msgid "item_merchant.gif_title"
-msgstr "item_merchant.gif_title"
-
-msgid "item_backpack.gif_alt"
-msgstr "item_backpack.gif_alt"
-
-msgid "item_backpack.gif_title"
-msgstr "item_backpack.gif_title"
-
-msgid "loc_library.gif_alt"
-msgstr "loc_library.gif_alt"
-
-msgid "loc_library.gif_title"
-msgstr "loc_library.gif_title"
-
-msgid "item_radspellbook.gif_alt"
-msgstr "item_radspellbook.gif_alt"
-
-msgid "item_radspellbook.gif_title"
-msgstr "item_radspellbook.gif_title"
-
-msgid "item_romancenovel.gif_alt"
-msgstr "item_romancenovel.gif_alt"
-
-msgid "item_romancenovel.gif_title"
-msgstr "item_romancenovel.gif_title"
-
-msgid "item_historybook.gif_alt"
-msgstr "item_historybook.gif_alt"
-
-msgid "item_historybook.gif_title"
-msgstr "item_historybook.gif_title"
-
-msgid "item_lever.gif_alt"
-msgstr "item_lever.gif_alt"
-
-msgid "item_lever.gif_title"
-msgstr "item_lever.gif_title"
-
-msgid "loc_backroom.gif_alt"
-msgstr "loc_backroom.gif_alt"
-
-msgid "loc_backroom.gif_title"
-msgstr "loc_backroom.gif_title"
-
-msgid "grep.gif_alt"
-msgstr "grep.gif_alt"
-
-msgid "grep.gif_title"
-msgstr "grep.gif_title"
-
-msgid "item_librarian.gif_alt"
-msgstr "item_librarian.gif_alt"
-
-msgid "item_librarian.gif_title"
-msgstr "item_librarian.gif_title"
-
-msgid "loc_rockypath.gif_alt"
-msgstr "loc_rockypath.gif_alt"
-
-msgid "loc_rockypath.gif_title"
-msgstr "loc_rockypath.gif_title"
-
-msgid "loc_artisanshop.gif_alt"
-msgstr "loc_artisanshop.gif_alt"
-
-msgid "loc_artisanshop.gif_title"
-msgstr "loc_artisanshop.gif_title"
-
-msgid "item_trinket.gif_alt"
-msgstr "item_trinket.gif_alt"
-
-msgid "item_trinket.gif_title"
-msgstr "item_trinket.gif_title"
-
-msgid "item_clockdragon.gif_alt"
-msgstr "item_clockdragon.gif_alt"
-
-msgid "item_clockdragon.gif_title"
-msgstr "item_clockdragon.gif_title"
-
-msgid "item_artisan.gif_alt"
-msgstr "item_artisan.gif_alt"
-
-msgid "item_artisan.gif_title"
-msgstr "item_artisan.gif_title"
-
-msgid "item_corn.gif_alt"
-msgstr "item_corn.gif_alt"
-
-msgid "item_corn.gif_title"
-msgstr "item_corn.gif_title"
-
-msgid "item_farmer.gif_alt"
-msgstr "item_farmer.gif_alt"
-
-msgid "item_farmer.gif_title"
-msgstr "item_farmer.gif_title"
-
-msgid "loc_clearing.gif_alt"
-msgstr "loc_clearing.gif_alt"
-
-msgid "loc_clearing.gif_title"
-msgstr "loc_clearing.gif_title"
-
-msgid "item_man.gif_alt"
-msgstr "item_man.gif_alt"
-
-msgid "item_man.gif_title"
-msgstr "item_man.gif_title"
-
-msgid "loc_bridge.gif_alt"
-msgstr "loc_bridge.gif_alt"
-
-msgid "loc_bridge.gif_title"
-msgstr "loc_bridge.gif_title"
-
-msgid "loc_path.gif_alt"
-msgstr "loc_path.gif_alt"
-
-msgid "loc_path.gif_title"
-msgstr "loc_path.gif_title"
-
-msgid "item_brambles.gif_alt"
-msgstr "item_brambles.gif_alt"
-
-msgid "item_brambles.gif_title"
-msgstr "item_brambles.gif_title"
-
-msgid "undefined_alt"
-msgstr "undefined_alt"
-
-msgid "undefined_title"
-msgstr "undefined_title"
-
-msgid "loc_theend.gif_alt"
-msgstr "loc_theend.gif_alt"
-
-msgid "loc_theend.gif_title"
-msgstr "loc_theend.gif_title"
-
-msgid "item_troll1.gif_alt"
-msgstr "item_troll1.gif_alt"
-
-msgid "item_troll1.gif_title"
-msgstr "item_troll1.gif_title"
-
-msgid "people_troll11_rm"
-msgstr "people_troll11_rm"
-
-msgid "people_troll11_mv"
-msgstr "people_troll11_mv"
-
-msgid "people_troll11_cp"
-msgstr "people_troll11_cp"
-
-msgid "item_troll2.gif_alt"
-msgstr "item_troll2.gif_alt"
-
-msgid "item_troll2.gif_title"
-msgstr "item_troll2.gif_title"
-
-msgid "item_supertroll.gif_alt"
-msgstr "item_supertroll.gif_alt"
-
-msgid "item_supertroll.gif_title"
-msgstr "item_supertroll.gif_title"
-
-msgid "item_cage.gif_alt"
-msgstr "item_cage.gif_alt"
-
-msgid "item_cage.gif_title"
-msgstr "item_cage.gif_title"
-
-msgid "item_kidnapped"
-msgstr "item_kidnapped"
-
-msgid "item_kidnapped_text"
-msgstr "item_kidnapped_text"
-
-msgid "item_cagedboy.gif_alt"
-msgstr "item_cagedboy.gif_alt"
-
-msgid "item_cagedboy.gif_title"
-msgstr "item_cagedboy.gif_title"
 
 msgid "game_loaded"
 msgstr "Partie restaurée"
