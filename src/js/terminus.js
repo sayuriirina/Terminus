@@ -1,42 +1,47 @@
 /**
  * This is the game script and represent the map too
  */
-var ldr=1; function app_loaded(){
-  if (ldr==0 && snd.isloaded()){
-    start_game();// make views and interact
-  }
+function app_loaded(){
+  start_game();// make views and interact
 }
 // Initiate Game state - required to be called 'state'
 var state = new GameState(); // GameState to initialize in game script
 var vt;
-var snd=new SoundBank(app_loaded);
+var snd=new SoundBank();
 var music=new Music(snd);
 /// sound set
 // The sounds in vterm are : choicemove choicemove question exclm endoftext dot learned space ret tag virg char
 snd.set('choicemove','./snd/sfx_movement_ladder5a.',['wav']);
 snd.set('choiceselect','./snd/sfx_movement_ladder2a.',['wav']);
 snd.set('tag','./snd/sfx_movement_ladder2a.',['wav']);
+//snd.set('char','./snd/voicehigh.',['mp3']);
 snd.set('char','./snd/char.',['wav']);
 snd.set('grl','./snd/grl.',['wav']);
 snd.set('poney','./snd/sfx_menu_move3.',['wav']);
 snd.set('portal','./snd/sfx_movement_portal6.',['wav']);
 snd.set('learned','./snd/sfx_sounds_fanfare3.',['wav']);
 snd.set('unlocked','./snd/sfx_sounds_fanfare3.',['wav']);
-music.set('chapter2','./music/slowdrum-cave.',['wav']);
-music.set('academy','./music/caravan.',['ogg']);
+snd.set('success','./snd/snd_5000points.',['mp3']);
+snd.set('broken','./snd/sfx_exp_cluster9.',['wav']);
 // music set
-music.set('yourduty','./music/enterTheHero.',['mp3']);
-music.set('trl','./music/trolls-beatdown-05l.',['wav']);
+music.set('chapter2','./music/place/slowdrum-cave.',['wav']);
+music.set('academy','./music/mystic/caravan.',['ogg']);
+music.set('warning','./music/danger/trolls-beatdown-05l.',['wav']);
+music.set('story','./music/cave/Searching.',['ogg']);
+music.set('forest','./music/nature/Forest_Ambience.',['mp3']);
+music.set('yourduty','./music/Intro_Theme.',['mp3']);
+music.set('title','./music/Intro_Theme.',['mp3']);
+music.set('trl','./music/danger/trolls-beatdown-05l.',['wav']);
 
+music.play('title',{loop:true});
+user.groups.push('cat');
+user.groups.push('dir');
 /*
  * recurrent events
  **/
 function learn(vt, cmds,re){
   if (typeof cmds == 'string'){
     cmds=[cmds];
-  }
-  for (var j=0; j<cmds.length;j++) {
-    global_commands.push(cmds[j]);
   }
   if (!re){
     global_fireables.done.push(
@@ -54,34 +59,63 @@ function unlock(vt, unlocked,re){
     global_fireables.done.push(
       function(){
         vt.playSound('unlocked'); 
+        vt.badge(_('you_unlock',[unlocked]));
+      }
+    );
+  }
+}
+function mesg(msg,re,opt){
+  if (!re) {
+    opt=opt||{};
+    var fu= function(){
+      setTimeout(function(){
+        vt.show_msg('<div class="mesg">'+
+            _('msg_from',[opt.user||'????',opt.tty||'???',getTime()])+
+            "\n" + 
+            msg +'</div>',
+            {direct:true});
+      },opt.timeout||0);
+    };
+    if (opt.ondone){
+      global_fireables.done.push(fu);
+    } else {
+     fu();
+    }
+  }
+}
+function ondone(fu){
+global_fireables.done.push(fu);
+}
+function success(vt, txt,re){
+  if (!re) {
+    global_fireables.done.push(
+      function(){
+        vt.playSound('success'); 
+        vt.badge(_('you_success',[txt]));
+        mesg(_('congrat',[txt]));
       }
     );
   }
 }
 
 //$home - required - default room
-newRoom('home', "loc_farm.gif") ;
+newRoom('home', undefined, {writable:true});
 state.setCurrentRoom($home);
+$home.setEnterCallback(function(){
+  music.play('forest');
+});
   
+  var loadel;
 function start_game(){
-  // build view
-  vt=new VTerm('term');
-  vt.soundbank=snd; 
-  vt.muteSound();
-  vt.charduration=20; 
-  vt.charfactor[' ']=25;//on each nbsp , it will take 1/2 second
-  vt.disable_input();
-  vt.epic_img_enter('titlescreen.gif','epicfromright',2000);
-  
   // prepare game loading
   var has_save=state.startCookie('terminuscookie');
   var choices=[_('cookie_yes'),_('cookie_no')];
   if (has_save) choices.unshift(_('cookie_yes_load'));
-
+  
   var game_start=function(vt, use_cookies){
+     vt.muteSound();
     var loaded=false;
     if (pogencnt>0){ vt.show_msg(_('pogen_alert',pogencnt)); }
-    console.log(has_save,use_cookies);
     if ((use_cookies - (has_save?1:0))<=0){ // yes new game or load
       state.setCookieDuration(7*24*60);// in minutes
       if(use_cookies==0){// load
@@ -99,29 +133,112 @@ function start_game(){
       vt.enable_input();
     } else {
       vt.muteCommandResult();
-      vt.show_msg(_('gamestart_text'));
-      vt.enable_input();
+      music.play('preload');
+      var seq=new Seq();
+      seq.then(function(next){
+        vt.show_loading_element_in_msg(['_',' '],{duration:800,finalvalue:' ',callback:next});
+      });
+      seq.then(function(next){
+        vt.unmuteSound();
+        vt.show_msg([_('gameintro_text_initrd'),next],{});
+      });
+      seq.then(function(next){
+        loadel=dom.Id('initload');
+        vt.show_loading_element_in_msg(['/\'','\'-',' ,','- '],{
+          el:loadel,finalvalue:"<span class='color-ok'>"+_('gameintro_ok')+"</span>",
+          duration:800,callback:next});
+      });
+      seq.then(function(next){
+        vt.show_msg([_('gameintro_text_domainname'),next]);
+      });
+      seq.then(function(next){
+        loadel=dom.Id('domainsetup');
+        vt.show_loading_element_in_msg(['/\'','\'-',' ,','- '],{
+          el:loadel,finalvalue:"<span class='color-ok'>"+_('gameintro_ok')+"</span>",
+          duration:800,callback:next});
+      });
+      seq.then(function(next){
+        vt.show_msg([_('gameintro_text_fsck'),next]);
+      });
+      seq.then(function(next){
+        loadel=dom.Id('initfsck');
+        vt.show_loading_element_in_msg(['/\'','\'-',' ,','- '],{
+          el:loadel,finalvalue:"<span class='color-ko'>"+_('gameintro_failure')+"</span>",
+          duration:800,callback:next});
+      });
+      seq.then(function(next){
+        vt.show_msg([_('gameintro_text_terminus'),next]);
+      });
+      seq.then(function(next){
+        vt.show_msg(_('gamestart_text'));
+        music.play('story');
+        vt.enable_input();
+        vt.auto_shuffle_input_msg(_('press_enter'),0.9,0.1,8,20,null,50);
+      });
+      seq.next();
     }
   };
-  setTimeout(function(){
-    vt.ask_choose(_('cookie'), choices,game_start,{instant:true});
-  },2000);
+
+  // build view
+  vt=new VTerm('term');
+  vt.soundbank=snd; 
+  vt.charduration=20; 
+  vt.charfactor[' ']=25;//on each nbsp , it will take 1/2 second
+  vt.disable_input();
+  vt.flash(0,800);
+  vt.epic_img_enter('titlescreen.gif','epicfromright',800,
+    function(vt){
+      if (TESTING){
+        vt.enable_input();
+        vt.setContext(state.getCurrentRoom());
+        do_test();
+      } else {
+        vt.ask_choose(_('cookie'), choices,game_start,{direct:true});
+      }
+    });
+
 }
 // home
+function cat_first_try(re){
+  $home.unsetCmdEvent('less_no_arg');
+  mesg(_('cmd_cat_first_try'),re,{timeout:500});
+//  if (!re){
+//    setTimeout(function(){
+//      vt.show_msg(_('msg_from',['????','???',getTime()]),{direct:true});
+//      vt.show_msg(_('cmd_cat_first_try'));
+//    },500);
+//  }
+}
+function cat_second_try(re){
+  $home.unsetCmdEvent('destination_unreachable');
+  mesg(_('cmd_cat_second_try'),re,{timeout:1000});
+//  if (!re){
+//    setTimeout(function(){
+//      vt.show_msg(_('msg_from',['????','???',getTime()]),{direct:true});
+//      vt.show_msg(_('cmd_cat_second_try'));
+//    },1000);
+//  }
+}
+function getTime(){
+  return new Date().toLocaleFormat('%Hh%M');
+}
 $home.setCmdEvent('poe_cmd_not_found','poe_mode')
-  .setCmdEvent('cmd_not_found','add_cat')
-  .setCmdEvent('destination_invalid','destination_invalid')
+  .setCmdEvent('cmd_not_found','hnotf')
+  .setCmdEvent('less_no_arg','hnoarg')
+  .setCmdEvent('destination_unreachable','hnodest')
   .addStates({
     poe_mode: function(re){
-      vt.show_msg(_('cmd_poe_revealed'),undefined,false);
+      vt.show_msg(_('cmd_poe_revealed'));
+      _addGroup('poe');
       learn(vt,['poe','pogen'],re);
     },
-    add_cat:function(re){
-      learn(vt,['cat'],re);
+    hnotf:function(re){
       if (!re){
         setTimeout(function(){
           vt.unmuteSound();
-          vt.show_msg(_('cmd_cat_revealed'));
+          mesg(_('very_first_try'),re);
+//          vt.show_msg(_('msg_from',['????','???',getTime()]),{direct:true});
+//          vt.show_msg(_('very_first_try'));
           vt.unmuteCommandResult();
           $home.unsetCmdEvent('cmd_not_found');
           setTimeout(function(){ 
@@ -132,65 +249,107 @@ $home.setCmdEvent('poe_cmd_not_found','poe_mode')
         },1000);
       }
     },
-    destination_invalid:function(re){
-      if (!re){
-        setTimeout(function(){
-          vt.show_msg(_('cmd_cat_first_try'));
-        },1000);
-      }
-    }
+    hnoarg:cat_first_try,
+    hnodest:cat_second_try
   });
-shelly=$home.newPeople('shell')
-  .setTextIdx(0)
-  .setCmdEvent('less','add_ls')
-  .setCmdEvent('less_done','chtxt')
-  .addStates({
-    add_ls:function(re){
-      shelly.unsetCmdEvent('less');
-      learn(vt,['cd','ls'],re);
-    },
-    chtxt:function(){
-      shelly.unsetCmdEvent('less_done');
-      shelly.setTextIdx('');
-      state.saveCookie();
+
+
+
+var shell_txt_id=0;
+function shell_dial(re){
+  if (!isStr(shell_txt_id)){
+    if (shell_txt_id==2){
+      pwddecl.fire_event(vt,'less');
     }
+    shelly.setTextIdx(++shell_txt_id%7);
+  }
+  state.saveCookie();
+}
+shelly=$home.newPeople('shell',undefined,{executable:true})
+  .setCmdEvent('less_done','chtxt')
+  .setCmdEvent('exec_done','chtxt')
+  .addStates({
+    chtxt:shell_dial
   });
 
 //WESTERN FOREST
-newRoom('western_forest', "loc_forest.gif");
+newRoom('western_forest', "loc_forest.gif")
+ .setEnterCallback(function(){
+  music.play('forest');
+});
 $western_forest.newItem('western_forest_academy_direction','item_sign.png');
-$western_forest.newItem('western_forest_back_direction')
+var pwddecl=$western_forest.newItem('western_forest_back_direction')
   .setCmdEvent('less','pwdCmd')
   .addStates({
     pwdCmd:function(re){
-      if (global_commands.indexOf('pwd')==-1){
+      $western_forest.unsetCmdEvent('less');
+      if (!_hasGroup('pwd')){
+        _addGroup('pwd');
         learn(vt,'pwd',re);
       }
     }
   })
 ;
 
-//SPELL CASTING ACADEMY
+//LESSONS
+var prof=newRoom('lessons',"loc_classroom.gif")
+  .newPeople('professor', "item_professor.png")
+  .setCmdEvent('less','learn_mv')
+  .addState('learn_mv',function(re){
+    prof.unsetCmdEvent('less');
+    _addGroup('mv');
+    learn(vt,'mv',re);
+  });
 
+
+//SPELL CASTING ACADEMY
 newRoom('spell_casting_academy', "loc_academy.gif");
-//  .newPeople('academy_student', "item_student.png");
 $spell_casting_academy.setEnterCallback(function(){
   music.play('academy');
 });
 //PRACTICE ROOM
-newRoom('academy_practice', "loc_practiceroom.gif")
-  .addCommand("mv");
-//  .newItem('academy_practice', "item_manuscript.png")
-$academy_practice.newItemBatch('practice_dummy',[1,2,3], "item_dummy.png")
-  .map(function(i){
-    i.addValidCmd('mv');
-  }
-  );
-
+newRoom('academy_practice', "loc_practiceroom.png",{writable:true})
+  .newItem('academy_practice', "item_manuscript.png");
 //BOX
-newRoom('box', "item_box.png")
-  .removeCommand("cd")
-  .setCmdText("cd",_('room_box_cd'));
+newRoom('box', "item_box.png",{writable:true})
+  .setEnterCallback(function(r,vt){enterRoom(r.parents[0],vt);});
+
+var mv_pr_sum=0;
+function mv_sum(re){
+  mv_pr_sum++;
+  if (mv_pr_sum==3){
+    prof.moveTo($academy_practice);
+    $spell_casting_academy.removePath($lessons);
+    $spell_casting_academy.setEnterCallback(null);
+    if (re){
+      $western_forest.removePath($spell_casting_academy);
+    } else {
+      $spell_casting_academy.setLeaveCallback(function(){
+        $western_forest.removePath($spell_casting_academy);
+      });
+    }
+    if (!re){
+      success(vt,_('room_spell_casting_academy'),re);
+      ondone(function(){
+        setTimeout(function(){ 
+          snd.play('broken');
+        },1000);
+        setTimeout(function(){ 
+          prof.setTextIdx('quit');
+          music.play('warning',{loop:true});
+          mesg(_('leave_academy'),re);
+        },3000);
+      });
+    }
+  }
+  console.log('mv',mv_pr_sum);
+}
+$academy_practice.newItemBatch('practice',[1,2,3], "item_test.png")
+  .map(function(i){
+    i .setCmdEvent('mv')
+      .addState('mv',mv_sum);
+  });
+
 
 //EASTERN MOUNTAINS
 man_sage=newRoom('mountain', "loc_mountains.gif")
@@ -199,6 +358,7 @@ man_sage.setCmdEvent('less','exitCmd')
   .addStates({
     exitCmd:function (re){
       man_sage.unsetCmdEvent('less');
+      _addGroup('exit');
       learn(vt, ['exit'], re);
       
       man=$mountain.newItem('man', "item_manuscript.png");
@@ -207,6 +367,7 @@ man_sage.setCmdEvent('less','exitCmd')
         .addStates({
           manCmd:function (re){
             man.unsetCmdEvent('less');
+            _addGroup('help');
             learn(vt, ['man', 'help'], re);
           }
         })
@@ -231,17 +392,17 @@ function poney_dial(re){
   if (!isStr(poney_txt_id)){
     poney.setTextIdx(poney_txt_id++);
     if (poney_txt_id==5){
-      poney.setCmdEvent('less_done','uptxthint')
+      poney.setCmdEvent('less_done','uptxthint');
     }
   }
 }
 function poney_dialhint(re){
-  poney.setCmdEvent('less_done','uptxthint')
+  poney.setCmdEvent('less_done','uptxthint');
   if (!vt.statkey.Tab || vt.statkey.Tab==0) {
     poney.setTextIdx('tab');
-  } else if (!global_hasCmd('mv')){
+  } else if (!_hasGroup('mv')){
     poney.setTextIdx('mv');
-  } else if (state.applied('mvBoulder')){
+  } else if (!state.applied('mvBoulder')){
     poney.setTextIdx('mountain');
   } else {
     poney.setTextIdx('help');
@@ -255,19 +416,12 @@ var poney=newRoom('meadow', "loc_meadow.gif")
   .addStates({
     add_mountain:function(re){
       $meadow.addPath($mountain);
-      unlock(vt, $mountain.room_name, re);
+      mesg(_('new_path',[$mountain]),re,{timeout:600,ondone:true});
+      unlock(vt, $mountain, re);
       poney.unsetCmdEvent('less');
     },
     uptxt:poney_dial,
     uptxthint:poney_dialhint
-  });
-
-//LESSONS
-newRoom('lessons',"loc_classroom.gif")
-  .newPeople('professor', "item_professor.png")
-  .setCmdEvent('less','learn_mv')
-  .addState('learn_mv',function(re){
-      learn(vt,'mv',re);
   });
 
 //CAVE
@@ -281,12 +435,13 @@ newRoom('staircase', "loc_stair.gif")
   .newItem('dead_end', "item_sign.png");
 
 //DANK ROOM
-newRoom('dank',"loc_darkroom.gif").addCommand("mv")
-  .newItem('boulder','item_boulder.png',{cls:'large'}).addValidCmd('mv')
+newRoom('dank',"loc_darkroom.gif",{writable:true}).addCommand("mv")
+  .newItem('boulder','item_boulder.png',{cls:'large'})
   .setCmdEvent('mv','mvBoulder')
   .addStates({
     mvBoulder: function(re){
       $dank.addPath($tunnel);
+      unlock(vt, $tunnel, re);
       if (re) {
         $dank.getItem('boulder').moveTo($small_hole);
       }
@@ -339,10 +494,7 @@ $townsquare.newPeople('citizen3',"item_lady.png");
 
 //MARKETPLACE
 var disabled_sell_choices=[];
-newRoom('market',"loc_market.gif")
-  .addCommand('rm')
-  .addCommand('mv')
-  .addCommand('touch');
+newRoom('market',"loc_market.gif",{writable:true}).addCommand('touch');
 
 function buy_to_vendor(vt, choice){
   if (choice==0) {
@@ -373,8 +525,6 @@ vendor=$market.newPeople("vendor", "item_merchant.png")
   ;
 
 var backpack=$market.newItem("backpack","item_backpack.png")
-  .addValidCmd('mv')
-  .addValidCmd('less')
   .setCmdEvent("mv", function(ct){
     vt.show_msg(_('item_backpack_stolen'));
     backpack.unsetCmdEvent("mv");
@@ -384,7 +534,7 @@ var backpack=$market.newItem("backpack","item_backpack.png")
 
 $market.addStates({
   unzipUnlocked:function(re){
-    backpack.addValidCmd('unzip');
+    _addGroup('unzip');
     learn(vt, 'unzip', re);
     backpack.unsetCmdEvent("less");
     backpack.setPoDelta(['.zip']);
@@ -394,16 +544,18 @@ $market.addStates({
       unzipped.push(ct.room.newItem('mkdir_cost'));
       backpack.setPoDelta([]);
       backpack.unsetCmdEvent('unzip');
-      vt.show_msg(_('unzipped',[_('item_backpack'), unzipped.join(", ")]),undefined,false);
+      vt.show_msg(_('unzipped',[_('item_backpack'), unzipped.join(", ")]),{dependant:false});
     });
   },
   rmSold:function(re){
+    _addGroup('rm');
     learn(vt,'rm',re);
     $market.removeItem('rm_spell');
     disabled_sell_choices.push(1);
     vendor.setCmdText("rm", _('people_vendor_rm'));
   },
   mkdirSold:function(re){
+    _addGroup('mkdir');
     learn(vt,'mkdir',re);
     disabled_sell_choices.push(0);
     $market.removeItem('mkdir_spell');
@@ -423,9 +575,7 @@ $library.newItem('nostalgicbook',"item_historybook.png")
   .setCmdEvent('less','pwdCmd')
   .addStates({
     pwdCmd:function(re){
-      if (global_commands.indexOf('pwd')==-1){
-        learn(vt,'pwd',re);
-      }
+      $western_forest.fire_event('pwdCmd'); 
     }
   })
 ;
@@ -436,11 +586,16 @@ vimbook=$library.newItem('vimbook',"item_vimbook.png")
     vt.rmCurrentImg(2650);
     vimbook.disappear();
   });
-lever=$library.newItem("lever", "item_lever.png")
-  .setCmdEvent('less','pullLever')
+
+
+lever=$library.newItem("lever", "item_lever.png",{executable:true})
+  .setCmdEvent('exec','pullLever')
   .addStates({
     pullLever:function(re){
       $library.addPath($backroom);
+      if (!re){
+        vt.show_msg(_('item_lever_exec'));
+      }
       lever.disappear();
     }
   })
@@ -454,6 +609,7 @@ $backroom.newPeople("grep", "grep.png")
   .setCmdEvent('less','grep')
   .addStates({
     grep:function(re){
+      _addGroup('grep');
       learn(vt,'grep',re);
     }
   })
@@ -462,10 +618,9 @@ $backroom.newPeople("grep", "grep.png")
 $backroom.newPeople("librarian", "item_librarian.png");
 
 //ROCKY PATH
-newRoom("rockypath", "loc_rockypath.gif")
+newRoom("rockypath", "loc_rockypath.gif",{writable:true})
   .newItem("largeboulder", "item_boulder.png")
   .setCmdText("rm", _('item_largeboulder_rm'))
-  .addValidCmd("rm")
   .addStates({
     rmLargeBoulder: function(re){
       $rockypath.addPath($farm);
@@ -500,6 +655,7 @@ newRoom("artisanshop", "loc_artisanshop.gif")
     'touchGear': function (re){
       Artisan.setCmdText("less", _('item_gear_touch'));
       $artisanshop.addCommand("cp");
+      _addGroup('cp');
       learn(vt,'cp',re);
       if (re) $artisanshop.newItem('gear',"item_gear.png");
       else $artisanshop.getItem('gear').setPic("item_gear.png");
@@ -507,8 +663,15 @@ newRoom("artisanshop", "loc_artisanshop.gif")
     },
     "FiveGearsCopied": function(re){
       Artisan.setCmdText("less", _('item_gear_artisans_ok'));
+      $artisanshop.removeItem('gear');
       if (re){
-        $artisanshop.newItemBatch("gear",['1','2','3','4','5']);
+      } else {
+//         $artisanshop.newItemBatch("gear",['1','2','3','4','5']);
+         $artisanshop.removeItem('gear',[1]);
+         $artisanshop.removeItem('gear',[2]);
+         $artisanshop.removeItem('gear',[3]);
+         $artisanshop.removeItem('gear',[4]);
+         $artisanshop.removeItem('gear',[5]);
       }
       state.saveCookie();
     }
@@ -525,6 +688,7 @@ var Artisan=$artisanshop.newPeople("artisan", "item_artisan.png")
   .setCmdEvent('less', 'touch' )
   .addStates({
     'touch': function(re){
+      _addGroup('touch');
       learn(vt,'touch',re);
       Artisan.unsetCmdEvent('less');
       state.saveCookie();
@@ -548,11 +712,10 @@ newRoom("farm", "loc_farm.gif")
 var Farmer=$farm.newPeople('farmer',"item_farmer.png");
 
 //CLEARING
-newRoom("clearing", "loc_clearing.gif")
+newRoom("clearing", "loc_clearing.gif",{executable:false})
   .setCmdEvent('mkdir',function(ct){
     return (ct.arg == _('room_house') ? 'HouseMade':'');
   })
-  .removeCommand("cd")
   .setCmdText("cd", _('room_clearing_cd'))
   .addCommand("mkdir")
   .addStates({
@@ -585,13 +748,11 @@ newRoom("brokenbridge", "loc_bridge.gif")
   });
 
 //OMINOUS-LOOKING PATH
-newRoom("ominouspath", "loc_path.gif")
-  .addCommand("rm")
+newRoom("ominouspath", "loc_path.gif",{writable:true})
   .newItem("brambles", "item_brambles.png",{cls:'large'})
   .setCmdEvent('rm','rmBrambles')
   .setCmdText("mv", _('item_brambles_mv'))
   .setCmdText("rm", _('item_brambles_rm'))
-  .addValidCmd("rm")
   .addStates({
     "rmBrambles":function(re){
       $ominouspath.addPath($trollcave) ;
@@ -599,8 +760,7 @@ newRoom("ominouspath", "loc_path.gif")
     }
   });
 //SLIDE
-newRoom("slide")
-  .removeCommand("cd")
+newRoom("slide",{executable:false})
   .setCmdText("cd", _('room_slide_cd'));
 
 //KERNEL FILES
@@ -618,8 +778,8 @@ $kernel.newItem("instructions")
   .setCmdEvent('less','sudo')
   .addStates({
     sudo : function(re){
+      _addGroup('sudo');
       learn(vt,'sudo',re);
-      vt.playSound('learned');
     }
   });
 
@@ -635,20 +795,13 @@ newRoom("paradise", "loc_theend.gif")
 var troll_evt=function(ct){
   return (ct.arg == 'UglyTroll' ? 'openSlide' : '' );
 };
-newRoom("trollcave", "loc_cave.gif")
+newRoom("trollcave", "loc_cave.gif",{writable:true})
   .setCmdEvent('mv',troll_evt)
-  .setCmdEvent('rm',troll_evt)
-  .addCommand("rm")
-  .addCommand("mv")
-  .addCommand("cp")
-;
+  .setCmdEvent('rm',troll_evt);
 
 $trollcave.newPeople('troll1', "item_troll1.png")
-  .addValidCmd("rm")
   .setCmdText("rm", _('people_troll11_rm'))
-  .addValidCmd("mv")
   .setCmdText("mv", _('people_troll11_mv'))
-  .addValidCmd("cp")
   .setCmdText("cp",_('people_troll11_cp'))
   .setCmdEvent('mv','openSlide')
   .setCmdEvent('rm','openSlide')
@@ -661,8 +814,6 @@ $trollcave.newPeople('troll1', "item_troll1.png")
   });
 
 $trollcave.newPeople('troll2', "item_troll2.png")
-  .addValidCmd("rm")
-  .addValidCmd("mv")
   .setCmdText("rm",_('people_troll11_rm'));
 
 $trollcave.newPeople('supertroll', "item_supertroll.png")
@@ -670,11 +821,9 @@ $trollcave.newPeople('supertroll', "item_supertroll.png")
   .setCmdText("mv", _('people_supertroll_mv'));
 
 //CAGE
-newRoom('cage', "item_cage.png",{cls:'covering'})
-  .removeCommand("cd")
+newRoom('cage', "item_cage.png",{cls:'covering',writable:true,executable:false})
   .setCmdText("cd", _('room_cage_cd'));
 var Kid=$cage.newPeople('kidnapped', "item_boy.png")
-  .addValidCmd("mv")
   .setCmdText("mv", _('people_kidnapped_mv'))
   .setCmdEvent("mv",'freekid')
   .addStates({
@@ -685,11 +834,11 @@ var Kid=$cage.newPeople('kidnapped', "item_boy.png")
 $home                  . addPath($western_forest);
 $western_forest        . addPath($spell_casting_academy);
 $spell_casting_academy . addPath($academy_practice );
+$spell_casting_academy . addPath($lessons);
 $academy_practice      . addPath($box);
 
 $home                  . addPath($meadow);
 //$meadow                . addPath($mountain);
-$spell_casting_academy . addPath($lessons);
 $mountain              . addPath($cave);
 $cave                  . addPath($dark_corridor);
 $cave                  . addPath($staircase);
@@ -715,7 +864,6 @@ $trollcave             . addPath($slide);
 $kernel                . addPath($morekernel);
 
 console.log("Game objects : init");
-ldr--;
 app_loaded();
 
 /**
@@ -774,12 +922,11 @@ app_loaded();
  *    and controllable given the Room or the Item :
  *
  *    // disallow or allow usage of command
- *    <Room>.removeCommand(<cmd_name>)
  *    <Room>.addCommand(<cmd_name>)
- *    <Item>.addValidCmd(<cmd_name>)
  *
  *    // alter result of the command
  *    <Room>.setCmdText(<cmd_name>,<cmd_result>)
  *    <Item>.setCmdText(<cmd_name>,<cmd_result>)
  *
  */
+// All bash shortcuts : https://ss64.com/bash/syntax-keyboard.html

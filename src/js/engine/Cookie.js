@@ -55,6 +55,7 @@ Cookie.prototype={
   write : function (params){
     var date = new Date();
     date.setTime(date.getTime()+(this.minutes*60*1000));
+    console.log('write cookie',params);
     dom.cookie = this.name+"="+this.stringify(params)+"; expires="+date.toGMTString()+"; path=/";
   },
   destroy : function (){

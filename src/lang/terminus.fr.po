@@ -18,6 +18,24 @@ msgstr "%s traductions manquent, tape 'pogen' pour télécharger le fichier de t
 msgid "you_learn"
 msgstr "Tu as appris à utiliser %s !"
 
+msgid "you_unlock"
+msgstr "Tu peux maintenant aller dans %s !"
+
+msgid "you_success"
+msgstr "Fini '%s' !"
+
+msgid "new_path"
+msgstr "Regarde avec 'ls', tu peux maintenant aller à cet endroit : '%s' !"
+
+msgid "congrat"
+msgstr "Félicitation ! Tu as résolu toutes les enigmes de %s !"
+
+msgid "press_enter"
+msgstr "Appuie sur la touche Entrée ↵"
+
+msgid "press_tab"
+msgstr "Appuie sur la touche Tab ↹"
+
 msgid "cookie"
 msgstr "Afin de conserver ton avancement dans le jeu, il faut manger un cookie.\nVeux tu activer les cookies ?"
 
@@ -52,50 +70,102 @@ msgid "people_none_text"
 msgstr "Cette personne ressemble plutôt à un robot."
 
 msgid "cannot_cast"
-msgstr "Ce sort ne peut pas être utilisé-e ici."
+msgstr "Cette commande ne peut pas être utilisé-e ici."
 
 msgid "cmd_exit"
 msgstr "Au revoir !"
 
+msgid "gameintro_text_initrd"
+msgstr "Chargement de initrd.img [<div class='inmsg' id='initload'></div>]\n"
+
+msgid "gameintro_text_domainname"
+msgstr "Configuration du nom de domaine [<div class='inmsg' id='domainsetup'></div>]\n"
+
+msgid "gameintro_text_fsck"
+msgstr "Vérification du système de fichier [<div class='inmsg' id='initfsck'></div>]\n"
+
+msgid "gameintro_ok"
+msgstr "OK"
+
+msgid "gameintro_failure"
+msgstr "Échec"
+
+msgid "gameintro_text_terminus"
+msgstr "   Bienvenue dans {{room.Terminus}}\n"
+
 msgid "gamestart_text"
-msgstr "Dans un pays lointain,\nla force physique autant que les pouvoirs magiques ont été surpassés par un mystérieux pouvoir...\nCependant les personnes sachant utiliser ce pouvoir sont rares.\nPar manque d'éducation ou grâce à un abrutissement de masse, ce pouvoir a permis aux élites d'imposer leur règles.\nDepuis quelques mois, de nombreuses disparitions ont été constatées, mais personne ne semble savoir pourquoi.\n\n\n\n\n\nLe réveil est difficile.\nIl semble que tu aies perdu la mémoire."
-
-msgid "cmd_cat_revealed"
-msgstr "Ro ro .\n Ro ro.\n Ro ro.\n\n.\n\n"
-"Tu m'as l'air de ne pas y voir grand chose dans ce brouillard.\n"
-"Où habites tu ? \n\n Tu ne sais pas ?\n C'est peut-être ici ta maison.\n"
-"Bon je vais t'accompagner, ça sera plus simple pour toi.\n Et puis, j'aime bien les aventures.\n"
-"Mon nom ?  c'est Cat. \nSi tu veux que je te serve d'interprète écris '{{cmd.cat}}' suivi du nom d'une personne ou d'un objet.\n"
-"\n\n"
-
+msgstr "\n. . .\n\nLe réveil est difficile.\nIl semble que tu aies perdu la mémoire."
 
 msgid "cmd"
 msgstr "%s"
+
+msgid "room"
+msgstr "%s"
+
+msgid "room_unreachable"
+msgstr "La pièce %s est inatteignable."
+
+msgid "room_unreadable"
+msgstr "Un brouillard dans la pièce empêche de voir son contenu."
+
 
 msgid "people_shell"
 msgstr "Palourde"
 
 msgid "people_shell_text"
-msgstr "<voice grl/>Pour ce qui est de se déplacer écris '{{cmd.cd}}' suivi d'un lieu et pour voir au alentour écris '{{cmd.ls}}'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin.\nIl te faudra surement écrire '{{cmd.ls}}' partout où tu passe."
+msgstr "<voice grl/>Pour ce qui est de se déplacer écris '{{cmd.cd}}' suivi d'un chemin et pour voir au alentour écris '{{cmd.ls}}'.\n Se déplacer dans un chemin n'est possible que si tu connais le chemin.\nIl te faudra surement écrire '{{cmd.ls}}' partout où tu passe."
+
+msgid "people_shell_text1"
+msgstr "<voice grl/>Savais tu que lorsque tu appuies sur Tab ↹ , des suggestions apparaissent ?\n"
+"Lorsque la suggestion devient un choix évident ta ligne de commande (en bas) se rempli  toute seule."
+
+msgid "people_shell_text2"
+msgstr "<voice grl/>Connais tu la commande '{{cmd.pwd}}' ?\n"
+"Si tu écris cette commande (et que tu valide en appuyant sur la touche Entrée ↵), tu auras des informations sur l'endroit où tu te trouves."
+
+msgid "people_shell_text3"
+msgstr "<voice grl/>Savais tu que lorsque tu appuies sur les flèches Haut et Bas, naviguer dans l'historique. C'est à dire que tu peux réutiliser les commandes que tu viens d'entrer."
+
+msgid "people_shell_text4"
+msgstr "<voice grl/>Savais tu que lorsque tu appuies sur les touches Ctrl et U, le texte avant le curseur dans la ligne de commande est effacé. "
+
+msgid "people_shell_text5"
+msgstr "<voice grl/>Savais tu que lorsque tu appuies sur les touches Ctrl et C, tu interromps l'action en cours."
+
+msgid "people_shell_text6"
+msgstr "<voice grl/>Sais tu ce qu'est un expression régulière ? Non ? par exemple \"Bo*\" est une expression régulière pour \"Bonbon\", mais aussi pour \"Bobine\" et tous les mots commençant par les lettres B o.\n Le caractère * (asterisk) signifie, n'importe quel caractère, autant de fois que possible."
 
 msgid "people_shell_text0"
-msgstr "<voice char/>cat : \"Salut ! oh blanche palourde ! \nLa chose, là, qui me sert de compagnon a oublié comment se repérer dans l'espace.\n
-Vu que toi, qui n'a ni yeux ni jambes, et que tu es arrivée jusqu'ici.\nOn se demandait comment tu faisais\"\n \n"
-"<voice grl/>palourde : \"Non, mais oh, pour qui tu te prends pour me parler avec ces manières.\n Et pour qui tu te prends de parler de cette personne ainsi !\" . . . \n"
-"\"Enfin bon, désolé de m'emporter.\n Pour ce qui est de se déplacer écris '{{cmd,[\"cd\"]}}' suivi d'un lieu et pour voir au alentour écris '{{cmd,[\"ls\"]}}'.\n Se déplacer dans un lieu n'est possible que si tu connais le chemin. Au début, il te faudra surement écrire '{{cmd,[\"ls\"]}}' partout où tu passe.\""
+msgstr "<voice grl/>Je n'a ni yeux ni jambes.\nJe me déplace avec '{{cmd.cd}}'.\nJe vois les routes et obstacles avec '{{cmd.ls}}'.\nJ'examine le contenu avec '{{cmd.cat}}' ou parfois avec un éditeur.\nEt parfois, j'execute..."
+
+msgid "msg_from"
+msgstr "Message de %s sur %s à %s :"
+
+msgid "very_first_try"
+msgstr ". . .\n\n"
+"Tu m'as l'air de ne pas y voir grand chose dans ce brouillard.\n\n"
+"Qui es tu ? \n\nAs tu un lieu où aller ? \n\n Tu ne sais pas ?\n\n"
+"Rappelles toi ces bases si tu ne veux pas tomber dans l'oubli :\n"
+"1. en écrivant '{{cmd.cat}}' ( ? ), tu pourra d'examiner en détails\n"
+"2. en écrivant '{{cmd.ls}}' (LiSter), tu pourra voir ce qui croise ton chemin\n"
+"3. en écrivant '{{cmd.cd}}' (Changer de Destination), tu pourra aller ailleur\n"
+"\n\n"
 
 msgid "cmd_cat_first_try"
-msgstr "Tiens, regardes là ! il y a une {{people_shell}}, on pourrait lui demander comment elle a fait pour venir jusqu'ici.\n"
-"Vous vous connaissez peut-être.\n Tu n'as qu'à écrire '{{cmd,[\"cat\"]}} {{people_shell}}' pour engager cette passionante discussion."
+msgstr "J'ai oublié de te dire que {{cmd.cat}} doit être suivi du nom d'une personne ou d'un objet."
+
+msgid "cmd_cat_second_try"
+msgstr "Tiens ! là ! il y a une {{people_shell}}, on pourrait lui demander comment elle a fait pour venir jusqu'ici.\n"
+"Vous vous connaissez peut-être.\n Tu n'as qu'à écrire '{{cmd.cat}} {{people_shell}}' pour engager cette passionante discussion."
 
 msgid "cmd_exit_html"
 msgstr "<p>Terminus a été arrêté.</p><p>Au revoir !</p>"
 
 msgid "cmd_cd"
-msgstr "Tu es entré-e dans %s. %s"
+msgstr "Tu entre dans %s. %s"
 
 msgid "cmd_cd_failed"
-msgstr "Il n'existe aucun lieu appelé %s. Retourne te coucher."
+msgstr "Il n'existe aucun chemin appelé %s. Retourne te coucher."
 
 msgid "cmd_cd_no_args"
 msgstr "'{{cmd.cd}} ~' pour retourner au point de départ."
@@ -128,10 +198,10 @@ msgid "item_not_exists"
 msgstr "L'objet '%s' n'existe pas."
 
 msgid "cmd_help_begin"
-msgstr "Tu peux utiliser les sorts suivants :"
+msgstr "Tu peux utiliser les commandes suivantes :"
 
-msgid "cmd_less_invalid"
-msgstr "Choisissez un autre objet à décrire..."
+msgid "cmd_less_no_arg"
+msgstr "(Pour que ça fonctionne, {{cmd.cat}} doit être suivi d'un sujet à examiner : un objet ou une personne présente dans l'endroit où te trouves)"
 
 msgid "cmd_less_missing"
 msgstr "%s n'a pas été(e) trouvé."
@@ -143,19 +213,31 @@ msgid "cmd_man_not_found"
 msgstr "Il n'y a rien d'écrit dans le grand manuscrit."
 
 msgid "cmd_not_found"
-msgstr "Il n'est pas possible de faire '%s' dans '%s'."
+msgstr "La commande '%s' est introuvable."
 
 msgid "cmd_mv_done"
 msgstr "%s a été déplacé(e) vers %s."
 
+msgid "cmd_mv_name_done"
+msgstr "%s a été renommé(e) %s."
+
+msgid "cmd_mv_overwrite_done"
+msgstr "%s a été renommé(e) en %s (qui a été écrasé(e))."
+
 msgid "cmd_mv_flood"
-msgstr "Il est possible de déplacer un objet A dans un emplacement (ou lieu)  B.  \nPour cela, utilise 'mv [objetA] [emplacementB]'."
+msgstr "Il est possible de déplacer un objet dans un emplacement en indiquant son chemin.  \nPour cela, utilise 'mv OBJET CHEMIN'."
 
 msgid "cmd_mv_invalid"
 msgstr "Il faut un objet et un emplacement de destination pour réaliser un déplacement."
 
 msgid "cmd_mv_fixed"
 msgstr "Ceci ne peut être déplacé."
+
+msgid "cmd_mv_dest_fixed"
+msgstr "Impossible de mettre ça dans cette pièce."
+
+msgid "permission_denied"
+msgstr "(Permission non accordée)"
 
 msgid "cmd_pwd"
 msgstr "Tu te trouves dans %s."
@@ -182,28 +264,25 @@ msgid "cmd_touch_nothing"
 msgstr "Tu dois indiquer ce que tu cherche à créer pour que cela marche."
 
 msgid "cmd_unknown"
-msgstr "Tu n'as pas encore appris ce sort."
+msgstr "Tu n'as pas encore appris cette commande."
 
 msgid "combo"
 msgstr "La combinaison est  'terminus' (sans les guillemets)."
 
 msgid "directions"
-msgstr "Lieux:\n%s "
+msgstr "Là où tu peux aller (chemins):\n%s "
 
 msgid "incorrect_syntax"
-msgstr "Cela ne marche pas. Tu devrais voir dans le Manuscrit si tu as bien utiliser ce sortilège."
-
-msgid "invalid_locker"
-msgstr "Je ne connais pas ce nom de verrou."
+msgstr "La syntaxe est incorrecte. Pour en savoir plus : '{{cmd.man}} %s'"
 
 msgid "invalid_spell"
-msgstr "Ce sort n'existe pas"
+msgstr "Cette commande n'existe pas"
 
 msgid "items"
-msgstr "Objets:\n%s"
+msgstr "Ici, tu peux interagir avec (objets):\n%s"
 
 msgid "peoples"
-msgstr "Individus:\n%s"
+msgstr "Ici, tu peux parler avec :\n%s"
 
 msgid "lock_added"
 msgstr "Tu viens d'ajouter le vérrou %s"
@@ -212,7 +291,7 @@ msgid "room_empty"
 msgstr "Cette pièce est vide. Il n'y a rien."
 
 msgid "room_new_created"
-msgstr "Tu viens de créer un nouveau lieu : %s"
+msgstr "Tu viens de créer un nouveau chemin : %s"
 
 msgid "room_wrong_password"
 msgstr "Le mot de passe est erroné. As tu oublié ton mot de passe ? Non, je blague. Déguerpissez !"
@@ -227,7 +306,7 @@ msgid "room_none_text"
 msgstr "C'est un endroit très banal."
 
 msgid "room_home"
-msgstr "DossierPersonnel"
+msgstr "Départ"
 
 msgid "room_home_text"
 msgstr "De retour au point de départ... "
@@ -242,45 +321,42 @@ msgid "room_spell_casting_academy"
 msgstr "AcadémieDesBots"
 
 msgid "room_spell_casting_academy_text"
-msgstr "Le hall d'entrée est bondée. \nL'académie a un plafond très haut ce que rend l'entrée très impressionnante."
+msgstr "Le hall d'entrée est bondée. \nL'académie a un plafond très haut ce qui rend l'entrée très impressionnante."
 
 msgid "item_western_forest_academy_direction"
 msgstr "Panneau"
 
 msgid "item_western_forest_academy_direction_text"
-msgstr "Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur.\nÀ ne pas manquez aujourd'hui : Leçon d'initiation aux sortilèges !"
+msgstr "Académie des Bots : Grande école de Sorcellerie du Grand Ordinateur.\nÀ ne pas manquez aujourd'hui : Leçon d'initiation aux commandes !"
 
 msgid "item_western_forest_back_direction"
 msgstr "RentreChezToi"
 
 msgid "item_western_forest_back_direction_text"
-msgstr "À tous moment, si tu veux revenir dans le dossier personnel, \nécris juste la commande '{{cmd.cd}} ~' ou '{{cmd.cd}}'  et tu seras de retour chez toi.\nSi tu es perdu(e), écris '{{cmd.pwd}}'."
+msgstr "À tous moment, si tu veux revenir au point de départ, \nécris juste la commande '{{cmd.cd}} ~' ou '{{cmd.cd}}'. \nSi tu es perdu(e), écris '{{cmd.pwd}}'."
 
-msgid "item_practice_dummy"
-msgstr "ObjetTest%d"
+msgid "item_practice"
+msgstr "Pilier%d"
 
-msgid "item_practice_dummy_text"
+msgid "item_practice_text"
 msgstr "Il s'agit d'un objet conçu pour  l'entrainement"
 
 msgid "room_academy_practice"
 msgstr "SalleDEntrainement"
 
 msgid "room_academy_practice_text"
-msgstr "La pièce est remplie de noobs comme toi et d'élèves pratiquant leur nouveaux sortilèges."
+msgstr "La pièce est remplie de noobs comme toi et d'élèves pratiquant leur nouvelles commandes."
 
 msgid "item_academy_practice"
-msgstr "LeçonDInitiation"
+msgstr "Note"
 
 msgid "item_academy_practice_text"
-msgstr "Bienvenue à la salle d'entrainement.\nIci, on a des objets pour exercer nos sorts.\nTu peux essayer si tu veux."
+msgstr "Attention : ne déplacer les Piliers."
 
 msgid "room_box"
 msgstr "Boite"
 
 msgid "room_box_text"
-msgstr "Cette boite est trop petite pour entrer dedans."
-
-msgid "room_box_cd"
 msgstr "Cette boite est trop petite pour entrer dedans."
 
 msgid "room_meadow"
@@ -375,11 +451,25 @@ msgstr "Tu entres dans la salle où sont dispensées les cours.\nC'est beaucoup 
 msgid "people_professor"
 msgstr "Professeur"
 
+
+msgid "cmd_syntax_lesson"
+msgstr "Syntaxe générale des commandes"
+"Les commandes élémentaires sont de la forme :"
+"> {{cmd.commande}} {{item.fichiers_ou_données}}"
+"La commande apparaissant en début de ligne est presque toujours le nom d'un programme. Ce programme peut être une commande du système d'exploitation, un logiciel écrit par un utilisateur (souvent en langage C) ou un shell. Quelques rares commandes comme la commande cd (changement de dossier / répertoire) ne peuvent pas être traitées correctement par un logiciel spécifique. Elles sont dans ce cas directement exécutées par l'interpréteur de commandes."
+"Certaines de ces commandes peuvent s'exécuter en tapant au clavier seulement leur nom. Mais la plupart des commandes acceptent des options (un tiret suivi d'une ou plusieurs lettres) qui permettent d'utiliser la commande autrement que dans son mode de fonctionnement par défaut. Enfin, bon nombre de commandes sont suivies d'un ou plusieurs noms de fichier, répertoire ou autre, avec lesquels elles vont travailler. Toutes les informations séparées par des espaces à droite du nom de la commande sont appelées arguments de la ligne de commandes."
+
 msgid "people_professor_text"
 msgstr "Le prof dit un tas de choses qui ressemble pour toi à du charabia,\n mais tu as réussi à comprendre 3 choses: \n"
 "1. '{{cmd.mv}}' sert à déplacer des objets \n"
-"2. il faut indiquer le nom de l'objet et de la destination ({{cmd.mv}} OBJET DESTINATION) \n"
+"2. il faut indiquer le nom de l'objet et de la destination ({{cmd.mv}} OBJET CHEMIN) \n"
 "3. Ce sort ne marche pas sur tous les objets, mais tu n'as pas réussi à suivre lesquels n'étaient pas déplaçables."
+
+msgid "people_professor_textquit"
+msgstr "« Oh oh ! c'est pas bon, tu devrais partir. Tout de suite ! Tu peux écrire '{{cmd.cd}} ~'» \n"
+
+msgid "leave_academy"
+msgstr "La salle d'entrainement va s'écrouler : fuis !"
 
 msgid "room_cave"
 msgstr "Cave"
@@ -553,7 +643,7 @@ msgid "item_mkdir_spell"
 msgstr "mkdir"
 
 msgid "item_mkdir_spell_text"
-msgstr "\"'mkdir' transforme les rêves en réalité. Invoque ce sort suivi du nom qui te convient crééra un nouveau lieu.\""
+msgstr "\"'mkdir' transforme les rêves en réalité. Invoque ce sort suivi du nom qui te convient crééra un nouveau chemin.\""
 
 msgid "room_library"
 msgstr "Bibliothèque"
@@ -571,43 +661,69 @@ msgid "item_romancebook"
 msgstr "RomanceDePoche"
 
 msgid "item_romancebook_text"
-msgstr "Tu retourne le livre de poche et l'ouvre sur un page au hazard. \n\"Oh, Horace!\" s'écria Antonia , sa poitrine se bondant tandis qu'Horace déchirait habilement son corset par sa souple encadrure. Horace fit un grognement animal et saisit ses doigts avec ses mains puissantes...\n— tu fermes le livre sans intérêt et tu le reposes sur l'étagère ."
+msgstr "Tu retourne le livre de poche et l'ouvre sur un page au hazard. \n"
+"\"Oh, Horace!\" s'écria Antonia , sa poitrine se bondant tandis qu'Horace déchirait habilement son corset par sa souple encadrure. Horace fit un grognement animal et saisit ses doigts avec ses mains puissantes...\n"
+"— tu fermes le livre sans intérêt et tu le reposes sur l'étagère ."
 
 msgid "item_historybook"
 msgstr "HistoireDeTerminus"
 
 msgid "item_historybook_text"
-msgstr "Ce livre semble intéressant, mais il y a trop de pages et l'écriture est vraiment petite. Voici un extrait:\n \n{{people_darkwizard}} ... un vielle légend parle d'un magicien qui divisera le pays...\n...seul une personne batisseuse de ce monde peut stopper le virus répandu par le {{people_darkwizard}}...\n...le pouvoir du  \"sudo\" pourrait être la seule faiblesse du {{people_darkwizard}}..."
+msgstr "Ce livre semble intéressant, mais il y a trop de pages et l'écriture est vraiment petite. Voici un extrait:\n"
+" \n"
+"{{people_darkwizard}} ... un vielle légend parle d'un magicien qui divisera le pays...\n"
+"...seul une personne batisseuse de ce monde peut stopper le virus répandu par le {{people_darkwizard}}...\n"
+"...le pouvoir du  \"sudo\" pourrait être la seule faiblesse du {{people_darkwizard}}..."
 
 msgid "item_nostalgicbook"
 msgstr "NostalgieDuPays"
 
 msgid "item_nostalgicbook_text"
-msgstr "Le livre dit : \"Si tu es nostalgique de ton petit nid douillet,\n invoque juste 'cd ~' et tu y retournera instantanément. \nMais rappelle toi que ce sera plus compliqué de revenir.\"\n\n Plus loin, un histoire intitulée \"Solitidue\" dit qu'une magiciene avec un pull arc-en-ciel et des lunettes roses, pouvais revenir en un instant là d'où il venait, quelque soit l'endroit. Aussi, elle pouvait téléporter des objets à un endroit distant.\n La page suivant semble expliquer comment, mais elle a été déchirée."
+msgstr "Le livre dit : \"Si tu es nostalgique de ton petit nid douillet,\n invoque juste 'cd ~' et tu y retournera instantanément. \n"
+"Mais rappelle toi que ce sera plus compliqué de revenir.\"\n"
+"\n"
+" Plus loin, un histoire intitulée \"Solitidue\" dit qu'une magiciene avec un pull arc-en-ciel et des lunettes roses, pouvais revenir en un instant là d'où il venait, quelque soit l'endroit. Aussi, elle pouvait téléporter des objets à un endroit distant.\n"
+" La page suivant semble expliquer comment, mais elle a été déchirée."
 
 msgid "item_vimbook"
 msgstr "VIMproved"
 
 msgid "item_vimbook_text"
-msgstr "Tu ouvres ce livre, et découvre un écriture étrange. La seconde suivante, tu es aveuglée par un lumière et tu le livre disparaît."
+msgstr "Tu ouvres ce livre, et découvre une écriture étrange.\n"
+"Une intense lumière en jaillit et t'aveugle.\n"
+"C'est alors que le livre disparaît."
+
+msgid "item_chat"
+msgstr "Discussions"
+
+msgid "item_chat_text"
+msgstr "Si tu reçois des messages d'autres personnes. C'est probablement parce l'instruction '{{cmd.mesg y}}' est présente dans ton profile.\n"
+"Tu peux vérifier cela avec '{{cmd.cat}} .profile'.\n"
+"Normalement, les personnes en questions doivent avoir accès à la commande '{{cmd.talk}}' pour t'envoyer des messages."
 
 msgid "item_lever"
 msgstr "IntrigantPanneau"
 
 msgid "item_lever_text"
-msgstr "Un panneau derrière l'étagère semble recouvrir une source de lumière.\n Par curiosité, tu le pousse, revelant une pièce secrète."
+msgstr "Un panneau derrière l'étagère semble recouvrir une source de lumière."
+
+msgid "item_lever_exec"
+msgstr "Par curiosité, tu le pousse, revelant une pièce secrète."
+
 
 msgid "room_backroom"
 msgstr "PièceSecrete"
 
 msgid "room_backroom_text"
-msgstr "Derrière le panneau, tu trouve un bibliothéquaire seule avec un petit elfe.\n Tu espères ne pas les déranger."
+msgstr "Derrière le panneau, tu trouve un bibliothéquaire seule avec un petit elfe.\n"
+" Tu espères ne pas les déranger."
 
 msgid "people_grep"
 msgstr "Grep"
 
 msgid "people_grep_text"
-msgstr "L'elfe se tourne vers toi avec un regard aigri. \n\"Greeeeeep,\" dit-il solannelement."
+msgstr "L'elfe se tourne vers toi avec un regard aigri. \n"
+"\"Greeeeeep,\" dit-il solannelement."
 
 msgid "people_librarian"
 msgstr "Bibliothéquaire"
@@ -622,7 +738,12 @@ msgid "people_darkwizard_text"
 msgstr "MageFuneste"
 
 msgid "people_librarian_text"
-msgstr "\"? Oh, bonjour. Désolé pour le désordre,\n mais je suis très occupé dans mes recherches sur {{people_darkwizard_pre}} {{people_darkwizard}}.\nPeux tu me faire une faveur ? Peurrais tu me dire toutes les références à {{people_darkwizard}} dans le livre relatant \"{{item_historybook}}\". Mon assistant Grep peux t'aider.\" \nGrep te regardes avec un air mécontent. \"Greeepp.\"\n\"Pour chercher les occurences d'un terme dans un livre, écris simplement \"grep\" suivi du terme et de l'objet en question\n. Va trouver le livre et tape \"grep {{people_darkwizard}} {{item_historybook}}\"."
+msgstr "\"? Oh, bonjour. Désolé pour le désordre,\n"
+" mais je suis très occupé dans mes recherches sur {{people_darkwizard_pre}} {{people_darkwizard}}.\n"
+"Peux tu me faire une faveur ? Peurrais tu me dire toutes les références à {{people_darkwizard}} dans le livre relatant \"{{item_historybook}}\". Mon assistant Grep peux t'aider.\" \n"
+"Grep te regardes avec un air mécontent. \"Greeepp.\"\n"
+"\"Pour chercher les occurences d'un terme dans un livre, écris simplement \"grep\" suivi du terme et de l'objet en question\n"
+". Va trouver le livre et tape \"grep {{people_darkwizard}} {{item_historybook}}\"."
 
 msgid "room_rockypath"
 msgstr "RockyPath"
@@ -634,7 +755,8 @@ msgid "item_largeboulder"
 msgstr "LargeBoulder"
 
 msgid "item_largeboulder_text"
-msgstr "There is an enormous boulder blocking your way.\nIt's much too big to move."
+msgstr "There is an enormous boulder blocking your way.\n"
+"It's much too big to move."
 
 msgid "item_largeboulder_rm"
 msgstr "The boulder disappears with a pop."
@@ -643,7 +765,8 @@ msgid "room_artisanshop"
 msgstr "BoutiqueArtisanale"
 
 msgid "room_artisanshop_text"
-msgstr "Les murs de la boutique sont couverts d'horloge dont les tics tacs sont légèrement désynchronisés.\nAu plan de travail, une femme avec un grosse paire de lunettes brandit un chalumeau avec un enthousiasme inquiétant. "
+msgstr "Les murs de la boutique sont couverts d'horloge dont les tics tacs sont légèrement désynchronisés.\n"
+"Au plan de travail, une femme avec un grosse paire de lunettes brandit un chalumeau avec un enthousiasme inquiétant. "
 
 msgid "item_strangetrinket"
 msgstr "BabiolleÉtrange"
@@ -652,7 +775,8 @@ msgid "item_strangetrinket_text"
 msgstr "Ça ressemble à une roche de cristal."
 
 msgid "item_strangetrinket_rm"
-msgstr "Didn't your mother ever teach you that it's rude to rease other people's \nthings from their plane of existence?"
+msgstr "Didn't your mother ever teach you that it's rude to rease other people's \n"
+"things from their plane of existence?"
 
 msgid "item_strangetrinket_mv"
 msgstr "You can't take that, it's not yours!"
@@ -661,10 +785,12 @@ msgid "item_dragon"
 msgstr "Dragon"
 
 msgid "item_dragon_text"
-msgstr "Un dragon de la taille de 2 mètres de long parcours la pièce.\nTu aurai cru qu'il s'agit d'un vrai dragon si il n'avait pas un clef servant à remonté le mécanisme sur le dos."
+msgstr "Un dragon de la taille de 2 mètres de long parcours la pièce.\n"
+"Tu aurai cru qu'il s'agit d'un vrai dragon si il n'avait pas un clef servant à remonté le mécanisme sur le dos."
 
 msgid "item_dragon_rm"
-msgstr "Didn't your mother ever teach you that it's rude to erase other people's \nthings from their plane of existence?"
+msgstr "Didn't your mother ever teach you that it's rude to erase other people's \n"
+"things from their plane of existence?"
 
 msgid "item_dragon_mv"
 msgstr "You can't take that, it's not yours!"
@@ -673,25 +799,40 @@ msgid "people_artisan"
 msgstr "Artisan"
 
 msgid "people_artisan_text"
-msgstr "L'Artisan lève ses lunettes et te regarde avec surprise.\n\"Êtes-vous le nouvel assistant? Vous êtes en retard!\" ...\n\"Vous dites que vous n'êtes pas mon assistant? \nEh bien, cela ne signifie pas que vous ne pouvez pas vous rendre utile.\nJ'ai besoin de quelques rouages rapidement! ...\nVous ne savez même pas comment faire des choses?\nHmph. Et vous vous prétendrez être un assistant.\nDites simplement \"{{cmd.touch}}\" suivi du nom de la chose que vous voulez créer. Maintenant, faites-moi un {{item_gear}}! Revenez me parler ensuite.\""
+msgstr "L'Artisan lève ses lunettes et te regarde avec surprise.\n"
+"\"Êtes-vous le nouvel assistant? Vous êtes en retard!\" ...\n"
+"\"Vous dites que vous n'êtes pas mon assistant? \n"
+"Eh bien, cela ne signifie pas que vous ne pouvez pas vous rendre utile.\n"
+"J'ai besoin de quelques rouages rapidement! ...\n"
+"Vous ne savez même pas comment faire des choses?\n"
+"Hmph. Et vous vous prétendrez être un assistant.\n"
+"Dites simplement \"{{cmd.touch}}\" suivi du nom de la chose que vous voulez créer. Maintenant, faites-moi un {{item_gear}}! Revenez me parler ensuite.\""
 
 msgid "item_gear"
 msgstr "rouage%s"
 
 msgid "item_gear_artisans_ok"
-msgstr "Ah, Déjà fini ? J'ai l'impression que tu apprends vite. \nMerci pour ton aide."
+msgstr "Ah, Déjà fini ? J'ai l'impression que tu apprends vite. \n"
+"Merci pour ton aide."
 
 msgid "item_gear_text"
 msgstr "Ceci est un {{item_gear}}"
 
 msgid "item_gear_touch"
-msgstr "Euh... à quoi tu t'attends avec seulement un {{item_gear}} ?\nTu devrait être capable de la copier pourtant...\n*pfffff* T'as vraiment besoin d'entrainement.\n Écris seulement “{{cmd,[\"cp\"]}} [ITEM] [CLONE_DE_ITEM]”.\n[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvelle copie.\nCompris ? Alors prouve le moi ! Voici un {{item_gear}}. Il m'en faut 5 autres.\nAppeles les  {{item_gear,[1]}}, {{item_gear,[2]}}, {{item_gear,[3]}}, {{item_gear,[4]}}, et {{item_gear,[5]}}, stp."
+msgstr "Euh... à quoi tu t'attends avec seulement un {{item_gear}} ?\n"
+"Tu devrait être capable de la copier pourtant...\n"
+"*pfffff* T'as vraiment besoin d'entrainement.\n"
+" Écris seulement “{{cmd,[\"cp\"]}} [ITEM] [CLONE_DE_ITEM]”.\n"
+"[ITEM] est le nom de ce que tu va copier, et [CLONE_DE_ITEM] est le nom de la nouvelle copie.\n"
+"Compris ? Alors prouve le moi ! Voici un {{item_gear}}. Il m'en faut 5 autres.\n"
+"Appeles les  {{item_gear,[1]}}, {{item_gear,[2]}}, {{item_gear,[3]}}, {{item_gear,[4]}}, et {{item_gear,[5]}}, stp."
 
 msgid "room_farm"
 msgstr "Farm"
 
 msgid "room_farm_text"
-msgstr "There was once a farm of some sort here,\nbut now the fields are scorched and brown."
+msgstr "There was once a farm of some sort here,\n"
+"but now the fields are scorched and brown."
 
 msgid "item_earofcorn"
 msgstr "EpisDeMais"
@@ -715,13 +856,17 @@ msgid "people_farmer"
 msgstr "Fermier"
 
 msgid "people_farmer_text"
-msgstr "\"Ruined! I'm ruined! Look at these crops... almost nothing left!\nThe wizard's minions were here last week... they destroyed everything.\nHow will I feed my 3 children with just one ear of corn?\nI could really use {{item_another_earofcorn}}! \""
+msgstr "\"Ruined! I'm ruined! Look at these crops... almost nothing left!\n"
+"The wizard's minions were here last week... they destroyed everything.\n"
+"How will I feed my 3 children with just one ear of corn?\n"
+"I could really use {{item_another_earofcorn}}! \""
 
 msgid "room_clearing"
 msgstr "Clearing"
 
 msgid "room_clearing_text"
-msgstr "There's a small grassy clearing here, with a man sitting on a stone, weeping.\nBehind him is a pile of rubble."
+msgstr "There's a small grassy clearing here, with a man sitting on a stone, weeping.\n"
+"Behind him is a pile of rubble."
 
 msgid "room_clearing_cd"
 msgstr " You can’t cross the bridge until you’ve replaced the missing Plank. "
@@ -730,7 +875,20 @@ msgid "people_cryingman"
 msgstr "CryingMan"
 
 msgid "people_cryingman_text"
-msgstr "\"You! You're a magic-user! I can tell, you've got that look. \nCome to finish the job, have you?\nWell, go ahead, do your worst there's nothing else you can take from me.\nNot since the rest of you were here a few days ago.\" \n\n\"What happened? You DARE to ask-- you know perfectly well what happened. \nYour friends, the wizard's minions, destroyed my house and kidnapped my \npoor daughter, that's what! My wife even went into town to look for help, \nand I haven't heard from her since!\" \n\n\"Hm? Well, I guess it's true that you don't look like one of the wizard's minions.\nStill, I don't trust you magicfolk. \nIf you really are who you say you are, then prove your good intentions \nby making me a new {{room_house}}!\""
+msgstr "\"You! You're a magic-user! I can tell, you've got that look. \n"
+"Come to finish the job, have you?\n"
+"Well, go ahead, do your worst there's nothing else you can take from me.\n"
+"Not since the rest of you were here a few days ago.\" \n"
+"\n"
+"\"What happened? You DARE to ask-- you know perfectly well what happened. \n"
+"Your friends, the wizard's minions, destroyed my house and kidnapped my \n"
+"poor daughter, that's what! My wife even went into town to look for help, \n"
+"and I haven't heard from her since!\" \n"
+"\n"
+"\"Hm? Well, I guess it's true that you don't look like one of the wizard's minions.\n"
+"Still, I don't trust you magicfolk. \n"
+"If you really are who you say you are, then prove your good intentions \n"
+"by making me a new {{room_house}}!\""
 
 msgid "room_house"
 msgstr "Maison"
@@ -748,13 +906,15 @@ msgid "room_clearing_less2"
 msgstr "Merci du fond du coeur pour m'avoir construit cette {{room_house}} ! J'en pleure de joie."
 
 msgid "room_clearing_text2"
-msgstr "There's a small grassy clearing here, with a man sitting on a \n stone, weeping. Behind him is a pile of rubble and a small white house."
+msgstr "There's a small grassy clearing here, with a man sitting on a \n"
+" stone, weeping. Behind him is a pile of rubble and a small white house."
 
 msgid "room_brokenbridge"
 msgstr "BrokenBridge"
 
 msgid "room_brokenbridge_text"
-msgstr "A creaky wooden bridges stretches across a chasm.\nBut it's missing a {{item_plank}}, and the gap is too far to jump."
+msgstr "A creaky wooden bridges stretches across a chasm.\n"
+"But it's missing a {{item_plank}}, and the gap is too far to jump."
 
 msgid "room_brokenbridge_text2"
 msgstr "Devant toi, un pont tenu par des cordes s'étend vers l'abîme."
@@ -769,7 +929,8 @@ msgid "room_ominouspath"
 msgstr "OminousLookingPath"
 
 msgid "room_ominouspath_text"
-msgstr "The path leads toward a dark cave. It's an ordinary cobblestone path, but for \nsome reason it fills you with a sense of dread."
+msgstr "The path leads toward a dark cave. It's an ordinary cobblestone path, but for \n"
+"some reason it fills you with a sense of dread."
 
 msgid "item_brambles"
 msgstr "ThornyBrambles"
@@ -781,7 +942,8 @@ msgid "item_brambles_mv"
 msgstr "You can't touch them because they are covered with thorns. Ouch!"
 
 msgid "item_brambles_rm"
-msgstr "You speak the words of the Remove spell and the brambles glimmer a \ndeep blue. After fizzling for a minute, they disappear with a puff of smoke."
+msgstr "You speak the words of the Remove spell and the brambles glimmer a \n"
+"deep blue. After fizzling for a minute, they disappear with a puff of smoke."
 
 msgid "room_slide"
 msgstr "Slide"
@@ -817,7 +979,8 @@ msgid "item_instructions"
 msgstr "Instructions"
 
 msgid "item_instructions_text"
-msgstr "You've learned how to make use of your friend grep I see. If you haven't it might be wise for you to go back to the Library again to do some reading. Because here, you'll need to use him to help you. Here is your task: \nThere are a lot of items in the MoreKernelFiles room and one of them contains the sudo password. This password is very powerful password that lets you do absolutely anything in the world. It lets you cast a spell on any item that is protected in any way. You know the password is contained in one of these .txt items. You know that it appears on a line that says the word: 'password='. You should find it with grep's help. Then you'll need to use the sudo spell to find Paradise. To do this, just Type 'sudo' before the command you want to run, like so: 'sudo cp ITEM_A ITEM_B'. You will then be prompted for the sudo password. Type the password, and the spell that comes after sudo will be cast. If you open the Certificate in Paradise with sudo, you will have truly found Paradise."
+msgstr "You've learned how to make use of your friend grep I see. If you haven't it might be wise for you to go back to the Library again to do some reading. Because here, you'll need to use him to help you. Here is your task: \n"
+"There are a lot of items in the MoreKernelFiles room and one of them contains the sudo password. This password is very powerful password that lets you do absolutely anything in the world. It lets you cast a spell on any item that is protected in any way. You know the password is contained in one of these .txt items. You know that it appears on a line that says the word: 'password='. You should find it with grep's help. Then you'll need to use the sudo spell to find Paradise. To do this, just Type 'sudo' before the command you want to run, like so: 'sudo cp ITEM_A ITEM_B'. You will then be prompted for the sudo password. Type the password, and the spell that comes after sudo will be cast. If you open the Certificate in Paradise with sudo, you will have truly found Paradise."
 
 msgid "room_morekernel"
 msgstr "MoreKernelFiles"
@@ -916,28 +1079,37 @@ msgid "item_workstation_text"
 msgstr "The Workstation has resources you can use to \naccess files in a joint Athena locker. It adds new rooms (when they're in your Home we \ncall them lockers) to your Home, and you can \nadd them to your collection of lockers if you have permission. If you know what you want to add \nto your Home (the name of the locker you want, of course), just 'add LOCKERNAME'. It \ngives you extra spells (if you learn them), and gives you more Rooms to explore."
 
 msgid "man_cd"
-msgstr "(Choisis ta destination) Utilise \"cd\" pour explorer le monde. \nIl faut écrire : cd LIEU_DE_DESTINATION"
+msgstr "(Choisis ta destination) Utilise \"cd\" pour explorer le monde. \nIl faut écrire : cd CHEMIN"
 
 msgid "help_cd"
-msgstr "Se déplacer dans un autre lieu."
+msgstr "Se déplacer dans un autre chemin."
 
 msgid "man_mv"
 msgstr "(MouVement). \nUtilise \"mv\" pour déplacer un objet. \nIl faut écrire : mv OBJET LIEU_DE_DESTINATION"
 
 msgid "help_mv"
-msgstr "Déplacer un objet dans un autre lieu."
+msgstr "Déplacer un objet dans un autre chemin."
 
 msgid "man_ls"
-msgstr "(Regarde autour de toi). \nUtilise \"ls\" pour voir ce qui se trouve dans un lieu donné. \nSoit tu observe là où tu es, soit tu observe un autre lieu.\nIl faut écrire : \n  ls              (pour voir autour de toi) \n-OU- \n  ls LOCATION     (pour voir là où tu ne peux pas choisir ta destination \"cd\" )"
+msgstr "(Regarde autour de toi). \nUtilise \"ls\" pour voir ce qui se trouve dans un chemin donné. \nSoit tu observe là où tu es, soit tu observe un autre chemin.\nIl faut écrire : \n  ls              (pour voir autour de toi) \n-OU- \n  ls CHEMIN     (pour voir là où tu ne peux pas choisir ta destination \"cd\" )"
 
 msgid "help_ls"
-msgstr "Décrire un lieu."
+msgstr "Décrire un chemin."
 
 msgid "man_less"
 msgstr "(Lire, Examiner ou parler). \nUtilise \"less\" pour connaître les secrets liés à un objet. \nIl faut écrire : \n  less ITEM"
 
 msgid "help_less"
 msgstr "Utiliser ou lire un objet, ou bien parler à quelqu'un."
+
+msgid "help_cat"
+msgstr "{{help_less}}"
+
+msgid "man_cat"
+msgstr "{{help_less}}"
+
+msgid "help_more"
+msgstr "{{help_less}}"
 
 msgid "man_man"
 msgstr "Le Grand Manuscrit possède le savoir indispensable aux sorciers.\nVoici les sorts que je pourrais t'enseigner : cd, ls, rm, mv, exit, help, man, touch, grep, pwd."

@@ -1,38 +1,103 @@
+function File(name,picname,prop){
+  prop=prop||{};
+  this.executable=d(prop.executable,false);
+  this.readable=d(prop.readable,true);
+  this.writable=d(prop.writable,false);
+  this.picture = new Pic(picname,prop) ;
+  this.cmd_event={};
+  this.cmd_text = {};
+  this.name=name;
+  this.uid=prop.uid||getObjUID();
+  this.poprefix=prop.poprefix;
+  //  this.group='';
+  //  this.owner='';
+  EventTarget.call(this);
+}
+File.prototype=union(EventTarget.prototype,{
+  toString : function(){
+    return this.name;
+  },
+  chmod:function(chmod){
+    this.readable=d(chmod.read,this.readable);
+    this.executable=d(chmod.exec,this.readable);
+    this.writable=d(chmod.write,this.readable);
+    return this;
+  },
+  getName:function(){
+    return this.name;
+  },
+  setName:function(name){
+    this.name=name;
+    return this;
+  },
+  getPic: function(){
+    return this.picture;
+  },
+  setPic: function(pic){
+    this.picture.set(pic);
+  },
+  unsetCmdEvent : function(cmd) {
+    delete this.cmd_event[cmd];
+    return this;
+  },
+  setCmdEvent : function(cmd, fun) {
+    this.cmd_event[cmd] = fun || cmd;
+    return this;
+  },
+  setCmdEvents : function(h) {
+    for (var i in h) {
+      if (h.hasOwnProperty(i)){
+        this.setCmdEvent(i, h[i]);
+      }
+    }
+    return this;
+  },
+  setCmdText : function(cmd, text) {
+    this.cmd_text[cmd] = text;
+    return this;
+  },
+  unsetCmdText : function(cmd){
+    delete this.cmd_text[cmd];
+    return this;
+  },
+  addState : function(name,fun){
+    name=this.uid+name;
+//    this.ev.addListener(name,state.Event);
+    this.addListener(name,state.Event);
+    state.add(name,fun);
+    return this;
+  },
+  addStates : function(h){
+    if (isObj(h)){
+      for (var i in h) {
+        if (h.hasOwnProperty(i)){
+          name=this.uid+i;
+//          this.ev.addListener(name,state.Event);
+          this.addListener(name,state.Event);
+          state.add(name,h[i]);
+        }
+      }
+    } else {
+      console.error('addStates shall receive a dictionnary {} as argument, if you want to declare only on state us addState');
+    }
+    return this;
+  },
+});
+
 function Item(name, intro, picname, prop){
-  this.name = name;
-  this.picture = new Pic(picname, prop);
+  prop=prop||{};
+  prop.poprefix=d(prop.poprefix,POPREFIX_ITEM);
+  File.call(this,name,picname,prop);
   this.cmd_text = {less: intro ? intro : _(PO_DEFAULT_ITEM)};
-  this.cmd_event = {};
-  this.valid_cmds = ["less"];
+//  this.valid_cmds = ["less"];
+  //  this.owner='';
   this.room=null;
-  this.ev = new EventTarget();
-  this.poprefix=POPREFIX_ITEM;
-  prop=d(prop,{});
+//  this.ev = new EventTarget();
   if (prop.poid){
     this.setPo(prop.poid,prop.povars);
   }
 }
-// Useless : just used for making distinction between living being and non-living things
-// Does people are items ?
-function People(name, intro, picname, prop){
-  this.name = name;
-  this.picture = new Pic(picname, prop);
-  this.cmd_text = {less: intro ? intro : _(PO_DEFAULT_PEOPLE)};
-  this.valid_cmds = ["less"];
-  this.room=null;
-  this.people=true;
-  this.cmd_event = {};
-  this.ev = new EventTarget();
-  this.poprefix=POPREFIX_PEOPLE;
-  prop=d(prop,{});
-  if (prop.poid){ 
-    this.setPo(prop.poid,prop.povars);
-  }
-}
-Item.prototype = {
-  getPic : function(newpicname){
-    this.picture = newpicname;
-  },
+Item.prototype=union(File.prototype, {
   addPicMod : function (id,picname,prop){
     var newpic=new Pic(picname,prop);
     this.picture.setChild(id,newpic);
@@ -48,23 +113,26 @@ Item.prototype = {
     nut.cmd_text = clone(this.cmd_text);
     nut.valid_cmds = clone(this.valid_cmds);
     nut.cmd_event = clone(this.cmd_event);
-//    nut.room = clone(this.room);
+    nut._listeners = clone(this._listeners);
     nut.room = this.room;
     nut.people = this.people;
-    nut.ev = clone(this.ev);
     nut.poprefix = this.poprefix;
     return nut;
   },
-  setPic : function(newpicname){
-    this.picture.set(newpicname);
-    return this;
+  setExecFunction:function(fu){
+    this.exec_function=fu;
   },
-  getName:function(){
-    return this.name;
+  unsetExecFunction:function(){
+    this.exec_function=undefined;
   },
-  setName:function(name){
-    this.name=name;
-    return this;
+  exec:function(args,room,vt){
+    var it=this;
+    this.fire_event(vt,'exec',args);
+    if (this.exec_function){
+      return this.exec_function(this,args,room,vt);
+    } else {
+      return cmd_done(vt,[[it,0]],it.cmd_text.less,'exec',args);
+    }
   },
   setPo:function(name,vars){
     this.poid=this.poprefix+name;
@@ -92,54 +160,19 @@ Item.prototype = {
   },
   fire_event:function(vt,cmd,args,idx){
     var ev_trigger=null;
-    var context={term:vt,room:this.room, item:this, arg:args[idx], args:args, i:idx};
+    var context={term:vt,room:this.room, item:this, arg:(def(idx)?args[idx]:null), args:args, i:idx};
+//    console.log(this.cmd_event);
     if (cmd in this.cmd_event) {
+      console.log(this.uid+' EVENT '+cmd);
       ev_trigger = this.cmd_event[cmd];
     }
     if (ev_trigger) {
       var ck=(typeof ev_trigger === "function" ? ev_trigger(context) : ev_trigger);
       if (ck) {
-        this.ev.fire(ck);
+        console.log(this.uid+' FIRE '+ck);
+        this.fire(this.uid+ck);
       }
     }
-  },
-  addListener : function(name,fun) {
-    this.ev.addListener(name,fun);
-    return this;
-  },
-  addState : function(name,fun){
-    this.ev.addListener(name,state.Event);
-    state.add(name,fun);
-    return this;
-  },
-  addStates : function(h){
-    for (var i in h) {
-      if (h.hasOwnProperty(i)){
-        this.ev.addListener(i,state.Event);
-        state.add(i,h[i]);
-      }
-    }
-    return this;
-  },
-  unsetCmdEvent : function(cmd) {
-    delete this.cmd_event[cmd];
-    return this;
-  },
-  setCmdEvent : function(cmd, fun) {
-    this.cmd_event[cmd] = fun;
-    return this;
-  },
-  setCmdText : function(cmd, text) {
-    this.cmd_text[cmd] = text;
-    return this;
-  },
-  unsetCmdText : function(cmd){
-    delete this.cmd_text[cmd];
-    return this;
-  },
-  addValidCmd : function(cmd){
-    this.valid_cmds.push(cmd);
-    return this;
   },
   disappear : function(){
     this.room.removeItemByName(this.name);
@@ -149,32 +182,12 @@ Item.prototype = {
     room.addItem(this);
     return this;
   },
-  toString : function(){
-    return this.name;
-  },
-};
-
-People.prototype.copy = Item.prototype.copy;
-People.prototype.getPic = Item.prototype.getPic;
-People.prototype.setPic = Item.prototype.setPic;
-People.prototype.getName = Item.prototype.getName;
-People.prototype.setName = Item.prototype.setName;
-People.prototype.setPo = Item.prototype.setPo;
-People.prototype.setPoDelta = Item.prototype.setPoDelta;
-People.prototype.checkTextIdx = Item.prototype.checkTextIdx;
-People.prototype.setTextIdx = Item.prototype.setTextIdx;
-People.prototype.setCmdText = Item.prototype.setCmdText;
-People.prototype.unsetCmdText = Item.prototype.unsetCmdText;
-People.prototype.setCmdEvent = Item.prototype.setCmdEvent;
-People.prototype.unsetCmdEvent = Item.prototype.unsetCmdEvent;
-People.prototype.addListener = Item.prototype.addListener;
-People.prototype.addStates = Item.prototype.addStates;
-People.prototype.addState = Item.prototype.addState;
-People.prototype.addValidCmd = Item.prototype.addValidCmd;
-People.prototype.moveTo = Item.prototype.moveTo;
-People.prototype.disappear = Item.prototype.disappear;
-People.prototype.toString = Item.prototype.toString;
-People.prototype.changePic = Item.prototype.changePic;
-People.prototype.fire_event = Item.prototype.fire_event;
-People.prototype.addPicMod = Item.prototype.addPicMod;
-People.prototype.rmPicMod = Item.prototype.rmPicMod;
+});
+function People(name,intro,picname,prop){
+  //Inherit instance properties
+  prop=prop||{};
+  prop.poprefix=d(prop.poprefix,POPREFIX_PEOPLE);
+  Item.call(this, name, intro,picname, prop);
+  this.people=true;
+}
+People.prototype=Item.prototype;

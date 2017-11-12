@@ -7,6 +7,12 @@ body {
   font-size: 1.4rem;
   font-stretch:condensed;
 }
+.color-ok {
+color:lightgreen;
+}
+.color-ko {
+color:red;
+}
 .color-cmd {
 color:chartreuse;
 }
@@ -19,13 +25,18 @@ color:palevioletred;
 .color-item {
 color:magenta;
 }
+.mesg {
+color:grey;
+}
 .notifications{
   position:fixed;
   z-index:0;
   right:0;
   top:0;
 }
-
+.inmsg {
+  display:inline-block;
+}
 .badge {
   position:relative;
   text-align:center;
@@ -76,13 +87,14 @@ color:magenta;
   height:100%;
   top:0;left:0;
   animation:flash .6s;
+  background:#FFF;
 }
 @keyframes flash {
   from {
-    background:#000;
+   opacity:0;
   }
   to {
-    background:#FFF;
+   opacity:1;
   }
 }
 .msg, button {
@@ -181,7 +193,7 @@ box-sizing: border-box;
   left:100%;
 }
 .epicfromright.loaded .layers {
-   animation:a 1s ease-out forwards;
+   animation:a 1.4s ease-out forwards;
 }
 .msg img {
   float:left;
@@ -279,7 +291,7 @@ max-width:12ch;
 
 
 #term .input:before{
-  content:"> ";
+  content:"$ ";
   position:absolute;
   left:0;
   top:0;
@@ -421,10 +433,26 @@ padding:3px;
 
 @keyframes a {
   from {
+    transform:translateX(-50%) rotate(-45deg);
     left:100%;
   }
-  to {
+  20% {
+    transform:translateX(-50%) rotate(-360deg);
     left:0;
+  }
+  40%{
+    transform:translateX(-50%) rotate(-360deg);
+    left:0;
+  }
+  50% {
+    transform:translateX(-50%) rotate(0deg);
+    bottom:10px;
+    left:25%;
+  }
+  to {
+    transform:translateX(-50%) rotate(360deg);
+    bottom:0;
+    left:50%;
   }
 }
 input[disabled=""] {

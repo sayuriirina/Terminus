@@ -1,13 +1,6 @@
 
 /* Terminal interface which solve completion problem */
 var SAFE_BROKEN_TEXT=true;
-function commonprefix(array) {
-  //https://stackoverflow.com/questions/1916218/find-the-longest-common-starting-substring-in-a-set-of-strings/1917041#1917041
-  var A= array.concat().sort(), 
-    a1= A[0], a2= A[A.length-1], L= a1.length, i= 0;
-  while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
-  return a1.substring(0, i);
-}
 function addspace(i){return i+' ';}
 function overide(e){
   e.preventDefault();
@@ -18,9 +11,9 @@ function VTerm(container_id, context){
   /* non dom properties */
   t.context = context;
   t.charduration=10;
-  t.charfactor={' ':8,' ':2,'!':10,'?':10,',':5,'.':8,"\t":2, "\n":10,'tag':10};
+  t.charfactor={char:1,' ':8,' ':2,'!':10,'?':10,',':5,'.':8,"\t":2, "\n":10,'tag':10};
   t.charhtml={' ':'&nbsp;',"\n":'<br>',"\t":'&nbsp;&nbsp;'};
-  t.imgs=[];
+  t.imgs={};
   t.statkey={};
   t.history=[];
   t.disabled={};
@@ -57,7 +50,7 @@ function VTerm(container_id, context){
   });
   // buttons
   t.btn_clear=addBtn(k,'key','✗','Ctrl-U',function(e){
-    t.set_line(''); t.show_suggestions(this.context.getCommands().map(addspace)); });
+    t.set_line(''); t.show_suggestions(_getCommands(this.context).map(addspace)); });
   t.btn_tab=addBtn(k,'key','↹','Tab',function(e){t.make_suggestions();});
   t.btn_enter=addBtn(k,'key','↵','Enter',function(e){t.enterKey();});
   t.msg_idx=0;
@@ -70,7 +63,10 @@ VTerm.prototype={
   /* API part */
   setContext: function(ctx){
     this.context=ctx;
-    this.show_suggestions(this.context.getCommands().map(addspace));
+    this.show_suggestions(_getCommands(this.context).map(addspace));
+  },
+  getContext: function(){
+    return this.context;
   },
   flash: function(timeout,timeoutdisappear){
     setTimeout(function(){
@@ -80,12 +76,37 @@ VTerm.prototype={
       },timeoutdisappear);
     },timeout);
   },
-  push_img: function(img){
-//    console.log('push',img);
+  push_img: function(img,opt){
+    opt=opt||{};
     if (img) {
-      this.imgs.push(img);
+      var idx=d(opt.index,-1);
+      if (!this.imgs[idx]) { this.imgs[idx]=[]; }
+      this.imgs[d(opt.index,-1)].push(img);
     }
     return this;
+  },
+  unset_img: function(){
+    var t=this;
+    if (t.imgs.length>0) {
+      t.imgs.pop();
+    }
+  },
+  show_img: function(opt){
+    opt=opt||{};
+    var t=this;
+    var idx=d(opt.index,-1);
+    var im;
+    var imgs=t.imgs[idx];
+    if (imgs && imgs.length>0) {
+      var onload=function(){
+        //        console.log('load');
+        t.scrl(1000);
+      };
+      var c = addEl(t.monitor,'div', "img-container");
+      while (im=imgs.shift()) {
+          im.render(c,onload);
+      }
+    }
   },
   epic_img_enter: function(i, clss, scrl_timeout,callback){
     var t=this;
@@ -98,9 +119,9 @@ VTerm.prototype={
         t.scrl_lock=false;
         t.scrl();
         if (def(callback)){
-          callback();
+          callback(vt);
         }
-      },1000);
+      },scrl_timeout);
     });
   },
   clear:function(){
@@ -129,6 +150,12 @@ VTerm.prototype={
   },
   set_line:function(val){
     this.input.value = val;
+  },
+  get_cursor_pos:function(){
+    return this.input.selectionStart;
+  },
+  set_cursor_pos:function(c){
+    this.input.selectionStart=c;
   },
   /* UI part */
   // Scroll the window to the last element (bottom of page)
@@ -177,36 +204,10 @@ VTerm.prototype={
     }
     return false;
   },
-  unset_img: function(){
-    var t=this;
-    if (t.imgs.length>0) {
-      t.imgs.pop();
-    }
-  },
-  show_img: function(){
-    var t=this;
-    var im;
-    if (t.imgs.length>0) {
-      var onload=function(){
-        //        console.log('load');
-        t.scrl(1000);
-      };
-      var c = addEl(t.monitor,'div', "img-container");
-      for (var i in t.imgs) {
-        if (t.imgs.hasOwnProperty(i)){
-          im=t.imgs[i];
-          if (im){
-            im.render(c,onload);
-          }
-        }
-      }
-      this.imgs=[];
-    }
-  },
   show_previous_prompt: function (txt){
     addEl(this.monitor,'p','input').innerText = txt;
   },
-  _show_chars: function (msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,cnt){
+  _show_chars: function (msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,cnt,opt){
     l=txttab.shift();
     var t=this;
     if (def(l)){
@@ -242,14 +243,14 @@ VTerm.prototype={
         t.scrl();
       } else {
         msg.innerHTML += l;
-        if (cnt%3 == 1){
+        if (t.charfactor.char > 0 && cnt%3 == 1){
           t.playSound(curvoice);
         }
-        timeout = 1;
+        timeout = t.charfactor.char;
       }
       if (!dependant || t.msg_idx==msgidx){
         setTimeout(function(){
-          t._show_chars(msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,++cnt);
+          t._show_chars(msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,++cnt,opt);
         },timeout*t.charduration);
       } else {
         if (SAFE_BROKEN_TEXT||safe) {
@@ -258,10 +259,12 @@ VTerm.prototype={
          }
          t.playSound('brokentext');
          if (cb) {cb();}
+         if (opt.cb) {opt.cb();}
        } 
     } else {
       t.playSound('endoftext');
       if (cb) {cb();}
+      if (opt.cb) {opt.cb();}
     }
   },
   rmCurrentImg: function(timeout){
@@ -274,73 +277,123 @@ VTerm.prototype={
       } 
     },timeout);
   },
-  show_msg: function (msg,el,dependant,direct,safe){
+  show_loading_element_in_msg: function (list,opt){
+    var t=this;
+    opt=opt||{};
+    var containingel=d(opt.container,t.monitor);
+    var innerEl;
+    if (opt.el){
+      innerEl=opt.el;
+    } else {
+      innerEl=addEl(containingel,'div','inmsg');
+    }
+    var period=d(opt.period,100);
+//    var duration=d(opt.duration,period*list.length);
+    var duration=opt.duration;
+    var finalvalue=opt.finalvalue;
+    var cb=opt.callback;
+    var i=0;
+    var id=t.msg_idx;
+    var loop=setInterval(function(){
+      if (t.msg_idx!=id){
+        clearInterval(loop);
+        if (finalvalue){
+          innerEl.innerHTML=finalvalue;
+          t.ghostel.innerHTML+=' '+finalvalue+' ';
+        }
+        if (cb){
+          cb();
+        }
+      } else {
+        innerEl.innerHTML=list[i%list.length];
+        i++;
+      }
+    },period);
+    if (duration){
+      setTimeout(function(){
+      if (id==t.msg_idx){
+        t.msg_idx++;
+      }
+      },duration);
+    }
+    return this;
+  },
+  show_msg: function (msg,opt){
     if (def(msg)){
+      opt=opt||{};
       var cb;
       var t=this;
       if (typeof msg != 'string'){
         cb=msg[1];
         msg=msg[0];
       }
-      el=d(el,t.monitor);
-      dependant=d(dependant,true);
-      safe=d(safe,false);
-      direct=d(direct,false);
+      var el=d(opt.el,t.monitor);
+      var dependant=d(opt.dependant,true);
+      var safe=d(opt.safe,false);
+      var direct=d(opt.direct,false);
       t.ghostel=addEl(t.ghost_monitor,'p');
       t.current_msg=addEl(el,'p','msg');
       if (msg.nodeType == 1){
         t.current_msg.appendChild(msg);
-        t.ghostel.innerHTML=msg.outerHTML;
+        t.ghostel.innerHTML=msg.outerHTML.replace(/<div class='inmsg'.*><\/div>/,'');
         if (cb) {cb();}
+        if (opt.cb) {opt.cb();}
       } else {
         txt=msg.toString();//ensure in case we have an object
         txt=txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>');
         txttab=txt.split('');
         t.msg_idx++;
         txt=txt.replace(/\t/g,"&nbsp;&nbsp;").replace(/\n/g,"<br>").replace(/ /g,"&nbsp;");
-        t.ghostel.innerHTML=txt.replace(/(<br>)/g,"<&nbsp;><br>").replace(/[«»]/g,'"').replace(/(\.\.\.)/g,'<br>');
+        t.ghostel.innerHTML=txt.replace(/<div class='inmsg'.*><\/div>/,'').replace(/(<br>)/g,"<&nbsp;><br>").replace(/[«»]/g,'"').replace(/(\.\.\.)/g,'<br>');
         if (direct){
           t.current_msg.innerHTML=txt;
           if (cb) {cb();}
+          if (opt.cb) {opt.cb();}
+          t.scrl();
         } else { // progressive 
-          t._show_chars(t.msg_idx,t.current_msg,txttab,dependant,safe,cb,txt,'char',1);
+          t._show_chars(t.msg_idx,t.current_msg,txttab,dependant,safe,cb,txt,'char',1,opt);
         }  
       }
     }
+    return this;
   },
   /* Suggestion part */
   make_suggestions: function (autocomplete){
-    var t=this;    
+    var t=this;
     var ac=d(autocomplete,true);
     t.suggestions.innerHTML = '';
-    var l=t.get_line();
+    var l=t.get_line(),pos=t.input.selectionStart;
+    
     args=l.split(' ');
     if (args.length > 0) {
-      var tocomplete;
+      var offset=0,idx;
+      for(idx=0;idx<args.length;idx++){
+        offset+=args[idx].length+1;
+        if (offset>pos) break;
+      }
+      var tocomplete=args[idx];
       var match=[];
 //      console.log('suggestions',ac,l,args);
       // which word to guess
-      if (args.length > 1) {
-        tocomplete=args.pop();
-        match=t.context._completeArgs(args[0],tocomplete);
-      } else if (args[0].length>0){
-        if (t.context.hasCommand(args[0])) {
-        tocomplete="";
-        t.set_line(l+' ');
-        match=t.context._completeArgs(args[0],tocomplete);
-        } else {
-          tocomplete=args.pop();
-          var cmds=t.context.getCommands();
+      if (idx>0) { // at least 1 arg
+        match=_completeArgs(args,idx,tocomplete,t.context);
+      } else if (args[0].length>0){ 
+        if (_hasRightForCommand(args[0],user.groups)) { // propose argument
+          match=_completeArgs(args,idx,tocomplete,t.context);
+        } else { // propose command completion
+          var cmds=_getCommands(t.context);
+          idx=0;
           for(var i = 0; i<cmds.length; i++){
             if(cmds[i].match("^"+tocomplete)){
                 match.push(cmds[i]);
             }
           }
         }
-      } else {
+      } else { // propose commands
         tocomplete="";
-        match=t.context.getCommands().map(addspace);
+        match=_getCommands(t.context).map(addspace);
       }
+      console.log(match);
       // find solutions
       if (match.length === 0){
         t.set_line(l+'?');
@@ -349,10 +402,9 @@ VTerm.prototype={
       } else if (match.length == 1 ){
         if (ac) {
           var lb=tocomplete.split('/');
-          lb.pop();
-          lb.push(match[0]);
-          args.push(lb.join('/'));
-          t.set_line(args.join(" "));
+          lb[lb.length-1]=match[0];
+          args.splice(idx,1,lb.join('/')); //insert value at idx
+          t.set_line(args.join(" ").replace('././','./'));//regex workaround
         } else {
           if (match[0] == tocomplete) {
             t.set_line(l+' ');
@@ -365,7 +417,9 @@ VTerm.prototype={
           t.set_line(l+' ');
         }
         if (lcp.length > 0 && ac){
-          args.push(lcp);
+          var lb=tocomplete.split('/');
+          lb[lb.length-1]=lcp;
+          args.splice(idx,1,lb.join('/'));
           t.set_line(args.join(" "));
         }
         t.show_suggestions(match);
@@ -388,7 +442,7 @@ VTerm.prototype={
       var last=sp.pop();
       sp.push('');
       var newl=sp.join(' ')+txt;
-      // set the line content and try to exec
+      // set the line content and try to nxec
       t.set_line(newl);
       if (t.argsValid(newl.replace(/\s+$/,"").split(" "))){
         t.enter();
@@ -405,7 +459,7 @@ VTerm.prototype={
   argsValid: function(args){
     return this.context._validArgs(args.shift(),args);
   },
-  enter : function(){
+  enter: function(){
     // Enter -> exec command
     var t=this;
     t.playSound('enter');
@@ -418,14 +472,27 @@ VTerm.prototype={
       t.show_previous_prompt(pr.value);
       t.history.push(pr.value);
       var args=l.split(' ');
-      var echo=t.context.exec(t, args);
+      var echo=_parse_exec(t, args);
       if (def(echo)){
-      t.show_img();
-      if (t.cmdoutput) {t.show_msg(echo);}
-      t.set_line('');
-      t.hide_suggestions();
-      t.show_suggestions(this.context.getCommands().map(addspace));
-      t.monitor = mon;
+        if (echo.isReturnSequence){
+          var supercb=[];
+          for (var i=0;i<echo.length();i++){
+             supercb.push(function(){
+               t.show_img({index:echo.getIdx()});
+               t.show_msg(echo.next(),{cb:supercb.shift()});
+             });
+          }
+          supercb.shift()();
+        } else {
+          t.show_img();
+          if (t.cmdoutput) {
+            t.show_msg(echo);
+          }
+        }
+t.set_line('');
+t.hide_suggestions();
+t.show_suggestions(_getCommands(t.context).map(addspace));
+t.monitor = mon;
       }
     }
   },
@@ -509,7 +576,8 @@ VTerm.prototype={
         } else if (k === 'u') { // CTRL+U - clear line
           overide(e);
           t.set_line('');
-        } else if (  k === 'v' || k === 'x' || k === 'y' || k === 'z'  ) {
+//        } else if (  k === 'v' || k === 'x' || k === 'y' || k === 'z'  ) {
+        } else if (  k === 'v' || k === 'x') {
           // replace CTRL + W - remove last component
           overide(e);
           var line=t.get_line();
@@ -606,12 +674,12 @@ VTerm.prototype={
     var curidx=0;
     opts=d(opts,{});
     disabled_choices=d(opts.disabled_choices,[]);
-    instant=d(opts.instant,false);
+    direct=d(opts.direct,false);
     while (disabled_choices.indexOf(curidx)>-1){
       curidx++;
     } 
     var choicebox = addEl(t.monitor,'div','choicebox');
-    t.show_msg(question,choicebox,false,instant);
+    t.show_msg(question,{direct:direct,el:choicebox,dependant:false});
    
     t.set_line('');
     t.choose_input = addEl(choicebox,'fieldset','choices');
@@ -630,7 +698,7 @@ VTerm.prototype={
     t.enterKey=function(e){
       t.playSound('choiceselect');
       t.choose_input.value=choices[curidx];
-      t.show_msg(choices[curidx],choicebox,false);
+      t.show_msg(choices[curidx],{el:choicebox,dependant:false});
       choicebox.removeChild(t.choose_input);
       t.choose_input = undefined;
       if (reenable){ t.enable_input(); }
@@ -701,7 +769,7 @@ VTerm.prototype={
     var t = this;
     t.set_line('');
     var choicebox = addEl(t.monitor,'div','choicebox');
-    t.show_msg(question,choicebox,false);
+    t.show_msg(question,{el:choicebox,dependant:false});
    
     if (args.multiline){
       t.answer_input=addEl(choicebox,'textarea',{cols:78});
@@ -780,21 +848,21 @@ VTerm.prototype={
     if (cmdpass.length > 0){
       var p=cmdpass.shift();
       var question=d(p.question,_('ask_password'));
-      t.show_msg( question,t._cur_box);
+      t.show_msg( question,{el:t._cur_box});
       t.enterKey=function(){
         t.playSound('choiceselect');
         var ret = t.password_input.value;
         t.password_input.value="";
         if (p.password === ret){
           if (p.passok){
-            t.show_msg(p.passok,t._cur_box);
+            t.show_msg(p.passok,{el:t._cur_box});
           }
           t._ask_password_rec(cmdpass,callback); 
         } else {
           if (p.passko){
-            t.show_msg(p.passko,t._cur_box);
+            t.show_msg(p.passko,{el:t._cur_box});
           }
-          t.show_msg(callback(false,cmdpass),t._cur_box);
+          t.show_msg(callback(false,cmdpass),{el:t._cur_box});
           t._end_password();
         }
       };
@@ -808,6 +876,76 @@ VTerm.prototype={
     this._begin_password();
     this._ask_password_rec(cmdpass,callback);
   },
+  auto_shuffle_input_msg: function(msg,fromcomplexicity,tocomplexicity,stepcomplexity,period,duration,incstep){
+    var t=this;
+    var id=t.msg_idx;
+    if (t.input_operation_interval){
+      clearInterval(t.input_operation_interval);
+    }
+    var inccnt=0;
+    var tmpc=fromcomplexicity;
+    var sens=(tocomplexicity>fromcomplexicity?1:-1);
+    var limit=tocomplexicity*sens;
+    var step=(tocomplexicity-fromcomplexicity)/stepcomplexity;
+    t.input_operation_interval=setInterval(function(){
+      if (t.msg_idx!=id){
+        clearInterval(t.input_operation_interval);
+        t.set_line('');
+      } else {
+        if (((tmpc*sens)<limit) && ((inccnt%incstep)==0)){
+          tmpc=tmpc+step;
+        }
+        t.shuffle_input_msg(msg,tmpc);
+        inccnt++;
+      }
+    },period);
+    if (duration){
+      setTimeout(function(){
+      if (id==t.msg_idx){
+        t.msg_idx++;
+      }
+      },duration);
+    }
+  },
+  auto_shuffle_input: function(minsize,maxsize,period,duration,incstep){
+    var t=this;
+    var id=t.msg_idx;
+    if (t.input_operation_interval){
+      clearInterval(t.input_operation_interval);
+    }
+    var inccnt=0;
+    var tmpsize=minsize;
+    t.input_operation_interval=setInterval(function(){
+      if (t.msg_idx!=id){
+        clearInterval(t.input_operation_interval);
+        t.set_line('');
+      } else {
+        if (incstep){
+          if ((inccnt%incstep)==0){
+            tmpsize++;
+          }
+          t.shuffle_input(tmpsize,null);
+          inccnt++;
+        } else {
+          t.shuffle_input(minsize,maxsize);
+        }
+      }
+    },period);
+    if (duration){
+      setTimeout(function(){
+      if (id==t.msg_idx){
+        t.msg_idx++;
+      }
+      },duration);
+    }
+  },
+  shuffle_input: function(minsize,maxsize){
+    var l=minsize+(maxsize?Math.round(Math.random()*(maxsize-minsize)):0);
+    this.set_line(randomStr(l));
+  },
+  shuffle_input_msg: function(msg,complexicity){
+    this.set_line(shuffleStr(msg,complexicity));
+  }
 };
 
 

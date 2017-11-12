@@ -39,7 +39,7 @@ SoundBank.prototype={
     t.dict[ref]=new Howl({
       src:exts.map(function(i){return file+i;}),
 //      volume:0,
-      onload:function(){ t.ldr--;t.callback();}
+      onload:function(){ t.ldr--; if(t.callback){t.callback();}}
     });
 //      this.dict[ref].volume=0;
 //    if (required){

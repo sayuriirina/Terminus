@@ -13,6 +13,18 @@ function addBtn(root,clss,txt,title,fun){
   root.appendChild(el);
   return el;
 }
+// input specific - from js fiddle
+//function findWord(str,pos){
+//    var words=str.split(' ');
+//    var offset=0;
+//    var i;
+//    for(i=0;i<words.length;i++){
+//        offset+=words[i].length+1;
+//        if (offset>pos) break;
+//        
+//    }
+//    return words[i];
+//}
 function prEl(root,tag,attrs){
   var el=dom.El(tag);
   root.prepend(el);
@@ -29,7 +41,28 @@ function addEl(root,tag,attrs){
   else if (ty=='object'){addAttrs(el,attrs);}
   return el;
 }
-
+function span(cls,content){
+  return "<span class='"+cls+"'>"+content+"</span>";
+}
+function injectProperties(obj1,obj2){
+  for (var i in obj2) {
+    if (obj2.hasOwnProperty(i)){
+      obj1[i] = obj2[i];
+    }
+  }
+}
+/**
+ * Union obj1's values with obj2's and adds obj2's if non existent in obj1
+ * @param obj1
+ * @param obj2
+ * @returns obj3 a new object based on obj1 and obj2
+ */
+function union(obj1,obj2){
+    var obj3 = {};
+    for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+    for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+    return obj3;
+}
 function addAttrs(el,attrs){
   for (var i in attrs) {
     if (attrs.hasOwnProperty(i)){
@@ -41,7 +74,9 @@ function addAttrs(el,attrs){
 function objToStr(o){
   return o.toString();
 }
+var eui=0;
 function clone(obj) {
+  eui++;
     if (null == obj || "object" != typeof obj) return obj;
     var copy = obj.constructor();
     for (var attr in obj) {
@@ -58,8 +93,15 @@ function anyStr(v,w){
 function aStrArray(v){
   return typeof v === 'string' ? [v] : ((v && v.length) ? v : []); 
 }
+function rmIdxOf(l,str){
+  index = l.indexOf(str);
+  return ((index === -1)? null : l.splice(index, 1));
+}
 function isStr(v){
 	return (typeof v === 'string');
+}
+function isObj(v){
+	return (typeof v === 'object');
 }
 function def(v){
 	return (typeof v !== 'undefined');
@@ -87,11 +129,34 @@ function hdef(h,k,v){
 //	}
 //	return ret;
 //};
+function randomSort(){
+return 0.5 - Math.random();
+}
 function shuffleStr(src,complexity){
-  var randsArr = ("!@#$)*(%^&").repeat(src.length/10+1).split('').sort(function () { return 0.5 - Math.random();});
+  var randsArr = "!@#$)~_(%^&.abcdefghijklmnopqrstuvwxyz -0123456789".repeat(src.length/10+1).split('').sort(randomSort);
   var ret='';
   for (var i=0;i<src.length;i++){
     ret+= (Math.random()>complexity ? src[i] : randsArr.shift());
   }
   return ret;
+}
+function randomStr(length){
+  var randsArr = (". abcdefghijklmnopqrstuvwxyz -0123456789").repeat(length).split('').sort(randomSort);
+  var ret=randsArr.slice(0,length).join('');
+  return ret;
+}
+var function_queue=[];
+function Seq(){
+  this.function_queue=[];
+}
+Seq.prototype={
+  then:function(fu){
+    this.function_queue.push(fu);
+  },
+  next:function(){
+    var t=this;
+    fu=t.function_queue.shift();
+    if (fu){fu(function(){t.next()});return true;}
+    return false;
+  }
 }

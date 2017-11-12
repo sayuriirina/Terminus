@@ -8,13 +8,13 @@ function EventTarget(){
 EventTarget.prototype = {
 
 //    constructor: EventTarget,
-
+    
     addListener: function(type, listener){
         hdef(this._listeners,type,listener);
+      return this;
     },
 
     fire: function(event){
-        console.log(event);
         if (typeof event == "string"){
             event = { type: event };
         }
@@ -28,11 +28,11 @@ EventTarget.prototype = {
 
         if (this._listeners[event.type] instanceof Array){
             var listeners = this._listeners[event.type];
-          console.log(listeners);
             for (var i=0, len=listeners.length; i < len; i++){
                 listeners[i].call(this, event);
             }
         }
+      return this;
     },
 
     removeListener: function(type, listener){
@@ -45,5 +45,6 @@ EventTarget.prototype = {
                 }
             }
         }
+      return this;
     }
 };

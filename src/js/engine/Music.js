@@ -37,7 +37,7 @@ Music.prototype = {
         c.currentTime=0;
       }
       if (n){
-        console.log(n);
+//        console.log(n);
         this.current=ref;
         setAudioLoop(n,d(attrs.loop,false));
         setAudioFade(n,d(attrs.fadein,[1,1,0]));
