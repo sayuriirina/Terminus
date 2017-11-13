@@ -78,9 +78,11 @@ Room.prototype=union(File.prototype, {
   // text displayed at each change
   setIntroText : function(txt){
     this.intro_text = txt;
+    return this;
   },
   addCommand:function(cmd){ 
     this.suggestions.push(cmd);
+    return this;
   },
   removeCommand:function(cmd){ 
     rmIdxOf(this.suggestions,cmd);
@@ -95,9 +97,11 @@ Room.prototype=union(File.prototype, {
   // callback when entering in the room
   setEnterCallback : function(fu){
     this.enter_callback = fu;
+    return this;
   },
   setLeaveCallback : function(fu){
     this.leave_callback = fu;
+    return this;
   },
   // a message displayed on game start
   getStarterMsg: function(){
@@ -109,6 +113,7 @@ Room.prototype=union(File.prototype, {
   },
   setStarterMsg: function(txt){
     this.starter_msg = txt;
+    return this;
   },
   // Room picture
   // item & people management
@@ -194,6 +199,7 @@ Room.prototype=union(File.prototype, {
       newchild.parents.push(this);
       newchild.isRoot=false;
     }
+    return this;
   },
   doLeaveCallbackTo:function(to){
     t=this;

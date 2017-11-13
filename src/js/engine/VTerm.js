@@ -765,6 +765,21 @@ t.monitor = mon;
   }, 
 
 /** Question prompt **/
+  battlescene: function(keys){
+    var t = this;
+    t.set_line('');
+    t.battle_scene = addEl(t.monitor,'div','battlescene');
+    t.disable_input();
+    var end_battle= function(){
+      t.battle_scene.setAttribute('disabled',true);
+      t.battle_scene = undefined;
+      t.enable_input();
+    };
+    ///
+    t.enterKey=function(){ console.log('Enter Pressed but Battle Mode');};
+    return t.battle_scene;
+  },
+/** Question prompt **/
   ask: function(question,callback,args){
     var t = this;
     t.set_line('');

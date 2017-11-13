@@ -76,7 +76,13 @@ function _js(){
     'src/js/engine/Pic.js',
     'src/js/engine/Item.js',
     'src/js/engine/Room.js',
-    'src/js/terminus.js'
+    'src/js/terminus.init.js',
+    'src/js/terminus.assets.js',
+    'src/js/terminus.utils.js',
+    'src/js/terminus.gamestart.js',
+    'src/js/terminus.level1.js',
+    'src/js/terminus.level2.js',
+    'src/js/terminus.run.js',
   ];
   
   /* uncomment this for debuging */

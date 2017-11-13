@@ -148,6 +148,10 @@ Item.prototype=union(File.prototype, {
     this.cmd_text.less = _(this.poid+POSUFFIX_DESC+textidx,vars,{or:this.poid+POSUFFIX_DESC});
     return this;
   },
+//  setTextIdx : function(textidx,vars) { // TODO with range
+//    this.cmd_text.less = _(this.poid+POSUFFIX_DESC+textidx,vars,{or:this.poid+POSUFFIX_DESC});
+//    return this;
+//  },
   setPoDelta:function(delta){
     if (typeof delta == 'string'){
       this.poid+=delta;
