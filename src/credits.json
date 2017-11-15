@@ -1,9 +1,10 @@
 {
+
+  /* All music are licenced on Creative Commons rights */
+  /* Coming Soon all music composers will be listed */
+  /* Sorry if it takes time */
   'music':{
    '*':'opengameart.org',
-   'song18.ogg':'pixelsphere.org',
-   'exploring a cave':'pugly',
   },
-  'testingthanks':['R.C.','C.M.','A.S.']
-   
+  'testingthanks':['myr.','r.cre','magi.a','a.pend','HackerSpace Rennes']
 }
