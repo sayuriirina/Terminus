@@ -15,6 +15,27 @@ msgstr ""
 msgid "pogen_alert"
 msgstr "%s traductions manquent, tape 'pogen' pour télécharger le fichier de traduction avec les nouvelles entrées."
 
+
+msgid "prelude_tuto"
+msgstr "= Geek Fighter II =\n"
+"Battez le super ordinateur avec les flèches, Entrée ↵  et  Tab ↹.\n"
+"Tu peux aussi invoquer des sorts en les écrivant rapidement 'ls', 'cat', ou encore 'cd'.\n"
+
+msgid "prelude_tab"
+msgstr "Quel beau coups de pied. Tu appuies sur Tab ↹ formidablement bien."
+
+msgid "prelude_enter"
+msgstr "Quel beau coups de point. Tu appuies sur Entrée ↵ formidablement bien."
+
+msgid "prelude_success_cmd"
+msgstr "Quel beau coups !"
+
+msgid "prelude_enemy_kill"
+msgstr "Cet ordi est foutu."
+
+msgid "prelude_wrong_game"
+msgstr "Tu concentre ton énergie tu lance ce sort puissant... Ou te crois tu ? dans un dessin animé ?"
+
 msgid "you_learn"
 msgstr "Tu as appris à utiliser %s !"
 
@@ -116,8 +137,9 @@ msgid "people_shell_text"
 msgstr "<voice grl/>Pour ce qui est de se déplacer écris '{{cmd.cd}}' suivi d'un chemin et pour voir au alentour écris '{{cmd.ls}}'.\n Se déplacer dans un chemin n'est possible que si tu connais le chemin.\nIl te faudra surement écrire '{{cmd.ls}}' partout où tu passe."
 
 msgid "people_shell_text1"
-msgstr "<voice grl/>Savais tu que lorsque tu appuies sur Tab ↹ , des suggestions apparaissent ?\n"
-"Lorsque la suggestion devient un choix évident ta ligne de commande (en bas) se rempli  toute seule."
+msgstr "<voice grl/>Savais tu que lorsque tu appuies sur Tab ↹ , des suggestions apparaissent sous ta ligne de commande ?\n"
+"Lorsque il n'y a plus qu'un mot qui peut être suggéré, ta ligne de commande (en bas) se rempli  toute seule.\n"
+"Pour constater cela, il suffit de commencer à écrire un mot et de taper sur Tab ↹.\n"
 
 msgid "people_shell_text2"
 msgstr "<voice grl/>Connais tu la commande '{{cmd.pwd}}' ?\n"

@@ -12,9 +12,12 @@ snd.set('learned','./snd/sfx_sounds_fanfare3.',['wav']);
 snd.set('unlocked','./snd/sfx_sounds_fanfare3.',['wav']);
 snd.set('success','./snd/snd_5000points.',['mp3']);
 snd.set('broken','./snd/sfx_exp_cluster9.',['wav']);
+snd.set('hit','./snd/sfx_menu_move3.',['wav']);
+snd.set('poweron','./snd/snd_steel.',['mp3']);
 // music set
 music.set('chapter2','./music/place/slowdrum-cave.',['wav']);
 music.set('academy','./music/mystic/caravan.',['ogg']);
+music.set('battle','./music/danger/snd__bairustage_loop.',['mp3']);
 music.set('warning','./music/danger/trolls-beatdown-05l.',['wav']);
 music.set('story','./music/cave/Searching.',['ogg']);
 music.set('forest','./music/nature/Forest_Ambience.',['mp3']);

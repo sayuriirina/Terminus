@@ -13,7 +13,7 @@ _setupCommand('less',null,[ARGT.strictfile],function(args,vt){// event arg -> ob
           vt.push_img(item.picture,{index:ret.length}); // Display image of item
           room.fire_event(vt,'less',args,i);
           item.fire_event(vt,'less',args,i);
-          ret.push(cmd_done(vt,[[room,0],[item,i]], item.cmd_text.less,'less',args)) ;
+          ret.push(cmd_done(vt,[[room,0],[item,i+0]], item.cmd_text.less,'less',args)) ;
         } else {
           room.fire_event(vt,'destination_unreachable',args,i);
           ret.push(_("item_not_exists",args));

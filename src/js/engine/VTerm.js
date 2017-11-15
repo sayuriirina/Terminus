@@ -17,10 +17,12 @@ function VTerm(container_id, context){
   t.statkey={};
   t.history=[];
   t.disabled={};
+  t.waiting_fus=[];
   t.histchecking=false;
   t.histindex=0;
   t.scrl_lock=false;
   t.cmdoutput=true;
+  t.suggestion_selected=null;
   /* dom properties (view) */
   t.container = dom.Id(container_id);
   t.monitor = addEl(t.container,'div','monitor');
@@ -63,7 +65,7 @@ VTerm.prototype={
   /* API part */
   setContext: function(ctx){
     this.context=ctx;
-    this.show_suggestions(_getCommands(this.context).map(addspace));
+//    this.show_suggestions(_getCommands(this.context).map(addspace));
   },
   getContext: function(){
     return this.context;
@@ -76,6 +78,38 @@ VTerm.prototype={
       },timeoutdisappear);
     },timeout);
   },
+
+  /// How to see the VTerm is busy : i don't know
+  /// but i assume that if you check every .5 second
+  /// and that you see there is no msg prompt during 1 second
+  /// then this is not busy...
+  /// Looping on an empty waiting loop (while true do skip)
+  /// consume CPU, so i decided to stop waiting at 5 seconds of non busy state
+  wait_free:function(fu){
+     this.waiting_fus.push(fu);
+  },
+  run_waiting:function(){
+    var fu=this.waiting_fus.shift();
+    if (fu) fu(this);
+  },
+  loop_waiting:function(){
+    var wcnt=0,t=this;
+    if (!t.waiting_interval){
+      t.waiting_interval=setInterval(function(){
+        if (t.busy){
+          wcnt=0;
+        } else if ((wcnt>0) && (t.waiting_fus.length > 0)){
+          t.run_waiting();
+        } else {
+          wcnt++;
+          if (wcnt>10){
+            clearInterval(t.waiting_interval);
+          }
+        }
+      },500);
+    }
+  },
+  /// 
   push_img: function(img,opt){
     opt=opt||{};
     if (img) {
@@ -210,6 +244,7 @@ VTerm.prototype={
   _show_chars: function (msgidx,msg,txttab,dependant,safe,cb,txt,curvoice,cnt,opt){
     l=txttab.shift();
     var t=this;
+    t.busy=true;
     if (def(l)){
       var timeout;
       if (l == "<" ){
@@ -254,17 +289,19 @@ VTerm.prototype={
         },timeout*t.charduration);
       } else {
         if (SAFE_BROKEN_TEXT||safe) {
-           msg.innerHTML=txt;
-           t.scrl();
-         }
-         t.playSound('brokentext');
-         if (cb) {cb();}
-         if (opt.cb) {opt.cb();}
+          msg.innerHTML=txt;
+          t.scrl();
+        }
+        t.playSound('brokentext');
+        if (cb) {cb();}
+        if (opt.cb) {opt.cb();}
+        t.busy=false;
        } 
     } else {
       t.playSound('endoftext');
       if (cb) {cb();}
       if (opt.cb) {opt.cb();}
+      t.busy=false;
     }
   },
   rmCurrentImg: function(timeout){
@@ -323,6 +360,7 @@ VTerm.prototype={
       opt=opt||{};
       var cb;
       var t=this;
+      t.busy=true;t.loop_waiting();
       if (typeof msg != 'string'){
         cb=msg[1];
         msg=msg[0];
@@ -338,6 +376,7 @@ VTerm.prototype={
         t.ghostel.innerHTML=msg.outerHTML.replace(/<div class='inmsg'.*><\/div>/,'');
         if (cb) {cb();}
         if (opt.cb) {opt.cb();}
+        t.busy=false;
       } else {
         txt=msg.toString();//ensure in case we have an object
         txt=txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>');
@@ -349,6 +388,7 @@ VTerm.prototype={
           t.current_msg.innerHTML=txt;
           if (cb) {cb();}
           if (opt.cb) {opt.cb();}
+          t.busy=false;
           t.scrl();
         } else { // progressive 
           t._show_chars(t.msg_idx,t.current_msg,txttab,dependant,safe,cb,txt,'char',1,opt);
@@ -358,13 +398,16 @@ VTerm.prototype={
     return this;
   },
   /* Suggestion part */
-  make_suggestions: function (autocomplete){
+  make_suggestions: function (tabidx,autocomplete){
+    var ret=true;
     var t=this;
-    var ac=d(autocomplete,true);
+    tabidx=d(tabidx,-1);
+    autocomplete=d(autocomplete,true);
     t.suggestions.innerHTML = '';
     var l=t.get_line(),pos=t.input.selectionStart;
-    
+    var hlidxs=[];
     args=l.split(' ');
+    t.suggestion_selected=null;
     if (args.length > 0) {
       var offset=0,idx;
       for(idx=0;idx<args.length;idx++){
@@ -375,7 +418,7 @@ VTerm.prototype={
       var match=[];
 //      console.log('suggestions',ac,l,args);
       // which word to guess
-      if (idx>0) { // at least 1 arg
+      if (tocomplete && idx>0) { // at least 1 arg
         match=_completeArgs(args,idx,tocomplete,t.context);
       } else if (args[0].length>0){ 
         if (_hasRightForCommand(args[0],user.groups)) { // propose argument
@@ -400,7 +443,7 @@ VTerm.prototype={
         setTimeout(function(){t.set_line(l+'??');},100);
         setTimeout(function(){t.set_line(l);},200);
       } else if (match.length == 1 ){
-        if (ac) {
+        if (autocomplete) {
           var lb=tocomplete.split('/');
           lb[lb.length-1]=match[0];
           args.splice(idx,1,lb.join('/')); //insert value at idx
@@ -415,27 +458,37 @@ VTerm.prototype={
         var lcp=commonprefix(match);
         if (match.indexOf(lcp)>-1){
           t.set_line(l+' ');
-        }
-        if (lcp.length > 0 && ac){
+        } else if (tabidx>-1){
+          if (tabidx < match.length) {
+//          t.set_line(match[idx]+' ');
+          hlidxs[tabidx]='select';
+            t.suggestion_selected=match[tabidx];
+          } else {
+                ret=false;
+          }
+        } 
+        if (lcp.length > 0 && autocomplete){
           var lb=tocomplete.split('/');
           lb[lb.length-1]=lcp;
           args.splice(idx,1,lb.join('/'));
           t.set_line(args.join(" "));
         }
-        t.show_suggestions(match);
+        t.show_suggestions(match,hlidxs);
       }
     }
+    return ret;
   },
-  show_suggestions: function (list){
+  show_suggestions: function (list,highlights){
+    highlights=highlights||[];
     this.suggestions.innerHTML = '<div class="visually-hidden">'+_('Suggestions')+'</div>';
     for (var i=0;i<list.length; i++){
-      this.show_suggestion(list[i]);
+      this.show_suggestion(list[i],highlights[i]);
     }
   },
-  show_suggestion: function (txt){
+  show_suggestion: function (txt,hlcls){
     var t=this;
     t.histindex=0;
-    addBtn(t.suggestions,undefined,txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>'),txt,function (e){
+    addBtn(t.suggestions,hlcls,txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>'),txt,function (e){
       var l=t.get_line();
       var sp=l.split(" ");
       // replace word by complete suggestion
@@ -447,7 +500,7 @@ VTerm.prototype={
       if (t.argsValid(newl.replace(/\s+$/,"").split(" "))){
         t.enter();
       } else {
-        t.make_suggestions(false);
+        t.make_suggestions(-1,false);
       }
     });
     t.scrl();
@@ -457,7 +510,7 @@ VTerm.prototype={
   },
   /* */
   argsValid: function(args){
-    return this.context._validArgs(args.shift(),args);
+    return _validArgs(args.shift(),args,this.context);
   },
   enter: function(){
     // Enter -> exec command
@@ -491,7 +544,7 @@ VTerm.prototype={
         }
 t.set_line('');
 t.hide_suggestions();
-t.show_suggestions(_getCommands(t.context).map(addspace));
+//t.show_suggestions(_getCommands(t.context).map(addspace));
 t.monitor = mon;
       }
     }
@@ -517,28 +570,52 @@ t.monitor = mon;
     // behavior 
     var t=this;
     var pr=t.input;
-    //    var cmd=this.cmdspan;
 
     dom.body.onkeydown = function (e) {
       e = e || window.event;//Get event
-      var k=e.key;
-//      console.log(e);
-      if(def(t.choose_input)){
-        t._choose_key(k,e);
-      } else if(def(t.password_input)) {
-        t._password_key(k,e);
-      } else if (k === 'ArrowRight' || k  === 'ArrowLeft' || k === 'ArrowUp' || k  === 'ArrowDown') {
+      if(def(t.battle_scene)){
+        t.battle_scene.onkeydown(e);
+      } else if(def(t.choose_input)||def(t.password_input)) {
+        e.preventDefault();
+      } else {
+        var k=e.key;
+        if (k === 'ArrowRight' || k  === 'ArrowLeft' || k === 'ArrowUp' || k  === 'ArrowDown') {
           if (e.shiftKey){
             e.preventDefault();
           }
-      } else {
-        var focused = dom.activeElement;
-        if ( !focused || focused != pr) {
-          pr.focus();t.scrl();
+        } else {
+          var focused = dom.activeElement;
+          if ( !focused || focused != pr) {
+            pr.focus();t.scrl();
+          }
+          pr.onkeydown(e);
         }
-        pr.onkeydown(e);
       }
     };
+    dom.body.onkeyup = function (e) {
+      e = e || window.event;//Get event
+      if(def(t.battle_scene)){
+        t.battle_scene.onkeyup(e);
+      } else if(def(t.choose_input)){
+        t._choose_key(e.key,e);
+      } else if(def(t.password_input)) {
+        t._password_key(e.key,e);
+      } else {
+        var k=e.key;
+        if (k === 'ArrowRight' || k  === 'ArrowLeft' || k === 'ArrowUp' || k  === 'ArrowDown') {
+          if (e.shiftKey){
+            e.preventDefault();
+          }
+        } else {
+          var focused = dom.activeElement;
+          if ( !focused || focused != pr) {
+            pr.focus();t.scrl();
+          }
+          pr.onkeyup(e);
+        }
+      }
+    };
+    var lastkey=[null,0];
     pr.onkeydown = function (e) {
       var k=e.key;
       if ( k === 'Tab' || k == 'Enter' ) {
@@ -559,14 +636,23 @@ t.monitor = mon;
     pr.onkeyup = function (e) {
       var k=e.key;
       vt.statkey[k]=(vt.statkey[k]||0)+1;
+      if (lastkey[0]==k) {lastkey[1]++;} else {lastkey[1]=0;}
+      lastkey[0]=k;
       var echo="";
       t.hide_suggestions();
       if (k === 'Enter') {
         overide(e);
-        t.enter();t.scrl();
+        if (t.suggestion_selected){
+          t.input.value+=t.suggestion_selected;
+          t.suggestion_selected=null;
+          t.make_suggestions();
+        } else {t.enter();
+        }
+        t.scrl();
       } else if (k === 'Tab' && !(e.ctrlKey || e.altKey)) {
         overide(e);
-        t.make_suggestions();t.scrl();
+        if (!t.make_suggestions(lastkey[1]-1)) lastkey[1]=0;
+        t.scrl();
       } else if (e.ctrlKey){
         if (k === 'c' ) { // CTRL+C - clear
           overide(e);
@@ -765,19 +851,20 @@ t.monitor = mon;
   }, 
 
 /** Question prompt **/
-  battlescene: function(keys){
+  battlescene: function(fu,cb){
     var t = this;
     t.set_line('');
     t.battle_scene = addEl(t.monitor,'div','battlescene');
     t.disable_input();
     var end_battle= function(){
       t.battle_scene.setAttribute('disabled',true);
+      t.monitor.removeChild(t.battle_scene);
       t.battle_scene = undefined;
-      t.enable_input();
+      if (cb) cb();
     };
     ///
     t.enterKey=function(){ console.log('Enter Pressed but Battle Mode');};
-    return t.battle_scene;
+    return fu(vt,t.battle_scene,end_battle);
   },
 /** Question prompt **/
   ask: function(question,callback,args){

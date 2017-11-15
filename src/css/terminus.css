@@ -147,10 +147,37 @@ box-sizing: border-box;
 /*}*/
 .img-container {
   position:relative;
+  z-index:0;
+  width:100%;
+  height:100%;
 }
 .img-container .layers {
   position:relative;
   display:inline-block;
+}
+.battlescene .red {
+  background:red;
+}
+.battlescene .big img {
+  width:150%;
+  max-width:unset;
+}
+.battlescene {
+  height:100vh;
+  width:100%;
+}
+.battlescene .img-container {
+/*  border:4px solid lightgreen;*/
+
+}
+.battlescene .img-container .layers {
+  position:absolute;
+}
+.reverseY{
+
+}
+.reverseX{
+transform:scaleX(-1);
 }
 .img-container .layers .main {
   position:relative;
@@ -170,7 +197,7 @@ box-sizing: border-box;
 .layer.item:not(.large) {
   width:50%; height:50%;
 }
-.img-container .layers .background, .img-container .layers .foreground {
+.img-container .livelayer, .img-container .layers .background, .img-container .layers .foreground {
   position:absolute;
   bottom:0;
   left:0;
@@ -333,6 +360,10 @@ max-width:12ch;
 }
 .suggest button {
   color:gray;
+}
+.suggest button.select {
+background:white;
+color:black;
 }
 .key{
   color:#f4f4f4;

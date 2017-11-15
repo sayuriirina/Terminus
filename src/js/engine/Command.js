@@ -45,7 +45,7 @@ function cmd_done(vt, fireables, ret, cmd, args){
   var cb=function(){
     for (var i = 0; i < fireables.length; i++) {
       fireables[i][0].fire_event(vt,cmd+'_done',args,fireables[i][1]);
-      global_fire_done(); 
+      global_fire_done();
     }
   };
   return [ret,cb];

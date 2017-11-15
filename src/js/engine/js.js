@@ -63,6 +63,16 @@ function union(obj1,obj2){
     for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
     return obj3;
 }
+function almostEqual(a,delta,b){
+  if(a==b){
+    return true;
+  } else if (a>b) {
+    return (b+delta)>a;
+  } else {
+    return (a+delta)>b;
+  }
+  return false;
+}
 function addAttrs(el,attrs){
   for (var i in attrs) {
     if (attrs.hasOwnProperty(i)){
