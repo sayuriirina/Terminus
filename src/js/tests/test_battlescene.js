@@ -5,29 +5,29 @@ function drawPlatform(c,op,custom_matrix,bgstyle){
   var x=op.grid.x,
     y=op.grid.y;
   var bl;
-  if (bgstyle){c.setAttribute('style',bgstyle);}
+  if (bgstyle){c.setAttribute('style',c.getAttribute('style')+';'+bgstyle);}
   for (var j=0;j<m.length;j++){
     for (var i=0;i<m[j].length;i++){
-//        bl=addEl(c,'div',{'style':'z-index:99;position:absolute;background:rgba(33,33,33,.3);border:1px solid #fff;box-sizing:border-box;width:'+x+'%;height:'+y+'%;left:'+(i*x)+'%;bottom:'+(j*y)+'%;'});
       if (m[j][i]==1){
         bl=addEl(c,'img',{'src':'./img/box.png','style':'z-index:99;position:absolute;height:'+y+'%;width:'+x+'%;left:'+(i*x)+'%;bottom:'+(j*y)+'%;'});
       } else if (m[j][i]==2){
         bl=addEl(c,'div',{'style':'z-index:99;position:absolute;background:rgba(33,33,33,.3);border:1px solid #fff;box-sizing:border-box;width:'+x+'%;height:'+y+'%;left:'+(i*x)+'%;bottom:'+(j*y)+'%;'});
-  } else if (m[j][i]==3){
+      } else if (m[j][i]==3){
         bl=addEl(c,'img',{'src':'./img/boulder.png','style':'z-index:99;position:absolute;height:'+y+'%;left:'+(i*x)+'%;bottom:'+(j*y)+'%;'});
-  } else if (m[j][i]==4){
+      } else if (m[j][i]==4){
         bl=addEl(c,'img',{'src':'./img/item_clockdragon.png','style':'z-index:99;position:absolute;width:'+2*x+'%;left:'+(i*x)+'%;bottom:'+(j*y)+'%;'});
       }
 
+      // else {
+      // bl=addEl(c,'div',{'style':'z-index:99;position:absolute;background:rgba(33,33,33,.3);border:1px solid #fff;box-sizing:border-box;width:'+x+'%;height:'+y+'%;left:'+(i*x)+'%;bottom:'+(j*y)+'%;'});
+      //  }
     }
   }
 
-
 }
 function minigame_start(vt,bs,end){
-  bs.setAttribute('style','height:420px');
   vt.show_msg([_('prelude_tuto'),
-    function(){minigame(vt,bs,end);}],{el:bs});
+    function(){minigame(vt,bs,end);}],{el:bs,direct:true});
 }
 function minigame(vt,bs,end){
   var frisk=new Pic('kid_profile.png');
@@ -37,26 +37,37 @@ function minigame(vt,bs,end){
     vt.scrl(1000);
   };
   var c = addEl(bs,'div', "img-container");
+  c.setAttribute('style','height:420px;max-height:80vh');
   var robot_layer=robot.render(c,onload);
   robot_layer.othercls="big";
   var robot_layer2=robot2.render(c,onload);
   var frisk_layer=frisk.render(c,onload);
+  frisk_layer.pid=0;
+  robot_layer.pid=1;
+  robot_layer2.pid=2;
   var keydown=false;
   var enemy=2;
+  var dammage=[0,0,0];
+  var maxdammage=[3,3,1];
   var endfu=function(l,x,y){
-    if(x>90){
-      enemy--;
-      vt.show_msg(_('prelude_enemy_kill'),{el:bs});
-      l.pic.set('computer_overkill.png');
-      var loo=0,inte=setInterval(function(){
-        l.pic.setChild('kick','computer_overkill_blur.png')||l.pic.unsetChild('kick');
+    dammage[l.pid]++;
+    if(dammage[l.pid]>=maxdammage[l.pid]){
+      if (l.pid != frisk_layer.pid ){
+        enemy--;
+        monret.innerHtml=_('prelude_enemy_kill');
+        l.pic.set('computer_overkill.png');
+        var loo=0,inte=setInterval(function(){
+          l.pic.setChild('kick','computer_overkill_blur.png')||l.pic.unsetChild('kick');
+          l.update();
+          if (loo++ > 10){
+            clearInterval(inte); 
+          }
+        },200);
+        l.pic.unsetChild('lock');
         l.update();
-        if (loo++ > 10){
-          clearInterval(inte); 
-        }
-      },200);
-      l.pic.unsetChild('lock');
-      l.update();
+      } else {
+        enemy=0;
+      }
       if (enemy<=0){
         music.play();
         end();
@@ -82,13 +93,13 @@ function minigame(vt,bs,end){
         },1000);
         if (frisk_layer.collide(robot_layer)){
           snd.play('hit');
-      vt.show_msg(_('prelude_tab'),{el:bs});
+        monret.innerHtml=_('prelude_tab');
           robot_layer.setOffsetDeltaXStepped(50,5,100,endfu);
           if (enemy<2){music.play();}
         }
         if (frisk_layer.collide(robot_layer2)){
           snd.play('hit');
-      vt.show_msg(_('prelude_tab'),{el:bs});
+        monret.innerHtml=_('prelude_tab');
           if (enemy<2){music.play();}
           robot_layer2.setOffsetDeltaXStepped(50,5,100,endfu);
         }
@@ -103,12 +114,12 @@ function minigame(vt,bs,end){
         if (frisk_layer.collide(robot_layer)){
           robot.setChild('lock','computer_content.png',{index:-1});
           snd.play('poweron');
-          vt.show_msg(_('prelude_enter'),{el:bs});
+        monret.innerHtml=_('prelude_enter');
           robot_layer.update();
         }
         if (frisk_layer.collide(robot_layer2)){
           robot2.setChild('lock','computer_content.png',{index:-1});
-          vt.show_msg(_('prelude_enter'),{el:bs});
+        monret.innerHtml=_('prelude_enter');
           snd.play('poweron');
           robot_layer2.update();
         }
@@ -153,7 +164,8 @@ function minigame(vt,bs,end){
      }
     return !e.defaultPrevented;
   };
-  var mon=addEl(bs,'p');
+  var moninput=addEl(bs,'p');
+  var monret=addEl(bs,'p');
   var parseCollectStr=function(){
         var ret=collect_string+" : ";
         if (collect_string=='ls'){
@@ -179,9 +191,9 @@ function minigame(vt,bs,end){
         } else if (collect_string=='hado'||collect_string=='hadoken'||collect_string=='hadouken'||collect_string=='kameha'||collect_string=='kamehameha'){
           ret+=_('prelude_wrong_game');
         } else {
-          ret=null;
+          ret='';
         }
-        if (ret) {vt.show_msg(ret,{el:bs});}
+        monret.innerHTML=ret;
         collect_string='';
   }
   bs.onkeyup = function (e) {
@@ -192,7 +204,7 @@ function minigame(vt,bs,end){
     }
     if (k.length==1){
       collect_string+=k;
-      mon.innerHTML=collect_string;
+      moninput.innerHTML=collect_string;
       setTimeout(parseCollectStr,1200);
     }
 //    console.log(k);

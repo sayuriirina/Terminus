@@ -39,7 +39,8 @@ function mesg(msg,re,opt){
             _('msg_from',[opt.user||'????',opt.tty||'???',getTime()])+
             "\n" + 
             msg +'</div>',
-            {direct:true});
+            {direct:true}
+        );
       },opt.timeout||0);
     };
     if (opt.ondone){

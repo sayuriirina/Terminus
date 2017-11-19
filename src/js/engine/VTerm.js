@@ -193,15 +193,16 @@ VTerm.prototype={
   },
   /* UI part */
   // Scroll the window to the last element (bottom of page)
-  scrl : function(timeout,retry){
+  scrl:function(timeout,retry){
     var t=this;
     var m=t.monitor;
     retry=d(retry,2);
     if ((m.parentNode.offsetTop + m.offsetTop + m.offsetHeight+t.inputdiv.offsetHeight)>window.innerHeight){
       if (!t.scrl_lock){
         if (!def(timeout)){
-          var c=t.container;
+//          var c=t.container;
           window.scrollBy(0, window.innerHeight);
+//          window.scrollTo(0, m.parentNode.offsetTop + m.offsetTop + m.offsetHeight+t.inputdiv.offsetHeight);
           return true;
         }
       }
@@ -213,6 +214,27 @@ VTerm.prototype={
         },timeout);
       }
     }
+   ///  ???? 
+  // ---- --- - -- --- -- ---- - -- --- -- -
+//(window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop) ought to give you the current scroll position in just about any browser.
+
+//The three scrolling functions you'll want to concern yourself with are window.scroll(x,y), window.scrollBy(dx,dy), and window.scrollTo(x,y).
+//As David mentioned you'll need the scroll position to know where you are and use the window.onscroll event to fire off this calculation.
+
+//window.onload = function () { 
+//  window.onscroll = function () { 
+//    var doc = document.body, 
+//    scrollPosition = doc.scrollTop,
+//    pageSize = (doc.scrollHeight - doc.clientHeight),
+//    percentageScrolled = Math.floor((scrollPosition / pageSize) * 100); 
+//
+//     if (percentageScrolled >= 50){ // if the percentage is >= 50, scroll to top
+//       window.scrollTo(0,0); 
+//     } 
+//   }; 
+//};
+
+  // ---- --- - -- --- -- ---- - -- --- -- -
   },
   disable_input:function(){//disable can act as a mutex, if a widget don't get true then it shouldn't enable input
     var t=this;
@@ -644,9 +666,11 @@ t.monitor = mon;
         overide(e);
         if (t.suggestion_selected){
           t.input.value+=t.suggestion_selected;
-          t.suggestion_selected=null;
+          t.suggestion_selected=0;
           t.make_suggestions();
-        } else {t.enter();
+          lastkey[0]='Tab';
+        } else {
+          t.enter();
         }
         t.scrl();
       } else if (k === 'Tab' && !(e.ctrlKey || e.altKey)) {
@@ -854,11 +878,14 @@ t.monitor = mon;
   battlescene: function(fu,cb){
     var t = this;
     t.set_line('');
-    t.battle_scene = addEl(t.monitor,'div','battlescene');
+    var scont = t.monitor;
+//    var scont = document.body;
+    var cont = addEl(scont,'div','battlescene-container');
+    t.battle_scene = addEl(cont,'div','battlescene');
     t.disable_input();
     var end_battle= function(){
       t.battle_scene.setAttribute('disabled',true);
-      t.monitor.removeChild(t.battle_scene);
+      scont.removeChild(cont);
       t.battle_scene = undefined;
       if (cb) cb();
     };

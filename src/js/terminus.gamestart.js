@@ -71,7 +71,8 @@ function start_game(){
       vt.battlescene(minigame_start,function(){
         music.play();
         vt.flash(0,800);
-        seq.next();});
+        seq.next();
+      });
     }
   };
 

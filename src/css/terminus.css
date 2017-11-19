@@ -6,6 +6,8 @@ body {
   font-family:sans-serif;
   font-size: 1.4rem;
   font-stretch:condensed;
+  position:absolute;
+  width:100%;
 }
 .color-ok {
 color:lightgreen;
@@ -155,24 +157,6 @@ box-sizing: border-box;
   position:relative;
   display:inline-block;
 }
-.battlescene .red {
-  background:red;
-}
-.battlescene .big img {
-  width:150%;
-  max-width:unset;
-}
-.battlescene {
-  height:100vh;
-  width:100%;
-}
-.battlescene .img-container {
-/*  border:4px solid lightgreen;*/
-
-}
-.battlescene .img-container .layers {
-  position:absolute;
-}
 .reverseY{
 
 }
@@ -227,14 +211,17 @@ transform:scaleX(-1);
 }
 
 #term .input-container {
-  position:fixed;
+/*  position:fixed;*/
+  position:relative;
+
   background:#000;
   bottom:0;
   left:0;
   width:100%;
 }
 #term .input-div {
-  padding:0 1rem;
+/*  padding:0 1rem;*/
+  padding:0;
 }
 #term .input-div,
 #term {
@@ -248,8 +235,8 @@ transform:scaleX(-1);
 #term{
   padding:1rem;
    position:relative;
-   top:-10rem;
-margin-top:10rem;
+/*   top:-10rem;*/
+/*margin-top:10rem;*/
 }
 fieldset{border:none;}
 img {
@@ -258,15 +245,9 @@ max-width:100%;
 /*  max-width:12ch;*/
 }
 
-/*.screen:not(:last-of-type) :not(.msg)  img{*/
 .screen:not(:last-of-type)  .layers{
-
   animation:fromfull 2s 1s forwards;
-
 }
-/*:not(.msg) > img {*/
-/*  max-width:100%;*/
-/*}*/
 .msg > img {
 max-width:12ch;
 }
@@ -275,7 +256,7 @@ max-width:12ch;
  to {max-width:12ch;}
 }
 @media all and (max-width:800px){
-  img {
+  :not(.battlescene) > .img-container .main img {
     min-width:80%;
   }
 }
@@ -283,6 +264,8 @@ max-width:12ch;
 @media all and (max-width:1024px){
 
 }
+
+
 
 .contribute:before {
    content:"<<";
@@ -486,7 +469,47 @@ padding:3px;
     left:50%;
   }
 }
+@keyframes slidein {
+  from {
+    left:100%;
+  }
+  to {
+    left:0;
+  }
+}
 input[disabled=""] {
   opacity:0;
 }
 
+.battlescene .red {
+  background:red;
+}
+.battlescene .big img {
+  width:150%;
+  max-width:unset;
+}
+.battlescene-container{
+  z-index:999;
+  background:black;
+  position:fixed;
+  top:0;
+  left:0;
+  height:100vh;
+  width:100vw;
+   animation:slidein 1.4s ease-out forwards;
+}
+.battlescene {
+  position:relative;
+  padding:0 1rem;
+  margin:auto;
+/*  height:100vh;*/
+  max-width:80ch;
+/*  width:100%;*/
+}
+.battlescene .img-container {
+/*  border:4px solid lightgreen;*/
+
+}
+.battlescene .img-container .layers {
+  position:absolute;
+}

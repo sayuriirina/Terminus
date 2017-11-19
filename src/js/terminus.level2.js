@@ -7,9 +7,28 @@ $portal.addPath(
 $townsquare.setEnterCallback(function(){
   music.play('chapter2',{loop:true});
 });
-$townsquare.newPeople('citizen1',"item_citizen1.png");
+var mayor_txtidx=1;
+var mayor=$townsquare.newPeople('citizen1',"item_citizen1.png")
+  .setCmdEvent('less_done','id')
+  .addStates({
+    id: function(re){
+      mayor.setCmdEvent('less_done','talk');
+      mayor.setPoDelta('_');
+    },
+    talk:function(re){
+      mayor.setTextIdx(mayor_txtidx++);
+    }
+  });
+
 $townsquare.newPeople('citizen2',"item_citizen2.png");
-$townsquare.newPeople('citizen3',"item_lady.png");
+var lady_txtidx=1;
+var lady=$townsquare.newPeople('citizen3',"item_lady.png")
+  .setCmdEvent('less_done','talk')
+  .addStates({
+    talk:function(re){
+      lady.setTextIdx(lady_txtidx++);
+    }
+  });
 
 
 //MARKETPLACE
@@ -147,10 +166,12 @@ $backroom.newPeople("librarian", "item_librarian.png");
 $townsquare.addPath(
   newRoom("rockypath", "loc_rockypath.gif",{writable:true})
 );
+// TODO play on filesize concept
 $rockypath.newItem("largeboulder", "item_boulder.png")
   .setCmdText("rm", _('item_largeboulder_rm'))
+  .setCmdEvent("rm")
   .addStates({
-    rmLargeBoulder: function(re){
+    rm: function(re){
       $rockypath.addPath($farm);
       if (re) {
         if (re) $rockypath.removeItem('largeboulder');

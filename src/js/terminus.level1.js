@@ -241,7 +241,7 @@ $staircase.newItem('dead_end', "item_sign.png");
 $dark_corridor.addPath(
   newRoom('dank',"loc_darkroom.gif",{writable:true}).addCommand("mv")
   .addPath(
-    newRoom('small_hole')
+    newRoom('small_hole',undefined,{writable:true})
     .setCmdText("cd", _('room_small_hole_cd'))
   )
 );
