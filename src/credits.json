@@ -6,5 +6,10 @@
   'music':{
    '*':'opengameart.org',
   },
+  'gitPR':{'Sbgodin','SuperLutin'
+  },
+  'gitIssues':{ 'Daniel Le Berre'
+  },
+  'linuxfr':{'Benoit Sibaud'}
   'testingthanks':['myr.','r.cre','magi.a','a.pend','HackerSpace Rennes']
 }

@@ -194,10 +194,17 @@ Room.prototype=union(File.prototype, {
     idx = this.children.map(objToStr).indexOf(name);
     return ((idx == -1) ? null : this.children[idx]);
   },
+  hasChild : function(child){
+    idx = this.children.map(objToStr).indexOf(child.name);
+    return ((idx == -1) ? null : this.children[idx]);
+  },
   addPath : function(newchild,wayback){
-    if (pushDef(newchild,this.children) && d(wayback,true)){
-      newchild.parents.push(this);
-      newchild.isRoot=false;
+    if (def(newchild) && !this.hasChild(newchild)){
+      this.children.push(newchild);
+      if (d(wayback,true)){ 
+        newchild.parents.push(this);
+        newchild.isRoot=false;
+      }
     }
     return this;
   },

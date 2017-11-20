@@ -245,15 +245,18 @@ $dark_corridor.addPath(
     .setCmdText("cd", _('room_small_hole_cd'))
   )
 );
-$dank
+var boulder=$dank
   .newItem('boulder','item_boulder.png',{cls:'large'})
   .setCmdEvent('mv','mvBoulder')
   .addStates({
     mvBoulder: function(re){
-      $dank.addPath($tunnel);
-      unlock(vt, $tunnel, re);
-      if (re) {
-        $dank.getItem('boulder').moveTo($small_hole);
+      if (!$dank.hasChild($tunnel)){
+        $dank.addPath($tunnel);
+        //      boulder.unsetCmdEvent('mv');
+        unlock(vt, $tunnel, re);
+        if (re) {
+          $dank.getItem('boulder').moveTo($small_hole);
+        }
       }
     }
   });
