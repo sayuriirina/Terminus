@@ -907,13 +907,13 @@ msgstr ""
 ". Va trouver le livre et tape \"grep {{people_darkwizard}} {{item_historybook}}\"."
 
 msgid "room_rockypath"
-msgstr "Che"
+msgstr "CheminEnPierres"
 
 msgid "room_rockypath_text"
 msgstr "The weed-choked path leads off into the fields."
 
 msgid "item_largeboulder"
-msgstr "LargeBoulder"
+msgstr "EnormeRocher"
 
 msgid "item_largeboulder_text"
 msgstr ""
