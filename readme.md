@@ -1,4 +1,4 @@
-[Terminus (image)](./src/img/promo_image.png)
+[Terminus (image)](./src/img/promo_image.jpg)
 
 
 In a mysterious land, both physical and magical powers had been surpassed by a new power.
