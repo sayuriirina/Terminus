@@ -57,7 +57,7 @@ function shell_dial(re){
   }
   state.saveCookie();
 }
-shelly=$home.newPeople('shell',undefined,{executable:true})
+shelly=$home.newPeople('shell')
   .setCmdEvent('less_done','chtxt')
   .setCmdEvent('exec_done','chtxt')
   .addStates({
