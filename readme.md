@@ -1,9 +1,8 @@
-[Terminus (image)](./src/img/promo_image.jpg)
-
+![Presenting Terminus]( ./src/img/promo_image.jpg )
 
 In a mysterious land, both physical and magical powers had been surpassed by a new power.
 The land is very peaceful, but great powers involve great struggles.
-Awakened in a strangely familiar place, you discover that you could have this power hidden in your belt.
+Awakened in a strangely familiar place, you discover that you could use this power without knowing how.
 Now, you want to learn how to use it.
 
 Terminus is a text adventure game running on your Web browser.
