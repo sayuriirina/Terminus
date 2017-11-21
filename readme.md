@@ -1,4 +1,4 @@
-![](./src/img/item_backpack.gif)![](./src/img/titlescreen.gif)![](./src/img/item_manuscript.gif)![](./src/img/item_boy.gif)![](./src/img/item_sign.gif)![](./src/img/loc_market.gif)
+[Terminus (image)](./src/img/promo_image.png)
 
 
 In a mysterious land, both physical and magical powers had been surpassed by a new power.
