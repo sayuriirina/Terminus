@@ -10,6 +10,53 @@ Terminus is a text adventure game running on your Web browser.
 The aim is not to destroy the enemy, no, you'll just have to help people you could meet.
 
 
+Parenthèse
+==========
+(fr)
+
+# LE JEU EST EN COURS DE DÉVELOPPEMENT
+
+Actuellement, les modifications scénaristiques et de fonctionnalités se font arbritrairement par un seule personne.
+Moi. Cela fait depuis juillet 2017 que je travaille de manière plus ou moins assidue sur ce projet.
+Par conséquent : s'il vous plaît, ne soyez pas trop enthousiastes.
+Ce projet a besoin de temps pour murir. Je ne suis pas scénariste, je ne suis pas graphiste.
+Ce projet a donc aussi besoin de ressources.
+
+
+# Quels sont les limites pour proposer ses idées ?
+La licence n'interdit pas de forker le projet, et encourage même a participer en proposant des pull-requests.
+
+Les limites suivantes expriment des raisons valables pour refuser une pull-request sans autre explication.
+
+* Le jeu doit être utilisable par une personne utilisant un lecteur d'écran; les minijeux et les énigmes, ne peuvent donc pas s'appuyer sur des éléments visuels, ou, au cas échéant, proposer une alternative à leur résolution;
+* Tout sujet en défaveur de l'égalité  des droits et des chances entre êtres humains quelque soit leur sexe, ou autres critères physiques; des mouvements pour les droits des animaux, des mouvements LGBTQ, du logiciel libre... c'est-à-dire tout point de scénario à raisonnement raciste, sexiste, genriste, validiste, spéciste sera écarté de ce projet;
+* Il en est de même pour tout scénario incitant à des actes de violences envers des êtres vivants.
+
+
+Dans la même logique, si une pull-request non destructrice<sup>[1](#myfootnote1)</sup> permet de résoudre une incompatibilité entre les points cités et l'état actuel du jeu, alors cette dernière sera acceptée (même en présence de fautes d'orthographes ou bugs mineurs<sup>[2](#myfootnote2)</sup>).
+
+<a name="myfootnote1">1</a>: non destructrice = qui ne détruit ou modifie aucune autre partie que celle qui concerne le sujet
+
+<a name="myfootnote1">2</a>: les bugs et fautes d'orthographes seront alors traités en priorité sur les autres sujets
+
+# Faire partie de l'équipe
+
+Le jeu sera certainement plus aboutit si de nouvelles personnes sont incluses dans le processus créatif.
+Toute proposition est bonne à prendre et à discuter.
+Cependant, aucune décision ne peut être prise à la légère.
+
+Si vous comprenez bien cela, je vous invite à venir discuter sur via Framateam  https://framateam.org/terminusjeu
+.
+
+(en)
+
+# Join the team
+Sorry, the english part of this project is completely destroyed.
+Anyway, if you wish to collaborate on this project,
+take a look at the Framateam page https://framateam.org/terminusjeu
+
+Just declare your presence to invite people to speak english.
+
 About the project
 =================
 This project is deviant fork of [mprat's Terminus project](http://mprat.github.io/Terminus/).
