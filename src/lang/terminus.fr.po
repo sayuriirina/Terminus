@@ -780,6 +780,15 @@ msgstr ""
 "et cela causera sa disparition… pour toujours.\n"
 "As-tu les tripes pour l'utiliser ?\""
 
+msgid "help_rm"
+msgstr "Faire disparaître définitivement un objet ou une personne."
+
+msgid "man_rm"
+msgstr ""
+"Utilise \"rm\" pour supprimer définitivement un objet.\n"
+"Il faut écrire :\n"
+"rm OBJET"
+
 msgid "item_backpack"
 msgstr "SacÀDos%s"
 
@@ -788,6 +797,15 @@ msgstr ""
 "Il y a un sac à dos avec ouverture zippée super classe sur la table sans prix dessus. Sa toile est un peu effilochée mais il semble robuste.\n"
 "Tu jettes un coup d'œil sur le vendeur mais son attention est ailleurs.\n"
 "Une inscription apparaît près de la languette du sac : 'unzip'. "
+
+msgid "help_unzip"
+msgstr "Récupérer le contenu d'un sac zippé."
+
+msgid "man_unzip"
+msgstr ""
+"Ouvrir un sac zippé et sortir ce qu'il contient.\n"
+"Il faut écrire :\n"
+"unzip SAC.zip"
 
 msgid "item_backpack_stolen"
 msgstr ""
@@ -800,6 +818,16 @@ msgstr "mkdir"
 
 msgid "item_mkdir_spell_text"
 msgstr "\"'mkdir' transforme les rêves en réalité. Invoque ce sort suivi du nom qui te convient créera un nouveau chemin.\""
+
+msgid "help_mkdir"
+msgstr "Créer un nouveau chemin."
+
+msgid "man_mkdir"
+msgstr ""
+"Créer un nouveau chemin.\n"
+"Utilise \"mkdir\" pour créer un nouveau chemin à partir du chemin où tu te trouves.\n"
+"Il faut écrire :\n"
+"mkdir CHEMIN"
 
 msgid "room_library"
 msgstr "Bibliothèque"
