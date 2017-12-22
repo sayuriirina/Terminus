@@ -7,12 +7,12 @@ Scénario
 
 # Peach
 
-## Intro
+## Introduction
 Vous incarner un gamin qui entre dans une salle informatique.
 Suite à des actions (destruction d'ordinateur ou appui bouton pour allumer), vous êtes téléporter dans l'univers de la ligne de commande de Terminus.
 
 Vous vous réveillé dans un lieu qui vous servira de référence (le point de départ).
-Il faudra apprendre avec différents personnages (Palourde; Poney; Professeur) les bases de cet univers. (tutorial)
+Il faudra apprendre avec différents personnages (Palourde; Poney; Professeur) les bases de cet univers. (tutoriel)
 Pour confirmer, poursuivre l'apprentissage de manière autonome, un Vieil Homme vous fournit un manuscrit (magique, il se rempli tout seul) contenant le manuel d'utilisation de tous ce qui est appris.
 
 Ensuite, vous franchissez un portail que vous avait indiqué le Vieil Homme.
@@ -34,8 +34,8 @@ Ensuite vous continuez le chemin en avant et apprenez à utiliser la commande 's
 * Le portail
 * Le village de Terminus
     * La boutique artisanal : apprentissage 'touch' 'cp'
-    * Le marché : apprentissage 'rm', 'mkdir' et accésoiremment 'unzip' (en fouillant dans le sac à dos)
-    * La bibliothèque : apprentissage 'grep' // il serait intéressant d'en faire le reflet d'une bibliothèque moderne (avec rayon cd)
+    * Le marché : apprentissage 'rm', 'mkdir' et accessoirement 'unzip' (en fouillant dans le sac à dos)
+    * La bibliothèque : apprentissage 'grep' // il serait intéressant d'en faire le reflet d'une bibliothèque moderne (avec rayon CD)
 * Le pont : il faut ajouter une planche pour passer
 * La maison (des parents) de l'enfant kidnappé : on peut reconstruire une maison avec mkdir
 * Le champ : vous pouvez redonner le sourire au cultivateur en dupliquant son épis de maïs
@@ -45,7 +45,7 @@ Ensuite vous continuez le chemin en avant et apprenez à utiliser la commande 's
 * ?????
 
 # Personnages
-## Intro
+## Introduction
 * Enfant apparaissant (personnage jouable) en prélude
 * Poney : vous supposer d'abord que vous ne pourrez pas communiquer avec lui (ou elle) mais finalement, c'est un allié de bon conseil
 * Palourde (pas d'image) : dans Terminus, la palourde est un animal mythique qui maitrise l'utilisation de la ligne de commande, on dit même qu'elle est au courant lorsqu'on écrit une commande. D'autres pensent même que c'est elle réalise l'action.
