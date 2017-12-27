@@ -99,7 +99,7 @@ _setupCommand('cd','dir',[ARGT.dir],function(args,vt){
     t.previous.previous=t;
     enterRoom(t.previous, vt);
   } else if (args.length === 0){
-    return _('cmd_cd_no_args')+(global_hasCmd('pwd')?("\n"+_('cmd_cd_no_args_pwd')):'');
+    return _('cmd_cd_no_args')+(_hasRightForCommand('pwd')?("\n"+_('cmd_cd_no_args_pwd')):'');
   } else if (args[0] === "~"){
     $home.previous=t;
     enterRoom($home, vt);
@@ -190,7 +190,6 @@ _setupCommand('cp',null,[ARGT.file,ARGT.filenew], function(args,vt){//event arg 
     }
     return _('cmd_cp_unknown');
   }
-  return _('cmd_unknown');
 });
 _setupCommand('mv',null,[ARGT.strictfile,ARGT.file],function(args,vt){// event arg -> object (source)
   console.log(args);
@@ -302,20 +301,17 @@ _setupCommand('rm',null,[ARGT.file],function(args,vt){// event arg -> object
 
 _setupCommand('grep',null,[ARGT.pattern,ARGT.strictfile],function(args,vt){
   var t=vt.getContext();
-  if (t.hasRightForCommand("grep")){
-    var word_to_find = args[0];
-    //      var item=t.getItemFromName(args[1]);
-    var tgt=t.traversee(args[1]);
-    if (tgt.item){
-      var item_to_find_in_text = tgt.item.cmd_text.less;
-      var line_array = item_to_find_in_text.split("\n");
-      var return_arr = line_array.filter(function(line){ return (line.indexOf(word_to_find) > 0);});
-      return return_arr.join("\n");
-    } else {
-      return _('item_not_exists', args);
-    }
+  var word_to_find = args[0];
+  //      var item=t.getItemFromName(args[1]);
+  var tgt=t.traversee(args[1]);
+  if (tgt.item){
+    var item_to_find_in_text = tgt.item.cmd_text.less;
+    var line_array = item_to_find_in_text.split("\n");
+    var return_arr = line_array.filter(function(line){ return (line.indexOf(word_to_find) > 0);});
+    return return_arr.join("\n");
+  } else {
+    return _('item_not_exists', args);
   }
-  return _('cmd_unknown');
 });
 _setupCommand('touch',null,[ARGT.filenew],function(args,vt){
   var t=vt.getContext();
@@ -337,7 +333,6 @@ _setupCommand('touch',null,[ARGT.filenew],function(args,vt){
     }
     return _('cmd_touch_created', [createdItemsString]);
   }
-  return _('cmd_unknown');
 });
 
 

@@ -564,10 +564,10 @@ VTerm.prototype={
             t.show_msg(echo);
           }
         }
-t.set_line('');
-t.hide_suggestions();
-//t.show_suggestions(_getCommands(t.context).map(addspace));
-t.monitor = mon;
+        t.set_line('');
+        t.hide_suggestions();
+        //t.show_suggestions(_getCommands(t.context).map(addspace));
+        t.monitor = mon;
       }
     }
   },
