@@ -28,11 +28,40 @@ A file with no permission (0), can be deleted, renamed or moved. It only depends
 # Rooms
 Rooms are directories.
 
-# Peoples
-Peoples are files. The fact it shall always be executable is discussed.
+# Peoples and items
+Peoples and items are represented by files.
 
-# Items
-Items are files.
+*Phylosophical part*
+Notes about execution and reading files:
+* if text is invariable, then it shall be only readable and writable
+* if text is a variable but nothing change in the environment, then it could be used has an executable
+* if text is a variable and it causes change in the environment, then it shall be an executale
+* executables files shall have a different result on `cat file` and `./file`.
+* keep the idea : `cat` is 'read', 'desc', or 'talk' ; `./` is 'use'.
+
+## People Interactions 
+The questions here are :
+* how does people are files ?
+* how to talk with them ?
+* how to get a description of how they look ?
+* how to give something ?
+
+A beginning of answer :
+* `cat people` provide a description of people.
+* The file people could be considered as a program to truly talk with people.
+  Therefore, `./people` could allow to discuss with people. 
+
+
+## Command learning
+The questions here are :
+* how to talk with a teacher who learn you a command ?
+* is it the same way for learning something from a book ?
+* how to get a description of how it look ?
+* shall we have a command like `source` to have a new command ?
+
+A beginning of answer :
+* `cat manuscript` provide a description and get the content.
+* `./manuscript` could allow to get its "magical" effect.
 
 # Commands
 
