@@ -128,9 +128,11 @@ $library.newItem('nostalgicbook',"item_historybook.png")
 ;
 vimbook=$library.newItem('vimbook',"item_vimbook.png")
   .setCmdEvent('less','openVim')
-  .addListener("openVim", function(){
-    vt.flash(1600,1000);
-    vt.rmCurrentImg(2650);
+  .addState("openVim", function(re){
+    if (!re){
+      vt.flash(1600,1000);
+      vt.rmCurrentImg(2650);
+    }
     vimbook.disappear();
   });
 
