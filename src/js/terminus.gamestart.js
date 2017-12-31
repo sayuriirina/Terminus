@@ -1,7 +1,9 @@
 var loadel;
+var game_version='0.1beta';
+var cookie_version='terminus'+game_version;
 function start_game(){
   // prepare game loading
-  var has_save=state.startCookie('terminuscookie');
+  var has_save=state.startCookie(cookie_version);
   var choices=[_('cookie_yes'),_('cookie_no')];
   if (has_save) choices.unshift(_('cookie_yes_load'));
   
@@ -87,6 +89,7 @@ function start_game(){
   vt.flash(0,800);
   vt.epic_img_enter('titlescreen.gif','epicfromright',800,
     function(vt){
+      vt.show_msg(['version : '+game_version,null]);
       if (TESTING){
         vt.enable_input();
         vt.setContext(state.getCurrentRoom());

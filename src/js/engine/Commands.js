@@ -34,11 +34,19 @@ _setupCommand('ls','dir', [ARGT.dir], function(args,vt){
   console.log(t);
   function printLS(room,render_classes){
     var ret='',pics={},i;
-    render_classes=render_classes|| {item:'item',people:'people'};
+    render_classes=render_classes|| {item:'item',people:'people',subroom:'inside-room'};
     if ((room.children.length > 0)||!room.isRoot){
+      tmpret='';
+      for (i=0;i<room.children.length;i++){
+         tmpret+=span('color-room',room.children[i].toString() + '/')+"\n\t";
+         if (room.children[i].picture && room.children[i].picture.shown_as_item ){
+            room.children[i].picture.setOneShotRenderClass(render_classes.subroom);
+            pics['room-'+i]=room.children[i].picture;
+         }
+      } 
       ret+= _('directions',
-        ["\t" + (room.isRoot?'':span('color-room','..')+" (revenir sur tes pas)\n\t") +
-          room.children.map(function(n){return span('color-room',n.toString() + '/');}).join("\n\t")]) + "\t\n";
+        ["\t" + (room.isRoot?'':span('color-room','..')+" (revenir sur tes pas)\n\t") + tmpret ]
+      ) + "\t\n";
     }
     var items=room.items.filter(function(o){return !o.people;});
     var peoples=room.items.filter(function(o){return o.people;});
@@ -123,7 +131,7 @@ _setupCommand('cd','dir',[ARGT.dir],function(args,vt){
         room.previous=t;
         return _('cmd_cd',enterRoom(room,vt));
       } else {
-//        t.fire_event(vt,'cd',args,0,{'unreachable_room':room});
+        t.fire_event(vt,'cd',args,0,{'unreachable_room':room});
         return room.cmd_text.cd;
       }
     }
@@ -287,6 +295,7 @@ _setupCommand('rm',null,[ARGT.file],function(args,vt){// event arg -> object
             } else {
               stringtoreturn += _('cmd_rm_done', [args[i]]);
             }
+            removedItem.fire_event(vt,'rm',args,i);
           } else {
             stringtoreturn += _('cmd_rm_failed');
           }

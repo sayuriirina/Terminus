@@ -173,6 +173,18 @@ transform:scaleX(-1);
 /*  transform:translate(-50%,-50%);*/
 /*  z-index:0;*/
 /*}*/
+.layers.room-cage .people:nth-child(n+2) {
+position: absolute;
+bottom: 0;
+}
+.layers.room-cage .people:nth-child(2) {
+left: -4rem;
+z-index: -1;
+}
+.layers.room-cage .people:nth-child(3) {
+left: 4rem;
+z-index: -1;
+}
 .layer.people {
 }
 .layers .covering {

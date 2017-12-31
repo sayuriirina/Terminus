@@ -4,6 +4,8 @@ function Pic(src,prop){
   this.img_dir=d(prop.img_dir, './img/'); // shall contains last slash './img/'
   this.cls=prop.cls;
   this.shown_in_ls=d(prop.pic_shown_in_ls,true);
+  this.shown_as_item=d(prop.pic_shown_as_item,false);
+  this.image_class=d(prop.image_class, '');
   this.index=d(prop.index,0);
   this.children=prop.children||{};
 }
@@ -13,6 +15,7 @@ function PicLayers(pic,cont,onload){
   this.onload=onload;
   this.reverseX=false;
   this.reverseY=false;
+  this.image_class=d(pic.image_class, '');
   this.othercls='';
   this.offset=[0,0];
   this.offset_prop={grid:null,val:[0,0],unit:['%','%'],prop:["left","bottom"],range:[[0,100],[0,100]]};
@@ -60,7 +63,7 @@ PicLayers.prototype={
 //        'box-sizing:border-box;border:1px solid pink;'+
         o.prop[0]+':'+t.offset[0]+o.unit[0]+';'+
         o.prop[1]+':'+t.offset[1]+o.unit[1]+';');
-      t.cont.className='layers '+t.othercls+(t.reverseX?' reverseX':'')+(t.reverseY?' reverseY':'');
+      t.cont.className='layers '+t.image_class+t.othercls+(t.reverseX?' reverseX':'')+(t.reverseY?' reverseY':'');
       if (t.gravity && !t.falling) t.gravity();
       return true;
     } else {
@@ -172,7 +175,7 @@ PicLayers.prototype={
     //  over.innerHTML="";
     //  behind.innerHTML="";
     cont.innerHTML="";
-    cont.className='layers '+t.othercls+(t.reverseX?' reverseX':'')+(t.reverseY?' reverseY':'');
+    cont.className='layers '+t.pic.image_class+' '+t.othercls+(t.reverseX?' reverseX':'')+(t.reverseY?' reverseY':'');
     var over=addEl(cont,'div',{'class':'foreground','aria-hidden':'true'});
     var behind=addEl(cont,'div',{'class':'background','aria-hidden':'true'});
     if (t.pic.src){
@@ -198,11 +201,15 @@ Pic.prototype={
   setOneShotRenderClass:function(cls){
     this.tmpcls=cls;
   },
+  setImgClass:function(cls){
+    this.image_class=cls;
+  },
   copy:function(children){
     return new Pic(this.src,{
       img_dir:this.img_dir,
       cls:this.cls,
       shown_in_ls:this.shown_in_ls,
+      image_class:this.image_class,
       children:clone(this.children)
     });
   },
@@ -243,28 +250,11 @@ Pic.prototype={
     var t=this;
     if (t.exists()){
       var cont=addEl(c,'div','layers');
-        cont.onload=onload ;
-//      var over=addEl(cont,'div',{'class':'foreground','aria-hidden':'true'});
-//      var behind=addEl(cont,'div',{'class':'background','aria-hidden':'true'});
-//      if (t.src){
-//        addEl(cont,'img',{class:'main '+(t.cls || '')+' '+(t.tmpcls || ''),src:t.img_dir + t.src, 'aria-hidden':'true'})
-//          .onload=onload;
-//        delete this.tmpcls;
-//      }
-//      var cnt=0;
-//      for (var name in t.children){
-//        if (this.children.hasOwnProperty(name)){
-//          var childpic=t.children[name];
-//          if (childpic.render_as_child((childpic.index<0?behind:over),cnt+1)){
-//            cnt++;
-//          }
-//        }
-//      }
+      cont.onload=onload ;
+//      console.log(t.image_class);
       var picl=new PicLayers(t,cont,onload);
       picl.update();
       return picl; 
-
-    
     }
     return null;
   }

@@ -1,12 +1,6 @@
-
-var global_uid=0;
-function getObjUID(){
-  return global_uid++;
-}
 var regexp_str=/^['"].*['"]$/;
 var regexp_star=/.*\*.*/;
 var global_spec={};
-
 
 function Room(roomname, introtext, picname,prop){
   prop=prop||{};
@@ -37,6 +31,7 @@ function newRoom(id, picture,prop){
     prop);
   n.varname='$'+id;//currently undefined for user created rooms, see mkdir
   n.poid=poid;
+  n.picture.setImgClass(n.varname.replace('$','room-'));
   window[n.varname]=n;
   return n;
 }

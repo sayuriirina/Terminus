@@ -699,7 +699,7 @@ msgstr ""
 "marmonne-t-il, secouant sa tête et retournant à sa lecture."
 
 msgid "people_citizen3"
-msgstr "Villageoise"
+msgstr "VillageoiseEnPleurs"
 
 msgid "people_citizen3_text"
 msgstr ""
@@ -1083,7 +1083,7 @@ msgid "room_clearing_cd"
 msgstr "Tu ne peux pas traverser le pont tant que tu n'as pas remplacé la {{item_plank}} manquante."
 
 msgid "people_cryingman"
-msgstr "FemmeEnPleurs"
+msgstr "HommeEnPleurs"
 
 msgid "people_cryingman_text"
 msgstr ""
@@ -1274,7 +1274,7 @@ msgid "room_paradise_ls"
 msgstr "There's really nothing interesting in Paradise."
 
 msgid "room_trollcave"
-msgstr "CaveOfDisgruntledTrolls"
+msgstr "CaveDesTrolls"
 
 msgid "room_trollcave_text"
 msgstr ""

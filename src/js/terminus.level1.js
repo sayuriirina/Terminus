@@ -233,9 +233,9 @@ var poney=$meadow
 $mountain.addPath(
   newRoom('cave', "loc_cave.gif")
   .addPath(newRoom('dark_corridor', "loc_corridor.gif"))
-  .addPath(newRoom('staircase', "loc_stair.gif"))
+//  .addPath(newRoom('staircase', "loc_stair.gif"))
 );
-$staircase.newItem('dead_end', "item_sign.png");
+//$staircase.newItem('dead_end', "item_sign.png");
 
 //DANK ROOM / SMALL HOLE
 $dark_corridor.addPath(

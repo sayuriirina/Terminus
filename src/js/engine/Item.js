@@ -1,3 +1,8 @@
+var global_uid={};
+function getObjUID(name){
+  cntUp(global_uid,name,0);
+  return  name.substr(0,4)+global_uid[name];
+}
 function File(name,picname,prop){
   prop=prop||{};
   this.executable=d(prop.executable,false);
@@ -7,7 +12,8 @@ function File(name,picname,prop){
   this.cmd_event={};
   this.cmd_text = {};
   this.name=name;
-  this.uid=prop.uid||getObjUID();
+  this.uid=prop.uid||getObjUID(prop.poid||name);
+//  console.log(name,this.uid);
   this.poprefix=prop.poprefix;
   //  this.group='';
   //  this.owner='';
@@ -21,6 +27,18 @@ File.prototype=union(EventTarget.prototype,{
     this.readable=d(chmod.read,this.readable);
     this.executable=d(chmod.exec,this.readable);
     this.writable=d(chmod.write,this.readable);
+    return this;
+  },
+  setReadable:function(chmod){
+    this.readable=d(chmod.read,this.readable);
+    return this;
+  },
+  setWritable:function(chmod){
+    this.writable=d(chmod.write,this.readable);
+    return this;
+  },
+  setExecutable:function(chmod){
+    this.executable=d(chmod.exec,this.readable);
     return this;
   },
   getName:function(){

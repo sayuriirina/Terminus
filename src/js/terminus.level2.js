@@ -274,6 +274,7 @@ $townsquare.addPath(
     touchPlank: function(re){
       $clearing.addCommand("cd");
       $clearing.unsetCmdText("cd");
+      $clearing.setExecutable(true);
       $brokenbridge.unsetCmdText("cd");
       $brokenbridge.setIntroText(_('room_brokenbridge_text2'));
       if (re) $brokenbridge.newItem('plank',"item_plank.png");
@@ -311,9 +312,9 @@ $clearing.addPath(
 $ominouspath.newItem("brambles", "item_brambles.png",{cls:'large'})
   .setCmdEvent('rm','rmBrambles')
   .setCmdText("mv", _('item_brambles_mv'))
-  .setCmdText("rm", _('item_brambles_rm'))
+  .setCmdText('rm', _('item_brambles_rm'))
   .addStates({
-    "rmBrambles":function(re){
+    rmBrambles:function(re){
       $ominouspath.addPath($trollcave) ;
       if (re) $ominouspath.removeItem('brambles');
     }
@@ -337,6 +338,7 @@ $trollcave.newPeople('troll1', "item_troll1.png")
   .addStates({
     openSlide:function(re){
       $slide.addCommand("cd");
+      $slide.setExecutable(true);
       $slide.setCmdText("cd", _('room_slide_cd2'));
       if (re) $trollcave.removePeople('troll1');
     }
@@ -351,7 +353,7 @@ $trollcave.newPeople('supertroll', "item_supertroll.png")
 
 //CAGE
 $trollcave.addPath(
-  newRoom('cage', "item_cage.png",{cls:'covering',writable:true,executable:false})
+  newRoom('cage', "item_cage.png",{cls:'covering',writable:true,executable:false,pic_shown_as_item:true})
   .setCmdText("cd", _('room_cage_cd'))
 );
 var Kid=$cage.newPeople('kidnapped', "item_boy.png")
@@ -362,7 +364,7 @@ var Kid=$cage.newPeople('kidnapped', "item_boy.png")
   });
 //SLIDE
 $trollcave.addPath(
-  newRoom("slide",{executable:false})
+  newRoom("slide",null,{executable:false})
   .setCmdText("cd", _('room_slide_cd'))
 );
 
@@ -392,7 +394,7 @@ $kernel. addPath(
   newRoom("morekernel")
   .addCommand("grep")
 );
-$kernel.newItemBatch("bigfile",['L','M','Q','R','S','T','U','V','W']);
+$morekernel.newItemBatch("bigfile",['L','M','Q','R','S','T','U','V','W']);
 
 //PARADISE (end game screen)
 newRoom("paradise", "loc_theend.gif")

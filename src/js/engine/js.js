@@ -126,6 +126,13 @@ function pushDef(v,h){
   }
 return false;
 }
+function cntUp(h,k){
+  if (ndef(h[k])){
+    h[k] = 1;
+  } else {
+    h[k]++;
+  }
+}
 function hdef(h,k,v){
   if (ndef(h[k])){
     h[k] = [];

@@ -511,15 +511,16 @@ VTerm.prototype={
     var t=this;
     t.histindex=0;
     addBtn(t.suggestions,hlcls,txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>'),txt,function (e){
-      var l=t.get_line();
-      var sp=l.split(" ");
-      // replace word by complete suggestion
-      var last=sp.pop();
-      sp.push('');
-      var newl=sp.join(' ')+txt;
+      t.input.value+=t.suggestion_selected;
+//      var l=t.get_line();
+//      var sp=l.split(" ");
+// replace word by complete suggestion
+//      var last=sp.pop();
+//      sp.push('');
+//      var newl=sp.join(' ')+txt;
       // set the line content and try to nxec
-      t.set_line(newl);
-      if (t.argsValid(newl.replace(/\s+$/,"").split(" "))){
+//      t.set_line(newl);
+      if (t.argsValid(t.input.value.replace(/\s+$/,"").split(" "))){
         t.enter();
       } else {
         t.make_suggestions(-1,false);
