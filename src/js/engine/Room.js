@@ -99,11 +99,12 @@ Room.prototype=union(File.prototype, {
     return this;
   },
   // a message displayed on game start
-  getStarterMsg: function(){
+  getStarterMsg: function(prefix){
+    prefix=prefix||'';
     if (this.starter_msg){
-      return this.starter_msg;
+      return prefix + this.starter_msg;
     } else {
-      return _(POPREFIX_CMD+'pwd',[this.name]).concat("\n").concat(this.intro_text);
+      return prefix + _(POPREFIX_CMD+'pwd',[this.name]).concat("\n").concat(this.intro_text);
     }
   },
   setStarterMsg: function(txt){

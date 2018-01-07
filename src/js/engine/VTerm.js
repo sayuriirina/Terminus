@@ -899,42 +899,63 @@ VTerm.prototype={
   ask: function(question,callback,args){
     var t = this;
     t.set_line('');
-    var choicebox = addEl(t.monitor,'div','choicebox');
-    t.show_msg(question,{el:choicebox,dependant:false});
-   
-    if (args.multiline){
-      t.answer_input=addEl(choicebox,'textarea',{cols:78});
-    } else {
-      t.answer_input=addEl(choicebox,'input',{size:78});
-    }
-    if (args.value){
-      t.answer_input.value=args.value;
-    }
-    if (args.placeholder){
-      t.answer_input.placeholder=args.placeholder;
-    }
-    t.answer_input.focus();
-    t.answer_input.onkeyup=function(e){
-      if (e.key === 'Enter') {
-        if (e.ctrlKey || !args.multiline) { // ENTER
-          t.enterKey();
-          e.preventDefault();
-          t.scrl();
-        } else { // line return
-          var strt=t.answer_input.selectionStart;
-          var bef=t.answer_input.value.substr(0,strt),aft=t.answer_input.value.substr(strt);
-          t.answer_input.value=bef+"\n"+aft;
-          t.answer_input.selectionStart=strt+1;
-          t.answer_input.selectionEnd=strt+1;
+    var intimeout=args.wait||0;
+    var outtimeout=args.timeout||null;
+    var choicebox = addEl(t.monitor,'div',args.cls|| 'choicebox');
+    t.show_msg([question,function(){
+      setTimeout(function(){
+        if (args.multiline){
+          t.answer_input=addEl(choicebox,'textarea',{cols:78});
+        } else {
+          t.answer_input=addEl(choicebox,'input',{size:78});
         }
+        if (args.value){
+          t.answer_input.value=args.value;
+        }
+        if (args.placeholder){
+          t.answer_input.placeholder=args.placeholder;
+        }
+        t.answer_input.focus();
+
+        t.answer_input.onkeyup=function(e){
+          if (e.key === 'Enter') {
+            if (e.ctrlKey || !args.multiline) { // ENTER
+              t.enterKey();
+              e.preventDefault();
+              t.scrl();
+            } else { // line return
+              var strt=t.answer_input.selectionStart;
+              var bef=t.answer_input.value.substr(0,strt),aft=t.answer_input.value.substr(strt);
+              t.answer_input.value=bef+"\n"+aft;
+              t.answer_input.selectionStart=strt+1;
+              t.answer_input.selectionEnd=strt+1;
+            }
+          }
+        };
+      },intimeout);
+      if (outtimeout){
+        setTimeout( function(){
+          t.playSound('choiceselect');
+          var ret = t.answer_input.value;
+          end_answer();
+          t.show_msg(callback(ret));
+        },intimeout+outtimeout);
       }
-    };
+    }],{el:choicebox,dependant:false}); 
+    var input_enabled=!t.disabled.input;
+    var destroy=null;
+    if (args.disappear){
+       destroy=function(){
+         choicebox.outerHTML="";
+       }
+    }
     t.disable_input();
    
     var end_answer= function(){
       t.answer_input.setAttribute('disabled',true);
       t.answer_input = undefined;
-      t.enable_input();
+      if (args.disappear) args.disappear(destroy);
+      if (input_enabled) t.enable_input();
     };
     ///
     t.enterKey=function(){

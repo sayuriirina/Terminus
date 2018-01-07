@@ -18,6 +18,7 @@ function PicLayers(pic,cont,onload){
   this.image_class=d(pic.image_class, '');
   this.othercls='';
   this.offset=[0,0];
+  this.gravity_coef=1;
   this.offset_prop={grid:null,val:[0,0],unit:['%','%'],prop:["left","bottom"],range:[[0,100],[0,100]]};
 }
 function PlatformGrid(matrix,range){
@@ -49,7 +50,7 @@ PlatformGrid.prototype.check=function(x,y,w,h){
   return ret;
 };
 PicLayers.prototype={
-  _setOffset:function(x,y,gravity){
+  _setOffset:function(x,y){
     var t=this; var o=t.offset_prop;
     var nowall=(!o.grid||(o.grid.check(
       x,y,
@@ -144,6 +145,7 @@ PicLayers.prototype={
   },
   setOffsetDelta:function(xd,yd){
     var t=this;
+    yd=yd*t.gravity_coef;
     return t._setOffset(t.offset[0]+xd,t.offset[1]+yd);
   },
   setOffsetDeltaX:function(xd){
@@ -151,8 +153,9 @@ PicLayers.prototype={
     return t._setOffset(t.offset[0]+xd,t.offset[1]);
   },
   setOffsetDeltaY:function(yd){
-      var t=this;
-      return t._setOffset(t.offset[0],t.offset[1]+yd);
+    var t=this;
+    yd=yd*t.gravity_coef;
+    return t._setOffset(t.offset[0],t.offset[1]+yd);
   },
   setOffsetDeltaXStepped:function(xd,step,interval,cb){
     var t=this;
@@ -160,6 +163,7 @@ PicLayers.prototype={
   },
   setOffsetDeltaYStepped:function(yd,step,interval,cb){
     var t=this;
+    yd=yd*t.gravity_coef;
     t.fallTo([t.offset[0],t.offset[1]+yd],[0,step],interval,cb);
   },
   getOffset:function(){

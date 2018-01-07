@@ -24,12 +24,21 @@ function start_game(){
     if (loaded){
       vt.unmuteSound();
       vt.notification(_("game_loaded"));
-      vt.show_msg( vt.context.getStarterMsg());
+      vt.show_msg( vt.context.getStarterMsg( _('welcome_msg',[user.name]) + "\n" ) );
       vt.enable_input();
     } else {
       vt.muteCommandResult();
       music.play('preload');
       var seq=new Seq();
+      seq.then(function(next){
+        vt.ask(_('username_prompt'),function(val){_setUserName(val);next();},{placeholder:user.name, cls:'megaprompt', disappear:function(cb){cb();},wait:500});
+      });
+      seq.then(function(next){
+        vt.ask(_('useraddress_prompt'),function(val){ _setUserAddress(val); next();},{placeholder:user.address, cls:'megaprompt', disappear:function(cb){
+            cb();
+            vt.flash(0,800);
+          },wait:500});
+      });
       seq.then(function(next){
         vt.show_loading_element_in_msg(['_',' '],{duration:800,finalvalue:' ',callback:next});
       });
@@ -70,10 +79,10 @@ function start_game(){
         vt.enable_input();
         vt.auto_shuffle_input_msg(_('press_enter'),0.9,0.1,8,20,null,50);
       });
-      vt.battlescene(minigame_start,function(){
+      vt.battlescene(minigame_intro.start,function(){
         music.play();
         vt.flash(0,800);
-        seq.next();
+        setTimeout(function(){seq.next()},100);
       });
     }
   };

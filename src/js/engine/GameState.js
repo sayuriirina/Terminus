@@ -23,6 +23,12 @@ GameState.prototype = {
   add : function(param_name, fun){
     this.actions[param_name]=fun;
   },
+  set : function(param_name, fun){
+    this.params[param_name]=fun;
+  },
+  get : function(param_name, fun){
+    return this.params[param_name];
+  },
   applied : function(param_name){
     return this.actions[param_name];
   },
@@ -48,15 +54,13 @@ GameState.prototype = {
     //this function reads from a cookie if one exists
     var params=this.cookie.read();
     if (params){
-      if ("" in params){
-        // set current room
-        this.params[""]=params[""];
-        delete params[""];
-      }
-      // set state properties
       for (var k in params){
         if (params.hasOwnProperty(k)){
-          this.apply(k, params[k]);
+          if (k in this.actions) {
+            this.apply(k, params[k]);
+          } else {
+            this.set(k,params[k]);
+          }
         }
       }
       this.saveCookie();

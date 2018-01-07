@@ -158,10 +158,13 @@ box-sizing: border-box;
   display:inline-block;
 }
 .reverseY{
-
+transform:scaleY(-1);
 }
 .reverseX{
 transform:scaleX(-1);
+}
+.reverseY.reverseX{
+transform:scale(-1,-1);
 }
 .img-container .layers .main {
   position:relative;
@@ -493,6 +496,24 @@ input[disabled=""] {
   opacity:0;
 }
 
+.megaprompt {
+font-size: 4vw;
+/*position: fixed;*/
+/*width: 100vw;*/
+/*height: 100vw;*/
+/*left: 0;*/
+/*top: 0;*/
+/*z-index: 999;*/
+}
+.megaprompt > * {
+  margin:auto;
+  display: block;
+  padding: 1em;
+}
+#term .megaprompt input {
+  background: white;
+  color: black;
+}
 .battlescene .red {
   background:red;
 }
