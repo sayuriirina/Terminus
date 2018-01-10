@@ -2,7 +2,9 @@
  * recurrent things
  **/
 function getTime(){
-  return new Date().toLocaleFormat('%Hh%M');
+//  return new Date().toLocaleFormat('%Hh%M');
+  var d=new Date();
+  return d.getHours() + 'h' + d.getMinutes();
 }
 
 function learn(vt, cmds,re){

@@ -31,6 +31,20 @@ function start_game(){
       music.play('preload');
       var seq=new Seq();
       seq.then(function(next){
+        vt.unmuteSound();
+        vt.ask(_('prelude_text'),function(val){},
+          {cls:'mystory',disappear:function(cb){cb();next();},
+          }
+        );
+      });
+      seq.then(function(next){
+        vt.battlescene(minigame_intro.start,function(){
+          music.play();
+          vt.flash(0,800);
+          setTimeout(function(){next()},100);
+        });
+      });
+      seq.then(function(next){
         vt.ask(_('username_prompt'),function(val){_setUserName(val);next();},{placeholder:user.name, cls:'megaprompt', disappear:function(cb){cb();},wait:500});
       });
       seq.then(function(next){
@@ -79,11 +93,7 @@ function start_game(){
         vt.enable_input();
         vt.auto_shuffle_input_msg(_('press_enter'),0.9,0.1,8,20,null,50);
       });
-      vt.battlescene(minigame_intro.start,function(){
-        music.play();
-        vt.flash(0,800);
-        setTimeout(function(){seq.next()},100);
-      });
+      seq.next();
     }
   };
 
@@ -104,7 +114,7 @@ function start_game(){
         vt.setContext(state.getCurrentRoom());
         do_test();
       } else {
-        music.play('title',{loop:true});
+//        music.play('title',{loop:true});
         vt.ask_choose(_('cookie'), choices,game_start,{direct:true});
       }
     });

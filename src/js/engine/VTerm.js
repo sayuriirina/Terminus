@@ -197,11 +197,19 @@ VTerm.prototype={
     var t=this;
     var m=t.monitor;
     retry=d(retry,2);
-    if ((m.parentNode.offsetTop + m.offsetTop + m.offsetHeight+t.inputdiv.offsetHeight)>window.innerHeight){
+    var misspos=m.parentNode.offsetTop + m.offsetTop + m.offsetHeight+t.inputdiv.offsetHeight - window.pageYOffset - window.innerHeight;
+    if (misspos>0){
       if (!t.scrl_lock){
         if (!def(timeout)){
 //          var c=t.container;
-          window.scrollBy(0, window.innerHeight);
+          window.scrollBy(0, misspos);
+//          t.container.style="margin-top:"+
+//           (
+//             window.inn
+//             -
+//             document.defaultView.getComputedStyle(vt.container)
+//             .getPropertyValue('margin-top').replace('px','')
+//           )+"px";
 //          window.scrollTo(0, m.parentNode.offsetTop + m.offsetTop + m.offsetHeight+t.inputdiv.offsetHeight);
           return true;
         }
@@ -442,7 +450,7 @@ VTerm.prototype={
       // which word to guess
       if (tocomplete && idx>0) { // at least 1 arg
         match=_completeArgs(args,idx,tocomplete,t.context);
-      } else if (args[0].length>0){ 
+      } else if (args[0].length>0) {
         if (_hasRightForCommand(args[0],user.groups)) { // propose argument
           match=_completeArgs(args,idx,tocomplete,t.context);
         } else { // propose command completion
@@ -450,11 +458,12 @@ VTerm.prototype={
           idx=0;
           for(var i = 0; i<cmds.length; i++){
             if(cmds[i].match("^"+tocomplete)){
-                match.push(cmds[i]);
+              match.push(cmds[i]);
             }
           }
         }
       } else { // propose commands
+      console.log("this case",_getCommands(t.context));
         tocomplete="";
         match=_getCommands(t.context).map(addspace);
       }
@@ -510,8 +519,9 @@ VTerm.prototype={
   show_suggestion: function (txt,hlcls){
     var t=this;
     t.histindex=0;
+    console.log(txt,hlcls);
     addBtn(t.suggestions,hlcls,txt.replace(/(#[^#]+#)/g,'<i class="hashtag"> $1 </i>'),txt,function (e){
-      t.input.value+=t.suggestion_selected;
+      t.input.value+=txt;
 //      var l=t.get_line();
 //      var sp=l.split(" ");
 // replace word by complete suggestion
@@ -779,6 +789,7 @@ VTerm.prototype={
     t.last_notify=now+downtimeout;
   },
 /** Choice prompt **/
+/** TODO : add live action function option **/
   ask_choose:function(question,choices,callback,opts){
     var t=this;
     var choices_btn=[];
@@ -896,6 +907,8 @@ VTerm.prototype={
     return fu(vt,t.battle_scene,end_battle);
   },
 /** Question prompt **/
+/** TODO : add generic confirmation button **/
+/** TODO : add live action function option **/
   ask: function(question,callback,args){
     var t = this;
     t.set_line('');
@@ -1024,6 +1037,7 @@ VTerm.prototype={
       t._end_password();
     }
   }, 
+/** TODO : maybe, add live action function option **/
   ask_password: function(cmdpass,callback){
     this._begin_password();
     this._ask_password_rec(cmdpass,callback);

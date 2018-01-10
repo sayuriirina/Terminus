@@ -1,5 +1,4 @@
 /* light dom manipulation and common type testing tool */
-
 var dom = document;
 dom.Id = dom.getElementById;
 dom.El = dom.createElement;
