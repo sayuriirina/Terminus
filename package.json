@@ -11,7 +11,7 @@
     "gulp-concat": "*",
     "gulp-inject": "*",
     "gulp-html-minifier": "*",
-    "uglify": "*",
+    "gulp-uglify": "*",
     "gulp-postcss": "*",
     "autoprefixer": "*",
     "cssnano": "*",

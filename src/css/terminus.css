@@ -1,4 +1,18 @@
 
+
+@font-face {
+    font-family: term;
+    src: url('terminal-grotesque-webfont.eot');
+    src: url('terminal-grotesque-webfont.eot?#iefix') format('embedded-opentype'),
+         url('terminal-grotesque-webfont.woff2') format('woff2'),
+         url('terminal-grotesque-webfont.woff') format('woff'),
+         url('terminal-grotesque-webfont.ttf') format('truetype'),
+         url('terminal-grotesque-webfont.svg#terminal_grotesqueregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 body {
   overflow-x:hidden;
   color: #efefef;
@@ -498,11 +512,11 @@ input[disabled=""] {
 
 .mystory {
 font-size: 1.5em;
-font-family:"Terminal Grotesque";
+font-family:term;
 }
 .megaprompt {
 font-size: 4.5vw;
-font-family:"Terminal Grotesque";
+font-family:term;
 }
 .megaprompt > * {
   margin:auto;

@@ -32,20 +32,16 @@ function start_game(){
       var seq=new Seq();
       seq.then(function(next){
         vt.unmuteSound();
-        vt.ask(_('prelude_text'),function(val){},
+        vt.ask(_('prelude_text'),function(val){
+          // Todo detect bad or lovely words -> user_judged_bad & user_judged_lovely
+          user.judged= _('user_judged-'+Math.min(5,Math.round(val.length / 20)));
+          },
           {cls:'mystory',disappear:function(cb){cb();next();},
           }
         );
       });
       seq.then(function(next){
-        vt.battlescene(minigame_intro.start,function(){
-          music.play();
-          vt.flash(0,800);
-          setTimeout(function(){next()},100);
-        });
-      });
-      seq.then(function(next){
-        vt.ask(_('username_prompt'),function(val){_setUserName(val);next();},{placeholder:user.name, cls:'megaprompt', disappear:function(cb){cb();},wait:500});
+        vt.ask(user.judged + "\n" + _('username_prompt'),function(val){_setUserName(val);next();},{placeholder:user.name, cls:'megaprompt', disappear:function(cb){cb();},wait:500});
       });
       seq.then(function(next){
         vt.ask(_('useraddress_prompt'),function(val){ _setUserAddress(val); next();},{placeholder:user.address, cls:'megaprompt', disappear:function(cb){

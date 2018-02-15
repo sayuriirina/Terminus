@@ -242,13 +242,17 @@ var minigame_intro={
     bs.onkeyup = function (e) {
       var k=e.key;
       keydown=false;
-      if ( k === 'Tab' || k == 'Enter' ) {
+      if ( k === 'Tab' || k === 'Enter' ) {
         parseCollectStr();
-      }
-      if (k.length==1){
-        collect_string+=k;
+      } else {
+        if (k === 'Backspace') {
+          collect_string=collect_string.slice(0,-1);
+        } else if (k.length==1){
+          collect_string+=k;
+        }
         moninput.innerHTML=collect_string;
-        setTimeout(parseCollectStr,1200);
+        if (bs.collecttimeout) clearTimeout(bs.collecttimeout);
+        bs.collecttimeout=setTimeout(parseCollectStr,1000);
       }
       //    console.log(k);
     };
@@ -300,4 +304,4 @@ add_test(function(next){
   });
   vt.loop_waiting();
 });
-TESTING=false;
+TESTING=true;

@@ -922,6 +922,8 @@ VTerm.prototype={
         } else {
           t.answer_input=addEl(choicebox,'input',{size:78});
         }
+        var k=addEl(choicebox,'div','keys');
+        addBtn(k,'key','↵','Enter',function(e){t.enterKey();});
         if (args.value){
           t.answer_input.value=args.value;
         }
@@ -950,8 +952,9 @@ VTerm.prototype={
         setTimeout( function(){
           t.playSound('choiceselect');
           var ret = t.answer_input.value;
+          ret = callback?callback(ret):ret;
           end_answer();
-          t.show_msg(callback(ret));
+          t.show_msg(ret);
         },intimeout+outtimeout);
       }
     }],{el:choicebox,dependant:false}); 
@@ -974,8 +977,9 @@ VTerm.prototype={
     t.enterKey=function(){
       t.playSound('choiceselect');
       var ret = t.answer_input.value;
+      ret = callback?callback(ret):ret;
       end_answer();
-      t.show_msg(callback(ret));
+      t.show_msg(ret);
     };
   },
 /** Password prompt **/
