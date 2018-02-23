@@ -50,10 +50,10 @@ function start_game(){
           },wait:500});
       });
       seq.then(function(next){
+        vt.muteSound();
         vt.show_loading_element_in_msg(['_',' '],{duration:800,finalvalue:' ',callback:next});
       });
       seq.then(function(next){
-        vt.unmuteSound();
         vt.show_msg([_('gameintro_text_initrd'),next],{});
       });
       seq.then(function(next){
@@ -85,6 +85,7 @@ function start_game(){
       });
       seq.then(function(next){
         vt.show_msg(_('gamestart_text'));
+        vt.unmuteSound();
         music.play('story');
         vt.enable_input();
         vt.auto_shuffle_input_msg(_('press_enter'),0.9,0.1,8,20,null,50);

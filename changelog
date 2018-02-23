@@ -1,0 +1,108 @@
+Here are listed major changes with commit references.
+Noticable things between commits are separated by '--'.
+
+commit 18b2ae0c1cc0e621ab805a29d04e2f20bb5a2a3e
+Date:   Fri Feb 23 12:32:31 2018 +0100
+    Set an ignore case and fuzzy completion.
+		From now all construction of scenario is first decided in the wiki.
+    --
+		Add grotesque font
+		Add a username prompt
+
+commit bb2701868cbfc7c8817c780ec9bceb44cae1830b
+Date:   Sun Nov 12 16:59:02 2017 +0100
+    Changing paradigm for a true filesystem paradigm
+		--
+		Removed MIT part.
+		The game is no more focussed on MIT students formation.
+
+commit 104761d88151d5fa6d48ca31680c8b02ccc501be
+Date:   Thu Oct 26 15:41:07 2017 +0200
+    version alpha : this begin to be a game
+    --
+		Adding sound capability (buggy) and text flow
+
+commit c79a37d605bbb11c08049bf7ba97531476419b8e
+Date:   Sat Aug 19 00:11:50 2017 +0200
+    Add cookie agrement.
+		It can ask multiple choices questions now.
+    --
+		Simplify event management // allows command learning
+    --
+		Passwords become really passwords. Too, the user will have to explore to learn the spell.
+		add dirty scrolling :p
+
+commit db83b5913a5a981df4a50ce352feccecca95fb76
+Date:   Sat Aug 5 12:48:10 2017 +0200
+    add clickable interface on suggestions
+
+commit 9633390940e156b2e4b133e12ad4a5a864ce7244
+Date:   Fri Jul 28 19:18:00 2017 +0200
+    optimisation / shorter code / po generation tool when running src/index.html
+    .. add a "compiled" version
+
+commit 1884bd25d045745738f346a58036e79b27bed9bd
+Date:   Thu Jul 27 20:54:06 2017 +0200
+    Fork deviation : the image appear in the flow
+
+commit fe3e961813d214aa651afca3100382e091639df5
+Date:   Mon Jul 17 12:22:01 2017 +0200
+    Init NonJquery version / light / remove JQuery Terminal
+
+commit 6c8ff29b8722da062776ccc4a07dbd33beff9ad2
+Date:   Fri Jul 7 22:50:26 2017 +0200
+    Refactoring // changes are a mix of english and french // todo GameDialogs // todo readable interface
+    --
+		Beginning with gettext
+		Starting a french version
+
+commit 1db759e01c80fdf8093e0b455cdd1ba18b2d38d1
+Date:   Sun Feb 2 23:47:14 2014 +0200
+    make font bigger and more contrast
+    --
+		added GPL v2 license
+
+commit 99e5c375a86083fbb1baef6a453b0fd2b8090a2e
+Date:   Wed May 1 06:15:38 2013 -0400
+    Dynamically created objects (Gear, Plank) images not functioning
+    properly, but not breaking either.
+    --
+    GIFs added
+    item_TA, gear, grad, plank, workstation
+    loc_MIT, cluster, stata
+    --
+    final round presentation added
+    --
+    just do state replay twice to catch everything
+    --
+		all / commands work
+    --
+    added MIT rooms
+    --
+    touch on bridge with listener working correctly. removecmdtext for room method added
+    --
+    save cookie
+    --
+		gamestate added
+
+commit 9ed58c9371819caa5ab3bdf4f297ee93801d251c
+Date:   Sat Apr 13 23:00:42 2013 -0400
+    Auto-complete fills in longest common substring of candidates
+    --
+    first commit to gh-pages
+
+commit 7603b51b732d52f452785391bf10da55bca10cbb
+Date:   Sun Mar 10 00:46:26 2013 -0500
+    Added autocomplete to LAST ARG
+    --
+		second level chained together but not implemented
+
+commit 62bd9c967efa2e35c6e00f17fa2ef96fe8366480
+Date:   Sat Mar 9 23:55:18 2013 -0500
+    version first published on mprats public
+    --
+    Added JQuery Terminal
+    --
+    web folder created
+    --
+    Initial commit

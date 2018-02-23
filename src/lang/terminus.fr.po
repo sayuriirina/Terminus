@@ -242,6 +242,12 @@ msgstr ""
 "2. en écrivant '{{cmd.ls}}' (LiSter), tu pourras voir ce qui croise ton chemin ;\n"
 "3. en écrivant '{{cmd.cd}}' (Changer de Destination), tu pourras aller ailleurs."
 
+msgid "a_wish_to_understand_you"
+msgstr "what do you want to do ?"
+
+msgid "cmd_cat_aliases"
+msgstr "detrui\w*, remov\*, del\w*, suppr\w*"
+
 msgid "cmd_cat_first_try"
 msgstr "J'ai oublié de te dire que {{cmd.cat}} doit être suivi du nom d'une personne ou d'un objet."
 
@@ -308,6 +314,10 @@ msgstr "Il n'y a rien d'écrit dans le grand manuscrit."
 msgid "cmd_not_found"
 msgstr "La commande '%s' est introuvable."
 
+
+msgid "cmd_mv_aliases"
+msgstr "d[ée]pl\w*, boug\*, mov\w*, met\w*"
+
 msgid "cmd_mv_done"
 msgstr "%s a été déplacé(e) vers %s."
 
@@ -340,8 +350,14 @@ msgstr "(Permission non accordée)"
 msgid "welcome_msg"
 msgstr "Salut '%s' ! Ça va ? \n Tu étais tombé·e dans les pommes. J'étais inquiet."
 
+msgid "cmd_pwd_aliases"
+msgstr "perd\w*, los\*, où\w*je, lieu"
+
 msgid "cmd_pwd"
 msgstr "Tu te trouves dans '%s'."
+
+msgid "cmd_rm_aliases"
+msgstr "detrui\w*, remov\*, del\w*, suppr\w*"
 
 msgid "cmd_rm_done"
 msgstr "Tu viens de supprimer '%s'. Ses données disparaissent devant tes yeux."

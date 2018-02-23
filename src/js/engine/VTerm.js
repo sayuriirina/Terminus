@@ -6,6 +6,9 @@ function overide(e){
   e.preventDefault();
   e.stopPropagation();
 }
+function no_accents(str){
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+}
 function VTerm(container_id, context){
   var t=this;
   /* non dom properties */
@@ -13,6 +16,7 @@ function VTerm(container_id, context){
   t.charduration=10;
   t.charfactor={char:1,' ':8,' ':2,'!':10,'?':10,',':5,'.':8,"\t":2, "\n":10,'tag':10};
   t.charhtml={' ':'&nbsp;',"\n":'<br>',"\t":'&nbsp;&nbsp;'};
+  t.complete_opts = {case:'i', fuzzy:no_accents,humanized:true};
   t.imgs={};
   t.statkey={};
   t.history=[];
@@ -448,16 +452,23 @@ VTerm.prototype={
       var match=[];
 //      console.log('suggestions',ac,l,args);
       // which word to guess
+      function trymatch(potential,tocomplete){
+        var tocompleterx=new RegExp("^"+t.complete_opts.fuzzy(tocomplete), t.complete_opts.case)
+        console.log(potential, tocompleterx);
+        return t.complete_opts.fuzzy(potential).match(tocompleterx);
+      }
       if (tocomplete && idx>0) { // at least 1 arg
-        match=_completeArgs(args,idx,tocomplete,t.context);
+        match=_completeArgs(args,idx,tocomplete,t.context,trymatch);
       } else if (args[0].length>0) {
         if (_hasRightForCommand(args[0],user.groups)) { // propose argument
-          match=_completeArgs(args,idx,tocomplete,t.context);
+          match=_completeArgs(args,idx,tocomplete,t.context,trymatch);
         } else { // propose command completion
           var cmds=_getCommands(t.context);
           idx=0;
           for(var i = 0; i<cmds.length; i++){
-            if(cmds[i].match("^"+tocomplete)){
+            console.log(cmds[i],tocomplete);
+            var tocompleterx=new RegExp("^"+t.complete_opts.fuzzy(tocomplete), t.complete_opts.case)
+            if(cmds[i].match(tocompleterx)){
               match.push(cmds[i]);
             }
           }

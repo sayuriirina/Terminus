@@ -50,7 +50,7 @@ function commonprefix(array) {
   while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
   return a1.substring(0, i);
 }
-function _completeArgs(args,argidx,tocomplete,r){ // return completion matches
+function _completeArgs(args,argidx,tocomplete,r, compl){ // return completion matches
   var search_room = tocomplete.substring(0,1) == "~" ? $home : r;
   tocomplete=tocomplete.replace(/\*/g,'.*');
   //Iterate through each room
@@ -64,7 +64,7 @@ function _completeArgs(args,argidx,tocomplete,r){ // return completion matches
 //    tocomplete=args.shift();
     idx=0;
     for(var i = 0; i<cmds.length; i++){
-      if(cmds[i].match("^"+tocomplete)){
+      if(compl(cmds[i])){
         substring_matches.push(cmds[i]+((cmds[i]==tocomplete)?' ':''));//space is here to say : if only one found, then go to next arg
       }
     }
@@ -95,14 +95,14 @@ function _completeArgs(args,argidx,tocomplete,r){ // return completion matches
         //Compare to this room's children
         if(_argType(syntax,argidx,ARGT.strictfile)||_argType(syntax,argidx,ARGT.file)||_argType(syntax,argidx,ARGT.dir)) {
           for(child_num = 0; child_num<search_room.children.length; child_num++){
-            if(search_room.children[child_num].name.match("^"+path_rooms[room_num])){
+            if(compl(search_room.children[child_num].name, path_rooms[room_num])){
               substring_matches.push(search_room.children[child_num].name + '/');
             }
           }
           //Compare to this room's items
           if(_argType(syntax,argidx,ARGT.strictfile)||_argType(syntax,argidx,ARGT.file)) {
             for(item_num = 0; item_num<search_room.items.length; item_num++){
-              if(search_room.items[item_num].name.match("^"+path_rooms[room_num])){
+              if(compl(search_room.items[item_num].name, path_rooms[room_num])){
                 substring_matches.push(search_room.items[item_num].name);
               }
             }
