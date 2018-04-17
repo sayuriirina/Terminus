@@ -1,6 +1,6 @@
 |  | | 
 | :--------------------------- | :--------------------------- | 
-|![Terminus : un jeu pour s'amuser avec la ligne de commande]( ./src/img/promo_image_char_pxl.png)| Contribuer : [Wiki en Français](https://github.com/luffah/Terminus/wiki/fr) <br> <br> Essayer : [Démo du jeu (alpha)](http://luffah.xyz/bidules/Terminus/)<br> <br> Licenses : [GPLv2](./LICENSE.md) <br> <br> Version originale (English) : [mprat's Terminus game](http://mprat.github.io/Terminus/) ([code](https://github.com/mprat/Terminus/))  |
+|![Terminus : un jeu pour s'amuser avec la ligne de commande]( ./src/img/promo_image_char_pxl.png)| Contribuer : [Wiki en Français](https://github.com/luffah/Terminus/wiki//Home) <br> <br> Essayer : [Démo du jeu (alpha)](http://luffah.xyz/bidules/Terminus/)<br> <br> Licenses : [GPLv2](./LICENSE.md) <br> <br> Version originale (English) : [mprat's Terminus game](http://mprat.github.io/Terminus/) ([code](https://github.com/mprat/Terminus/))  |
 
  *(Les fondements du jeu sont en cours de révision, cela aura un impact sur : les dialogues, les actions possibles, et le design.)* <br><br>
 
