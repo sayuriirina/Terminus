@@ -2,7 +2,7 @@ Dans un univers où la magie a été remplacée par le mystérieux pouvoir de la
 
 Terminus est un jeu d'aventure textuel (jouable sur un navigateur Web), le but n'est pas de vaincre ou détruire des ennemis, mais d'aider les autres personnes que tu rencontre. 
 
-Pour contribuer, voir le [wiki](https://github.com/luffah/Terminus/wiki/fr) et les [règles de contributions](https://github.com/luffah/Terminus/wiki/R%C3%A8gles-de-contributions).
+Pour contribuer, voir le [wiki](https://github.com/luffah/Terminus/wiki) et les [règles de contributions](https://github.com/luffah/Terminus/wiki/R%C3%A8gles-de-contributions).
 
 
 Compilation
