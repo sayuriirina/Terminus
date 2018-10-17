@@ -32,7 +32,7 @@ _defCommand('rm', [ARGT.file], function (args, ctx, vt) { // event arg -> object
           ret.push(_stderr(_('cmd_rm_invalid')))
         }
       }
-      return new ReturnSequence(ret)
+      return new Seq(ret)
     }
   }
 })

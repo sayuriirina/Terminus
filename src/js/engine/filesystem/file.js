@@ -1,15 +1,15 @@
 var global_uid={};
 function getObjUID(name){
-  cntUp(global_uid,name,0);
+  inc(global_uid,name);
   return  name.substr(0,4)+global_uid[name];
 }
 
 function File(name,picname,prop){
   prop=prop||{};
-  this.executable=d(prop.executable,false);
-  this.readable=d(prop.readable,true);
-  this.writable=d(prop.writable,false);
+  this.mod = new Modes(prop.mod||'a+r');
   this.picture = new Pic(picname,prop) ;
+  this.group='';
+  this.owner='';
   this.cmd_event={};
   this.cmd_hook = {};
   this.name=name;
@@ -17,9 +17,10 @@ function File(name,picname,prop){
   this.uid=prop.uid||getObjUID(prop.poid||name);
 //  console.log(name,this.uid);
   this.poprefix=prop.poprefix;
-  //  this.group='';
-  //  this.owner='';
   EventTarget.call(this);
+  this._inheritable = ['poprefix']
+  this._clonable = ['_listeners', 'cmd_event', 'cmd_hook', 'text']
+  this._copiable = ['picture']
 }
 
 File.prototype=union(EventTarget.prototype,{
@@ -28,8 +29,8 @@ File.prototype=union(EventTarget.prototype,{
   },
   getHash: function(){
     hash={};
-    hash['rwx']=this.readable * 4 + this.writable *2 + this.executable;
-    hash['d']=this.hasOwnProperty('children')*1;
+    hash['m']=this.mod.stringify()
+    hash['d']=this.hasOwnProperty('children')*1
     hash['events']=this.cmd_event;
     // hash['states']=this._listeners;
     // TODO: revoir définition d'une sauvegarde... + alteration d'état room/file dans gamestate ?
@@ -37,22 +38,26 @@ File.prototype=union(EventTarget.prototype,{
     hash['picture']=this.picture.src;
     return hash;
   },
+  ismod: function(right,ctx){
+    if (this.modes.get('o',right)) {
+      return true
+    }
+    if (ctx){
+      if (ctx.user.groups.indexOf(this.group) != -1){
+        if (this.modes.get('g',right)){
+          return true
+        }
+      }
+      if (ctx.currentuser == this.owner){
+        if (this.modes.get('u',right)) {
+          return true
+        }
+      }
+    }
+    return false
+  },
   chmod:function(chmod){
-    this.readable=d(chmod.read,this.readable);
-    this.executable=d(chmod.exec,this.readable);
-    this.writable=d(chmod.write,this.readable);
-    return this;
-  },
-  setReadable:function(chmod){
-    this.readable=d(chmod.read,this.readable);
-    return this;
-  },
-  setWritable:function(chmod){
-    this.writable=d(chmod.write,this.readable);
-    return this;
-  },
-  setExecutable:function(chmod){
-    this.executable=d(chmod.exec,this.readable);
+    this.mod.parse(chmod);
     return this;
   },
   getName:function(){
@@ -84,7 +89,7 @@ File.prototype=union(EventTarget.prototype,{
   },
   setTextIdx: function (textidx, vars) {
     this.text = _(this.poid + POSUFFIX_DESC + textidx, vars, { or: this.poid + POSUFFIX_DESC })
-    return this
+      return this
   },
   unsetCmdEvent : function(cmd) {
     delete this.cmd_event[cmd];
@@ -109,7 +114,7 @@ File.prototype=union(EventTarget.prototype,{
       fu = () => {return {ret:_stdout(fu), pass: true}}
     }
     this.cmd_hook[cmd] = fu
-    return this;
+      return this;
   },
   unsetCmd : function(cmd) {
     delete this.cmd_hook[cmd];
@@ -132,7 +137,7 @@ File.prototype=union(EventTarget.prototype,{
     return this;
   },
   addStates : function(h){
-    if (isObj(h)){
+    if (h instanceof Object){
       for (var i in h) {
         if (h.hasOwnProperty(i)){
           this.addListener(i,this.apply);
@@ -145,12 +150,26 @@ File.prototype=union(EventTarget.prototype,{
     }
     return this;
   },
+  copy:function(name){
+    var nut = this.constructor(name);
+    for (var attr in this._copiable) {
+      if (this.hasOwnProperty(attr)) nut[attr] = obj[attr].copy();
+    }
+    for (var attr in this._clonable) {
+      if (this.hasOwnProperty(attr)) nut[attr] = clone(obj[attr]);
+    }
+    for (var attr in this._inheritable) {
+      if (this.hasOwnProperty(attr)) nut[attr] = obj[attr];
+    }
+    return nut;
+  }
 });
 
 function Item(name, intro, picname, prop){
   prop=prop||{};
   prop.poprefix=d(prop.poprefix,POPREFIX_ITEM);
   File.call(this,name,picname,prop);
+  this._inheritable.push('room')
   this.text = intro || _(PO_DEFAULT_ITEM)
   this.room=null;
   if (prop.poid){
@@ -166,18 +185,6 @@ Item.prototype=union(File.prototype, {
   rmPicMod : function (id,picname){
     this.picture.unsetChild(id,newpic);
     return this;
-  },
-  copy:function(name){
-    var nut = new Item(name);
-    nut.picture = this.picture.copy();
-    nut.text = clone(this.text);
-    nut.cmd_hook = clone(this.cmd_hook);
-    nut.cmd_event = clone(this.cmd_event);
-    nut._listeners = clone(this._listeners);
-    nut.room = this.room;
-    nut.people = this.people;
-    nut.poprefix = this.poprefix;
-    return nut;
   },
   setExecFunction:function(fu){
     this.exec_function=fu;
@@ -233,6 +240,5 @@ function People(name,intro,picname,prop){
   prop=prop||{};
   prop.poprefix=d(prop.poprefix,POPREFIX_PEOPLE);
   Item.call(this, name, intro,picname, prop);
-  this.people=true;
 }
 People.prototype=Item.prototype;

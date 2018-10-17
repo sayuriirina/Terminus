@@ -14,6 +14,9 @@ Context.prototype = {
       v:this.variables
     });
   },
+  traversee:function(path){
+    return this.room.traversee(path,this)
+  },
   addGroup(grp){
     this.users[this.currentuser].groups.push(grp);
   },

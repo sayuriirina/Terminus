@@ -2,8 +2,8 @@ var globalSpec = {}
 
 function Room (roomname, text, picname, prop) {
   prop = prop || {}
-  prop.executable = d(prop.executable, true)
   File.call(this, d(roomname, _(PO_DEFAULT_ROOM, [])), picname, prop)
+  this.chmod(755)
   this.parents = []
   this.previous = this
   this.children = []
@@ -102,7 +102,7 @@ Room.prototype = union(File.prototype, {
   // Room picture
   // item & people management
   addItem: function (newitem) {
-    pushDef(newitem, this.items)
+    this.items.push(newitem);
     newitem.room = this
     return this
   },
@@ -285,8 +285,8 @@ Room.prototype = union(File.prototype, {
   /* Returns the room and the item corresponding to the path
    * if item is null, then the path describe a room and  room is the full path
    * else room is the room containing the item */
-  traversee: function (path) {
-    var item; var pa = this.pathToRoom(path); var ret = {}
+  traversee: function (path, ctx) {
+    var item; var pa = this.pathToRoom(path, ctx); var ret = {}
     ret.room = pa[0]; ret.item_name = pa[1]; ret.item_idx = -1
     if (ret.room) {
       ret.room_name = ret.room.name
@@ -303,14 +303,14 @@ Room.prototype = union(File.prototype, {
     console.log(ret)
     return ret
   },
-  pathToRoom: function (path) {
+  pathToRoom: function (path, ctx) {
     var pat = path.split('/')
     var room = this
     var lastcomponent = null
     var cancd = true
     var pathstr = ''
     for (var i = 0; i < pat.length - 1; i++) {
-      if (room && room.executable) {
+      if (room && room.ismod('x', ctx)) {
         room = room.can_cd(pat[i])
         if (room) {
           pathstr += (i > 0 ? '/' : '') + pat[i]

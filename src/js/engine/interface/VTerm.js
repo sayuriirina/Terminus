@@ -606,7 +606,7 @@ VTerm.prototype={
       var args=l.split(' ');
       var echo=_parse_exec(t, args);
       if (def(echo)){
-        if (echo.isReturnSequence){
+        if (echo instanceof Seq){
           var supercb=[];
           for (var i=0;i<echo.length();i++){
              supercb.push(function(){
